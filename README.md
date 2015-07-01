@@ -8,6 +8,8 @@ It should be used under the FLASHgg framework and not as a standalone package.
 
 Before cloning this package, get the FLASHgg framework:
 https://github.com/cms-analysis/flashgg
+Also check their Twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/FLASHggFramework#New_simple_instructions
+Current CMSSW version to be used (as of 01July2015): CMSSW_7_4_6_patch2
 
 Follow their instructions (including compilation).
 
