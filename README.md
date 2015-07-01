@@ -14,7 +14,7 @@ Follow their instructions (including compilation).
 Then, go to the flashgg directory and clone bbggTools, and compile again:
 ```
 cd $CMSSW_BASE/src/flashgg
-git clone git@github.com:ResonantHbbHgg/bbggTools.git
+git clone git@github.com:ResonantHbbHgg/bbggTools.git bbggTools
 cd bbggTools
 scramv1 b -j 10
 ```
