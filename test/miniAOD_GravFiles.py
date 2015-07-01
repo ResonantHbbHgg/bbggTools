@@ -1,0 +1,35 @@
+GravFiles = {}
+
+GravFiles['260']	=	[
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/60000/5850C23B-6A12-E511-A4BD-0025905C96A6.root'
+]
+
+GravFiles['270']	=	[
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/70000/AA3F313F-7512-E511-AFCC-00259055C872.root'
+]
+
+GravFiles['280']	=	[
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/70000/409DF65D-4812-E511-851C-001E675A6AA9.root'
+]
+
+GravFiles['320']	=	[
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/2C8D7473-C412-E511-8A41-D4AE527EE0EB.root',
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/7A1718B6-C412-E511-A77F-000F530E479C.root'
+]
+
+GravFiles['350']	=	[
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/70000/06771201-AD12-E511-A99B-0025905B8572.root',
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/70000/1609AB11-AD12-E511-834F-0025905A6064.root',
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/70000/6A161005-AD12-E511-B0C4-001E67397CB0.root',
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/70000/D29B3C54-AD12-E511-92BA-02163E01451E.root'
+]
+
+GravFiles['500']	=	[
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/70000/1C83FB28-7A12-E511-AA24-001EC9ED4FB6.root',
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/70000/D4480A47-7A12-E511-9F02-6CC2173BBD40.root'
+]
+
+GravFiles['550']	=	[
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/1EA6F277-9612-E511-BE5D-002618943962.root',
+'/store/mc/RunIISpring15DR74/GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/1EB6217A-9612-E511-9483-00266CFFC6CC.root'
+]
