@@ -18,3 +18,9 @@ git clone git@github.com:ResonantHbbHgg/bbggTools.git bbggTools
 cd bbggTools
 scramv1 b -j 10
 ```
+
+#### MetaData
+On the MetaData directory, you will find the JSON files that are used to produce microAOD with FLASHgg from the miniAOD datasets. We only need to produce the signal microAOD for ourselves, the rest should be inherited from Hgg.
+
+#### Test
+On the test directory, you will find the different scripts to run our analysis, such as the flat tree producer, plots producer, etc. See directory README for more information.
