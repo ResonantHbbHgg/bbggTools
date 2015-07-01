@@ -21,26 +21,7 @@ scramv1 b -j 10
 ```
 
 #### MetaData
-On the MetaData directory, you will find the JSON files that are used to produce microAOD with FLASHgg from the miniAOD datasets. We only need to produce the signal microAOD for ourselves, the rest should be inherited from Hgg.
-
-To produce microAOD from datasets in a JSON file, take the JSON file to flashgg/MetaData/work and do:
-```
-./prepareCrabJobs.py -s HHbbgg.json -o /store/user/rateixei/flashgg/ -C RunIISpring15DR74 -V RunIISpring15MicroAODV1
-```
-Where:  
--C = Campaign  
--V = Version  
--o = output folder on EOS
-
-This will create a folder on flashgg/MetaData/work with all the crab submition files. To submit all of them at the same time, do:
-```
-echo crabConfig_*.py | xargs -n 1 crab sub
-```
-
-To check the status of all of them at the same time, do:
-```
-echo crab_* | xargs -n 1 crab status
-```
+On the MetaData directory, you will find the JSON files that are used to produce microAOD with FLASHgg from the miniAOD datasets. We only need to produce the signal microAOD for ourselves, the rest should be inherited from Hgg. For more information about how to create MicroAOD, see the MetaData README.md.
 
 #### Test
 On the test directory, you will find the different scripts to run our analysis, such as the flat tree producer, plots producer, etc. See directory README for more information.
