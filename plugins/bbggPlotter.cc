@@ -47,7 +47,7 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 //Local
-#include "flashgg/bbggPlotter/interface/bbggTools.h"
+#include "flashgg/bbggTools/interface/bbggTools.h"
 
 //
 // class declaration
@@ -69,15 +69,8 @@ class bbggPlotter : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
-      // ---------- extra methods... ---------------------
-      double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho, float rho);
-      double getNHisoToCutValue(const flashgg::Photon* pho, float rho);
-      double getPHisoToCutValue(const flashgg::Photon* pho, float rho);
-      double getEA( float eta, int whichEA);
-      double DeltaR( bbggPlotter::LorentzVector vec1, bbggPlotter::LorentzVector vec2);
-
-
       // ----------member data ---------------------------
+	  bbggTools tools_;
       //Parameter tokens
       edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
       edm::EDGetTokenT<edm::View<flashgg::Jet> > thejetToken_;
@@ -132,7 +125,8 @@ diPhotonToken_( consumes<edm::View<flashgg::DiPhotonCandidate> >( iConfig.getUnt
 thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<edm::InputTag>( "JetTag", edm::InputTag( "flashggJets" ) ) ) )
 {
    //now do what ever initialization is needed
-   EvtCount = 0;
+	  tools_ = bbggTools();
+   	  EvtCount = 0;
 //Default values for thresholds
       std::vector<double> def_ph_pt;
       std::vector<double> def_ph_eta;
@@ -297,6 +291,7 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    Handle<double> rhoHandle;        // the old way for now...move to getbytoken?
    iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
    const double rhoFixedGrd = *( rhoHandle.product() );
+   tools_.setRho(rhoFixedGrd);
 
    bool isValidDiPhotonCandidate = false;
 
@@ -324,14 +319,13 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 pho1_r9 = dipho->leadingPhoton()->r9();			pho2_r9 = dipho->subLeadingPhoton()->r9();
 	 pho1_elveto = dipho->leadingPhoton()->passElectronVeto();	pho2_elveto = dipho->subLeadingPhoton()->passElectronVeto();
 
-	 pho1_chiso = bbggPlotter::getCHisoToCutValue( dipho, 0, rhoFixedGrd);
-	 pho2_chiso = bbggPlotter::getCHisoToCutValue( dipho, 1, rhoFixedGrd);
-	 pho1_nhiso = bbggPlotter::getNHisoToCutValue( dipho->leadingPhoton(), rhoFixedGrd );
-	 pho2_nhiso = bbggPlotter::getNHisoToCutValue( dipho->subLeadingPhoton(), rhoFixedGrd );
-	 pho1_phiso = bbggPlotter::getPHisoToCutValue( dipho->leadingPhoton(), rhoFixedGrd );
-	 pho2_phiso = bbggPlotter::getPHisoToCutValue( dipho->subLeadingPhoton(), rhoFixedGrd );
-
-		 
+	 pho1_chiso = tools_.getCHisoToCutValue( dipho, 0);
+	 pho2_chiso = tools_.getCHisoToCutValue( dipho, 1);
+	 pho1_nhiso = tools_.getNHisoToCutValue( dipho->leadingPhoton() );
+	 pho2_nhiso = tools_.getNHisoToCutValue( dipho->subLeadingPhoton() );
+	 pho1_phiso = tools_.getPHisoToCutValue( dipho->leadingPhoton() );
+	 pho2_phiso = tools_.getPHisoToCutValue( dipho->subLeadingPhoton() ); 
+	 		 
 	 if( pho1_pt < dipho_mass*ph_pt[0] ) continue;
 	 if( fabs(pho1_eta) > ph_eta[1] ) continue;
 	 if( pho2_pt < dipho->mass()*ph_pt[1] ) continue;
@@ -409,8 +403,8 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	if(jet->bDiscriminator(bTagType) < jt_bDis[0]) continue;
 	if( !isJet1 && !isJet2 ) continue;
-	if( bbggPlotter::DeltaR(jet->p4(), diphoCand->leadingPhoton()->p4()) < jt_drPho[0] 
-            || bbggPlotter::DeltaR(jet->p4(), diphoCand->subLeadingPhoton()->p4()) < jt_drPho[0] ) continue;
+	if( tools_.DeltaR(jet->p4(), diphoCand->leadingPhoton()->p4()) < jt_drPho[0] 
+            || tools_.DeltaR(jet->p4(), diphoCand->subLeadingPhoton()->p4()) < jt_drPho[0] ) continue;
 	
 	Jets.push_back(jet);
 	if( jet->bDiscriminator(bTagType) > jt_bDis[1] ) nbjets++;
@@ -437,6 +431,7 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 //	  if(totalbjet != n_bJets) continue;
 
 	  bbggPlotter::LorentzVector dijet = Jets[iJet]->p4() + Jets[jJet]->p4();
+	  if(dijet.mass() < dijt_mass[0] || dijet.mass() > dijt_mass[1]) continue;
 	  if(dijet.pt() > dijetPt_ref && dijet.pt() > dijt_pt[0] && fabs(dijet.Eta()) < dijt_eta[0] )
 	  {
 	      hasDiJet = true;
@@ -475,15 +470,15 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    jet2_bDis = jet2->bDiscriminator(bTagType);
    jet2_PUid = jet2->passesPuJetId(CandVtx);
 
-   jet1_drPho1 = bbggPlotter::DeltaR(jet1->p4(), diphoCand->leadingPhoton()->p4());
-   jet1_drPho2 = bbggPlotter::DeltaR(jet1->p4(), diphoCand->subLeadingPhoton()->p4());
-   jet2_drPho1 = bbggPlotter::DeltaR(jet2->p4(), diphoCand->leadingPhoton()->p4());
-   jet2_drPho2 = bbggPlotter::DeltaR(jet2->p4(), diphoCand->subLeadingPhoton()->p4());
+   jet1_drPho1 = tools_.DeltaR(jet1->p4(), diphoCand->leadingPhoton()->p4());
+   jet1_drPho2 = tools_.DeltaR(jet1->p4(), diphoCand->subLeadingPhoton()->p4());
+   jet2_drPho1 = tools_.DeltaR(jet2->p4(), diphoCand->leadingPhoton()->p4());
+   jet2_drPho2 = tools_.DeltaR(jet2->p4(), diphoCand->subLeadingPhoton()->p4());
 
    //End Jets Loop/Selection -----------------------------------------------------------
    
    //Candidate assignment --------------------------------------------------------------
-   double deltaR = bbggPlotter::DeltaR(DiJet, diphoCand->p4());
+   double deltaR = tools_.DeltaR(DiJet, diphoCand->p4());
    double dijet_sumbdis = jet1_bDis + jet2_bDis;
    bbggPlotter::LorentzVector HHCandidate = DiJet + diphoCand->p4();
    cand4_pt = HHCandidate.pt();
@@ -570,90 +565,6 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    if(DEBUG) std::cout << "Histograms filled!" << std::endl;
 }
-
-// ------------ Extra methods... -------------
-//
-
-double bbggPlotter::DeltaR(bbggPlotter::LorentzVector vec1, bbggPlotter::LorentzVector vec2)
-{
-	double R2 = (vec1.phi() - vec2.phi())*(vec1.phi() - vec2.phi()) + (vec1.eta() - vec2.eta())*(vec1.eta() - vec2.eta());
-	return sqrt(R2);
-}
-
-double bbggPlotter::getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho, float rho)
-{
-	if( whichPho > 1 ) {
-		std::cout << "[bbggPlotter::getCHisoToCutValue] You chose the wrong photon!" << std::endl;
-		return -1;
-	}
-	double PFIso = -1, eta = -99;
-	if(whichPho == 0) {
-		PFIso = dipho->leadingView().pfChIso03WrtChosenVtx();
-		eta = dipho->leadingPhoton()->superCluster()->eta();
-	}
-	if(whichPho == 1) {
-		PFIso = dipho->subLeadingView().pfChIso03WrtChosenVtx();
-		eta = dipho->subLeadingPhoton()->superCluster()->eta();
-	}
-	
-	double EA = bbggPlotter::getEA(eta, 0);
-	double finalValue = fmax(PFIso - rho*EA, 0.);
-	return finalValue;
-}
-
-double bbggPlotter::getNHisoToCutValue(const flashgg::Photon* pho, float rho)
-{
-	double PFIso = pho->pfNeutIso03();
-	double eta = pho->superCluster()->eta();
-	double EA = bbggPlotter::getEA(eta, 1);
-	double extraFactor = 0;
-	if(fabs(eta) < 1.479) extraFactor = exp(0.0028*pho->pt()+0.5408);
-	if(fabs(eta) > 1.479) extraFactor = 0.01725*pho->pt();
-	double finalValue = fmax(PFIso - rho*EA, 0.) - extraFactor;
-	return finalValue;
-}
-
-double bbggPlotter::getPHisoToCutValue(const flashgg::Photon* pho, float rho)
-{
-	double PFIso = pho->pfPhoIso03();
-	double eta = pho->superCluster()->eta();
-	double EA = bbggPlotter::getEA(eta, 2);
-	double extraFactor = 0;
-	if(fabs(eta) < 1.479) extraFactor = 0.0014*pho->pt();
-	if(fabs(eta) > 1.479) extraFactor = 0.0091*pho->pt();
-	double finalValue = fmax(PFIso - rho*EA, 0.) - extraFactor;
-	return finalValue;
-}
-
-double bbggPlotter::getEA( float eta, int whichEA){
-        if(whichEA < 0 || whichEA > 2){
-                std::cout << "WRONG EA TYPE" << std::endl;
-                return -1;
-        }
-
-        float EA[7][3];
-
-        EA[0][0] = 0.0234; EA[0][1] = 0.0053; EA[0][2] = 0.078;
-        EA[1][0] = 0.0189; EA[1][1] = 0.0103; EA[1][2] = 0.0629;
-        EA[2][0] = 0.0171; EA[2][1] = 0.0057; EA[2][2] = 0.0264;
-        EA[3][0] = 0.0129; EA[3][1] = 0.0070; EA[3][2] = 0.0462;
-        EA[4][0] = 0.0110; EA[4][1] = 0.0152; EA[4][2] = 0.0740;
-        EA[5][0] = 0.0074; EA[5][1] = 0.0232; EA[5][2] = 0.0924;
-        EA[6][0] = 0.0035; EA[6][1] = 0.1709; EA[6][2] = 0.1484;
-
-        float feta = fabs(eta);
-
-        if(feta > 0.000 && feta < 1.000 ) return EA[0][whichEA];
-        if(feta > 1.000 && feta < 1.479 ) return EA[1][whichEA];
-        if(feta > 1.479 && feta < 2.000 ) return EA[2][whichEA];
-        if(feta > 2.000 && feta < 2.200 ) return EA[3][whichEA];
-        if(feta > 2.200 && feta < 2.300 ) return EA[4][whichEA];
-        if(feta > 2.300 && feta < 2.400 ) return EA[5][whichEA];
-        if(feta > 2.400 && feta < 10.00 ) return EA[6][whichEA];
-
-        return -1;
-}
-
 
 // ------------ method called once each job just before starting event loop  ------------
 void 

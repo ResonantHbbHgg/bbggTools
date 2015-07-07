@@ -25,16 +25,19 @@ using namespace std;
 
 class bbggTools{
 public:
-	bbggTools() {}
+	bbggTools() { rho_ = -10;}
 	~bbggTools() {}
 	typedef math::XYZTLorentzVector LorentzVector;
-	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho, float rho);
-        double getNHisoToCutValue(const flashgg::Photon* pho, float rho);
-	double getPHisoToCutValue(const flashgg::Photon* pho, float rho);
+	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
+    double getNHisoToCutValue(const flashgg::Photon* pho);
+	double getPHisoToCutValue(const flashgg::Photon* pho);
 	double getEA( float eta, int whichEA);
 	double DeltaR( bbggTools::LorentzVector vec1, bbggTools::LorentzVector vec2);
 	bool isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts);
-	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts);	
+	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts);
+	void setRho(double rho) {rho_ = rho;}
+private:
+	double rho_;
 };
 
 #endif

@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 from microAOD_RadFiles import *
 from microAOD_GravFiles import *
 
-process = cms.Process("bbggAnalyzer")
+process = cms.Process("bbggplotter")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
@@ -21,8 +21,8 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.load("flashgg.bbggPlotter.CfiFile_cfi")
-process.bbggAnalyzer.OutFileName = cms.untracked.string('XXXMASS.root')
+process.load("flashgg.bbggTools.bbggPlotter_cfi")
+process.bbggplotter.OutFileName = cms.untracked.string('XXXMASS.root')
 
 
-process.p = cms.Path(process.bbggAnalyzer)
+process.p = cms.Path(process.bbggplotter)
