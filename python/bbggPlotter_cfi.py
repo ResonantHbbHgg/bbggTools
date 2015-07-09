@@ -1,9 +1,44 @@
 import FWCore.ParameterSet.Config as cms
+import flashgg.bbggTools.parameters as param
 
 #### Comments refer to the structure
 #### of the vector below the comment line
 
 bbggplotter = cms.EDAnalyzer('bbggPlotter',
+	DiPhotonTag=param._DiPhotonTag,
+	JetTag=param._JetTag,
+	rhoFixedGridCollection=param._rhoFixedGridCollection,
+	PhotonPtOverDiPhotonMass=param._PhotonPtOverDiPhotonMass,
+	PhotonEta=param._PhotonEta,
+	PhotonHoverE=param._PhotonHoverE,
+	PhotonSieie=param._PhotonSieie,
+	PhotonR9=param._PhotonR9,
+	PhotonChargedIso=param._PhotonChargedIso,
+	PhotonNeutralIso=param._PhotonNeutralIso,
+	PhotonPhotonIso=param._PhotonPhotonIso,
+	PhotonElectronVeto=param._PhotonElectronVeto,
+	PhotonDoID=param._PhotonDoID,
+	PhotonDoISO=param._PhotonDoISO,
+	DiPhotonPt=param._DiPhotonPt,
+	DiPhotonEta=param._DiPhotonEta,
+	DiPhotonMassWindow=param._DiPhotonMassWindow,
+	DiPhotonOnlyFirst=param._DiPhotonOnlyFirst,
+	JetPtOverDiJetMass=param._JetPtOverDiJetMass,
+	JetEta=param._JetEta,
+	JetBDiscriminant=param._JetBDiscriminant,
+	JetDoPUID=param._JetDoPUID,
+	JetDrPho=param._JetDrPho,
+	CandidatesDeltaR=param._CandidatesDeltaR,
+	n_bJets=param._n_bJets,
+	DiJetPt=param._DiJetPt,
+	DiJetEta=param._DiJetEta,
+	DiJetMassWindow=param._DiJetMassWindow,
+	CandidateMassWindow=param._CandidateMassWindow,
+	CandidatePt=param._CandidatePt,
+	CandidateEta=param._CandidateEta,
+	bTagType=param._bTagType
+)
+'''
 	DiPhotonTag=cms.untracked.InputTag('flashggDiPhotons'),
 	JetTag=cms.untracked.InputTag('flashggJets'),
 	rhoFixedGridCollection=cms.untracked.InputTag('fixedGridRhoAll'),
@@ -52,7 +87,7 @@ bbggplotter = cms.EDAnalyzer('bbggPlotter',
 	#0: upper boundary for dijet pt
 	DiJetEta=cms.untracked.vdouble(20.),
 	#0: DiJet mass window lower boundary, 1: upper boundary
-	DiJetMassWindow=cms.untracked.vdouble(40., 200.),
+	DiJetMassWindow=cms.untracked.vdouble(0., 500.),
 	#0: 4-candidate mass window lower boundary, 1: upper boundary
 	CandidateMassWindow=cms.untracked.vdouble(0, 9000.),
 	#0 4-candidate pt lower bound
@@ -61,4 +96,4 @@ bbggplotter = cms.EDAnalyzer('bbggPlotter',
 	CandidateEta=cms.untracked.vdouble(20.),
 	#string for btag algorithm
 	bTagType=cms.untracked.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
-)
+'''

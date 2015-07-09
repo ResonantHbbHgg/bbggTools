@@ -83,6 +83,7 @@ class bbggTree : public edm::EDAnalyzer {
 	  double leadingJet_bDis;
 	  LorentzVector subleadingJet;
 	  double subleadingJet_bDis;
+	  LorentzVector dijetCandidate;
 
       //Thresholds
       std::vector<double> ph_pt;
@@ -116,6 +117,8 @@ class bbggTree : public edm::EDAnalyzer {
       std::vector<double> cand_pt;
       std::vector<double> cand_eta;
       std::vector<double> cand_mass;
+	  
+	  std::vector<double> dr_cands;
 
       //OutFile & Hists
       TFile* outFile;
@@ -168,6 +171,8 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
       std::vector<double> def_cand_pt;
       std::vector<double> def_cand_eta;
       std::vector<double> def_cand_mass;
+
+	  std::vector<double> def_dr_cands;
 
       std::string def_bTagType;
 
@@ -243,12 +248,44 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
       cand_pt 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidatePt", def_cand_mass);
       cand_eta 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidateEta", def_cand_mass);
       cand_mass = iConfig.getUntrackedParameter<std::vector<double > >("CandidateMassWindow", def_cand_mass);
+	  
+	  dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
 
       rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
 
       bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
 
       fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
+	  
+	  tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
+	  tools_.SetCut_PhotonEta( ph_eta );
+	  tools_.SetCut_PhotonDoID( ph_doID );
+	  tools_.SetCut_PhotonDoISO( ph_doISO );
+	  tools_.SetCut_PhotonHoverE( ph_hoe );
+	  tools_.SetCut_PhotonSieie( ph_sieie );
+	  tools_.SetCut_PhotonR9( ph_r9 );
+	  tools_.SetCut_PhotonChargedIso( ph_chIso );
+	  tools_.SetCut_PhotonNeutralIso( ph_nhIso);
+	  tools_.SetCut_PhotonPhotonIso( ph_phIso);
+	  tools_.SetCut_PhotonElectronVeto( ph_elVeto );
+	  tools_.SetCut_DiPhotonPt( diph_pt );
+	  tools_.SetCut_DiPhotonEta( diph_eta );
+	  tools_.SetCut_DiPhotonMassWindow( diph_mass );
+	  tools_.SetCut_DiPhotonOnlyFirst( diph_onlyfirst );
+	  tools_.SetCut_JetPt( jt_pt );
+	  tools_.SetCut_JetEta( jt_eta );
+	  tools_.SetCut_JetBDiscriminant( jt_bDis );
+	  tools_.SetCut_JetDrPho( jt_drPho  );
+	  tools_.SetCut_JetDoPUID( jt_doPU );
+	  tools_.SetCut_n_bJets( n_bJets );
+	  tools_.SetCut_DiJetPt( dijt_pt );
+	  tools_.SetCut_DiJetEta( dijt_eta );
+	  tools_.SetCut_DiJetMassWindow( dijt_mass );
+	  tools_.SetCut_CandidateMassWindow( cand_mass );
+	  tools_.SetCut_CandidatePt( cand_pt );
+	  tools_.SetCut_CandidateEta( cand_eta );
+	  tools_.SetCut_bTagType( bTagType );
+	  tools_.SetCut_CandidatesDeltaR( dr_cands );
 
       std::cout << "Parameters initialized... cand_mass[0]: " << cand_mass[0] << "\t" << "cand_mass[1] " << cand_mass[1] << std::endl;
 
@@ -276,20 +313,6 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     EvtCount++;
     using namespace edm;
 	 
-    double dipho_pt = -1, dipho_eta = -1, /*dipho_phi = -1,*/ dipho_mass = -1;
-//    double dijet_pt = -1, dijet_eta = -1, dijet_phi = -1, dijet_mass = -1;
-    double cand4_pt = -1, cand4_eta = -1, /*cand4_phi = -1,*/ cand4_mass = -1;
-    double pho1_pt = -1, pho1_eta = -1/*, pho1_phi = -1*/;
-    double pho1_hoe = -1, pho1_sieie = -1, /*pho1_r9 = -1,*/ pho1_chiso = -1, pho1_nhiso = -1, pho1_phiso = -1;
-    int pho1_elveto = -1;
-    double pho2_pt = -1, pho2_eta = -1/*, pho2_phi = -1*/;
-    double pho2_hoe = -1, pho2_sieie = -1, /*pho2_r9 = -1,*/ pho2_chiso = -1, pho2_nhiso = -1, pho2_phiso = -1;
-    int pho2_elveto = -1;
-//    double jet1_pt = -1, jet1_eta = -1, jet1_phi = -1, jet1_bDis = -1, jet1_PUid = -1, jet1_drPho1 = -1, jet1_drPho2 = -1;
-//    double jet2_pt = -1, jet2_eta = -1, jet2_phi = -1, jet2_bDis = -1, jet2_PUid = -1, jet2_drPho1 = -1, jet2_drPho2 = -1;
-	
-	bbggTree::LorentzVector _pho1, _pho2, _jet1, _jet2, _dipho, _dijet, _hhcand;
-
     Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
     iEvent.getByToken( diPhotonToken_, diPhotons );
     Handle<View<flashgg::Jet> > theJets;
@@ -299,201 +322,23 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     const double rhoFixedGrd = *( rhoHandle.product() );
     tools_.setRho(rhoFixedGrd);
 
-    bool isValidDiPhotonCandidate = false;
-
-    edm::Ptr<reco::Vertex> CandVtx;
-    edm::Ptr<flashgg::DiPhotonCandidate> diphoCand;
-
-    //Begin DiPhoton Loop/Selection -----------------------------------------------------------
-    for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
-    {
- 	if(diph_onlyfirst && diphoIndex > 0 ) break;
-
- 	 edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
-	 
- 	 dipho_pt = dipho->pt(); dipho_eta = dipho->eta(); dipho_mass = dipho->mass();
-		 
- 	 if(dipho_mass < diph_mass[0] || dipho_mass > diph_mass[1]) continue;
- 	 if(fabs(dipho_eta) > diph_eta[0] ) continue;
- 	 if(dipho_pt < diph_pt[0] ) continue;
-		 
- 	 pho1_pt = dipho->leadingPhoton()->pt();			pho2_pt = dipho->subLeadingPhoton()->pt();
- 	 pho1_eta = dipho->leadingPhoton()->superCluster()->eta();	pho2_eta = dipho->subLeadingPhoton()->superCluster()->eta();
-// 	 pho1_phi = dipho->leadingPhoton()->superCluster()->phi();	pho2_phi = dipho->subLeadingPhoton()->superCluster()->phi();
- 	 pho1_hoe = dipho->leadingPhoton()->hadronicOverEm(); 		pho2_hoe = dipho->subLeadingPhoton()->hadronicOverEm();
- 	 pho1_sieie = dipho->leadingPhoton()->full5x5_sigmaIetaIeta();	pho2_sieie = dipho->subLeadingPhoton()->full5x5_sigmaIetaIeta();
-// 	 pho1_r9 = dipho->leadingPhoton()->r9();			pho2_r9 = dipho->subLeadingPhoton()->r9();
- 	 pho1_elveto = dipho->leadingPhoton()->passElectronVeto();	pho2_elveto = dipho->subLeadingPhoton()->passElectronVeto();
-
- 	 pho1_chiso = tools_.getCHisoToCutValue( dipho, 0);
- 	 pho2_chiso = tools_.getCHisoToCutValue( dipho, 1);
- 	 pho1_nhiso = tools_.getNHisoToCutValue( dipho->leadingPhoton() );
- 	 pho2_nhiso = tools_.getNHisoToCutValue( dipho->subLeadingPhoton() );
- 	 pho1_phiso = tools_.getPHisoToCutValue( dipho->leadingPhoton() );
- 	 pho2_phiso = tools_.getPHisoToCutValue( dipho->subLeadingPhoton() ); 
-	 		 
- 	 if( pho1_pt < dipho_mass*ph_pt[0] ) continue;
- 	 if( fabs(pho1_eta) > ph_eta[1] ) continue;
- 	 if( pho2_pt < dipho->mass()*ph_pt[1] ) continue;
- 	 if( fabs(pho2_eta) > ph_eta[1] ) continue;
-		 
- 	 bool pho1_id = true, pho2_id = true;
- 	 if( ph_doID[0] )
- 	 {
- 	   int pho1Index = 0;
- 	   if( fabs(pho1_eta) > ph_eta[0] ) pho1Index = 1;
-			 
- 	   if( pho1_hoe > ph_hoe[pho1Index] ) 	pho1_id = false;
- 	   if( pho1_sieie > ph_sieie[pho1Index] ) pho1_id = false;
- 	   if( pho1_elveto != ph_elVeto[0] )    pho1_id = false;
- 	}
- 	if(ph_doISO[0])
- 	{
- 	   int pho1Index = 0;
-            if( fabs(pho1_eta) > ph_eta[0] ) pho1Index = 1;
-
- 	   if( pho1_chiso > ph_chIso[pho1Index] ) pho1_id = false;
- 	   if( pho1_nhiso > ph_nhIso[pho1Index] ) pho1_id = false;
- 	   if( pho1_phiso > ph_phIso[pho1Index] ) pho1_id = false;
- 	}
- 	if( ph_doID[1] )
- 	{
- 	   int pho2Index = 2;
- 	   if( fabs(pho2_eta) > ph_eta[0] ) pho2Index = 3;
-
-            if( pho2_hoe > ph_hoe[pho2Index] )   pho2_id = false;
-            if( pho2_sieie > ph_sieie[pho2Index] ) pho2_id = false;
- 	   if( pho2_elveto != ph_elVeto[1] )    pho2_id = false;
- 	}
- 	if(ph_doISO[1])
- 	{
-            int pho2Index = 2;
-            if( fabs(pho2_eta) > ph_eta[0] ) pho2Index = 3;	 
-
- 	   if( pho2_chiso > ph_chIso[pho2Index] ) pho2_id = false;
- 	   if( pho2_nhiso > ph_nhIso[pho2Index] ) pho2_id = false;
- 	   if( pho2_phiso > ph_phIso[pho2Index] ) pho2_id = false;
- 	}
-
- 	if(pho1_id == true && pho2_id == true){
- 	  isValidDiPhotonCandidate = true;
-   	  CandVtx = dipho->vtx();
- 	  diphoCand = dipho;
-	  _pho1 = dipho->leadingPhoton()->p4();
-	  _pho2 = dipho->subLeadingPhoton()->p4();
-	  _dipho = dipho->p4();
- 	  break;
- 	}
-
-    }
-    if( isValidDiPhotonCandidate == false ) return;
-    if(DEBUG) std::cout << "Passed diphoton selection..." << std::endl;
-    //End DiPhoton Loop/Selection -----------------------------------------------------------
-   
-    //Begin Jets Loop/Selection ------------------------------------------------------------
-    std::vector<edm::Ptr<flashgg::Jet>> Jets;
-    int nJet1 = 0, nJet2 = 0;
-    int nbjets = 0;
-    for( unsigned int jetIndex = 0; jetIndex < theJets->size(); jetIndex++ )
-    {
-    	edm::Ptr<flashgg::Jet> jet = theJets->ptrAt( jetIndex );
-    	bool isJet1 = true, isJet2 = true;
+	bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+	if(!passedSelection) return;
 	
-    	if(jet->pt() < jt_pt[0]) isJet1 = false;
-    	if(fabs(jet->eta()) > jt_eta[0] ) isJet1 = false;
-    	if( jt_doPU[0] && jet->passesPuJetId(CandVtx) == 0 ) isJet1 = false;
+	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
+	edm::Ptr<flashgg::Jet> LeadingJet = tools_.GetSelected_leadingJetCandidate();
+	edm::Ptr<flashgg::Jet> SubLeadingJet = tools_.GetSelected_subleadingJetCandidate();
 	
-    	if(jet->pt() < jt_pt[1]) isJet2 = false;
-    	if(fabs(jet->eta()) > jt_eta[1] ) isJet2 = false;
-    	if( jt_doPU[1] && jet->passesPuJetId(CandVtx) == 0 ) isJet2 = false;
-	
-    	if(isJet1) nJet1++;
-    	if(isJet1 == false && isJet2) nJet2++;
-
- 	if(jet->bDiscriminator(bTagType) < jt_bDis[0]) continue;
- 	if( !isJet1 && !isJet2 ) continue;
- 	if( tools_.DeltaR(jet->p4(), diphoCand->leadingPhoton()->p4()) < jt_drPho[0] 
-             || tools_.DeltaR(jet->p4(), diphoCand->subLeadingPhoton()->p4()) < jt_drPho[0] ) continue;
-	
- 	Jets.push_back(jet);
- 	if( jet->bDiscriminator(bTagType) > jt_bDis[1] ) nbjets++;
-    }
-
-    if(Jets.size() < 2 ) return;
-
-    edm::Ptr<flashgg::Jet> jet1, jet2;
-    bbggTree::LorentzVector DiJet(0,0,0,0);
-    double dijetPt_ref = 0;
-    bool hasDiJet = false;
-
-    for(unsigned int iJet = 0; iJet < Jets.size(); iJet++)
-    {
- 	unsigned int isbjet = 0;
- 	if( Jets[iJet]->bDiscriminator(bTagType) > jt_bDis[1] ) isbjet = 1;
- 	for(unsigned int jJet = iJet+1; jJet < Jets.size(); jJet++)
- 	{
- 	  unsigned int isbjet2 = 0;
- 	  if( Jets[jJet]->bDiscriminator(bTagType) > jt_bDis[1] ) isbjet2 = 1;
-	  
- 	  unsigned int totalbjet = isbjet + isbjet2;
- 	  if(n_bJets && totalbjet != n_bJets) continue;
- //	  if(totalbjet != n_bJets) continue;
-
- 	  bbggTree::LorentzVector dijet = Jets[iJet]->p4() + Jets[jJet]->p4();
-	  if(dijet.mass() < dijt_mass[0] || dijet.mass() > dijt_mass[1]) continue;
-
- 	  if(dijet.pt() > dijetPt_ref && dijet.pt() > dijt_pt[0] && fabs(dijet.Eta()) < dijt_eta[0] )
- 	  {
- 	      hasDiJet = true;
-               dijetPt_ref = dijet.pt();
-               DiJet = dijet;
-               if( Jets[iJet]->pt() > Jets[jJet]->pt() ) {
-                      jet1 = Jets.at(iJet);
-                      jet2 = Jets.at(jJet);
-               } else {
-                      jet2 = Jets.at(iJet);
-                      jet1 = Jets.at(jJet);
-               } 
- 	  }
- 	}
-
-    }
-
-
-    if( hasDiJet == false ) return;
-   
-	_jet1 = jet1->p4();
-	_jet2 = jet2->p4();
-	_dijet = DiJet;
-	
-    //End Jets Loop/Selection -----------------------------------------------------------
-   
-    //Candidate assignment --------------------------------------------------------------
-//    double deltaR = tools_.DeltaR(DiJet, diphoCand->p4());
-//    double dijet_sumbdis = jet1->bDiscriminator(bTagType) + jet2->bDiscriminator(bTagType);
-    bbggTree::LorentzVector HHCandidate = DiJet + diphoCand->p4();
-    cand4_pt = HHCandidate.pt();
-    cand4_eta = HHCandidate.eta();
-    cand4_mass = HHCandidate.mass();
-    if(DEBUG) std::cout << cand4_pt << "\t < \t" << cand_pt[0] << std::endl;
-    if(cand4_pt < cand_pt[0] ) return;
-    if(DEBUG) std::cout << fabs(cand4_eta) << "\t > \t" << cand_eta[0] << std::endl;
-    if(fabs(cand4_eta) > cand_eta[0] ) return;
-    if(DEBUG) std::cout << cand4_mass << "\t" << cand_mass[0] << "\t" << cand_mass[1] << std::endl;
-    if(cand4_mass < cand_mass[0] || cand4_mass > cand_mass[1] ) return;
-    if(DEBUG) std::cout << "Passed 4-candidate selection..." << std::endl;
-	_hhcand = HHCandidate;
-    //END Candidate assignment ---------------------------------------------------------- 
-
     if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
-	diphotonCandidate = _dipho;
-	leadingPhoton = _pho1;
-	subleadingPhoton = _pho2;
-	dihiggsCandidate = _hhcand;
-	leadingJet = _jet1;
-	leadingJet_bDis = jet1->bDiscriminator(bTagType);
-	subleadingJet = _jet2;
-	subleadingJet_bDis = jet2->bDiscriminator(bTagType);
+	diphotonCandidate = diphoCand->p4();
+	leadingPhoton = diphoCand->leadingPhoton()->p4();
+	subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
+	leadingJet = LeadingJet->p4();
+	subleadingJet = SubLeadingJet->p4();
+	leadingJet_bDis = LeadingJet->bDiscriminator(bTagType);
+	subleadingJet_bDis = SubLeadingJet->bDiscriminator(bTagType);
+	dijetCandidate = leadingJet + subleadingJet;
+	dihiggsCandidate = diphotonCandidate + dijetCandidate;
 	tree->Fill();
 
     if(DEBUG) std::cout << "Histograms filled!" << std::endl;
@@ -505,7 +350,7 @@ void
 bbggTree::beginJob()
 {
 	outFile = new TFile(fileName.c_str(), "RECREATE");
-    tree = new TTree("bbggTree", "Tree for HH->bbgg analyses");
+        tree = new TTree("bbggTree", "Tree for HH->bbgg analyses");
 	tree->Branch("diphotonCandidate", &diphotonCandidate);
 	tree->Branch("leadingPhoton", &leadingPhoton);
 	tree->Branch("subleadingPhoton", &subleadingPhoton);
@@ -514,6 +359,7 @@ bbggTree::beginJob()
 	tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/D");
 	tree->Branch("subleadingJet", &subleadingJet);
 	tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/D");
+	tree->Branch("dijetCandidate", &dijetCandidate);
 
 }
 
@@ -521,41 +367,11 @@ bbggTree::beginJob()
 void 
 bbggTree::endJob() 
 {
+	outFile->cd();
 	tree->Write();
 	outFile->Close();
 }
 
-// ------------ method called when starting to processes a run  ------------
-/*
-void 
-bbggTree::beginRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-*/
-
-// ------------ method called when ending the processing of a run  ------------
-/*
-void 
-bbggTree::endRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-*/
-
-// ------------ method called when starting to processes a luminosity block  ------------
-/*
-void 
-bbggTree::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-*/
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-/*
-void 
-bbggTree::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-*/
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void

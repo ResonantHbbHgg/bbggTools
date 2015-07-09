@@ -109,6 +109,8 @@ class bbggPlotter : public edm::EDAnalyzer {
       std::vector<double> cand_pt;
       std::vector<double> cand_eta;
       std::vector<double> cand_mass;
+	  
+	  std::vector<double> dr_cands;
 
       //OutFile & Hists
       TFile* outFile;
@@ -160,6 +162,8 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
       std::vector<double> def_cand_eta;
       std::vector<double> def_cand_mass;
 
+	  std::vector<double> def_dr_cands;
+
       std::string def_bTagType;
 
       std::string def_fileName;
@@ -196,6 +200,8 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
       def_cand_pt.push_back(0.);
       def_cand_eta.push_back(20.);
       def_cand_mass.push_back(0.);		def_cand_mass.push_back(2000.);
+	  
+	  def_dr_cands.push_back(0.11);
 
 
       def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
@@ -234,13 +240,46 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
       cand_pt 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidatePt", def_cand_mass);
       cand_eta 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidateEta", def_cand_mass);
       cand_mass = iConfig.getUntrackedParameter<std::vector<double > >("CandidateMassWindow", def_cand_mass);
+	  
+	  dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
 
       rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
 
       bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
 
       fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
-
+	  
+	  tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
+	  tools_.SetCut_PhotonEta( ph_eta );
+	  tools_.SetCut_PhotonDoID( ph_doID );
+	  tools_.SetCut_PhotonDoISO( ph_doISO );
+	  tools_.SetCut_PhotonHoverE( ph_hoe );
+	  tools_.SetCut_PhotonSieie( ph_sieie );
+	  tools_.SetCut_PhotonR9( ph_r9 );
+	  tools_.SetCut_PhotonChargedIso( ph_chIso );
+	  tools_.SetCut_PhotonNeutralIso( ph_nhIso);
+	  tools_.SetCut_PhotonPhotonIso( ph_phIso);
+	  tools_.SetCut_PhotonElectronVeto( ph_elVeto );
+	  tools_.SetCut_DiPhotonPt( diph_pt );
+	  tools_.SetCut_DiPhotonEta( diph_eta );
+	  tools_.SetCut_DiPhotonMassWindow( diph_mass );
+	  tools_.SetCut_DiPhotonOnlyFirst( diph_onlyfirst );
+	  tools_.SetCut_JetPt( jt_pt );
+	  tools_.SetCut_JetEta( jt_eta );
+	  tools_.SetCut_JetBDiscriminant( jt_bDis );
+	  tools_.SetCut_JetDrPho( jt_drPho  );
+	  tools_.SetCut_JetDoPUID( jt_doPU );
+	  tools_.SetCut_n_bJets( n_bJets );
+	  tools_.SetCut_DiJetPt( dijt_pt );
+	  tools_.SetCut_DiJetEta( dijt_eta );
+	  tools_.SetCut_DiJetMassWindow( dijt_mass );
+	  tools_.SetCut_CandidateMassWindow( cand_mass );
+	  tools_.SetCut_CandidatePt( cand_pt );
+	  tools_.SetCut_CandidateEta( cand_eta );
+	  tools_.SetCut_bTagType( bTagType );
+	  tools_.SetCut_CandidatesDeltaR( dr_cands );
+	  
+	  
       std::cout << "Parameters initialized... cand_mass[0]: " << cand_mass[0] << "\t" << "cand_mass[1] " << cand_mass[1] << std::endl;
 
 }
@@ -266,24 +305,7 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    if( EvtCount%100 == 0 ) std::cout << "[bbggPlotter::analyze] Analyzing event number: " << EvtCount << std::endl;
    EvtCount++;
    using namespace edm;
-	 
-   double dipho_pt = -1, dipho_eta = -1, dipho_phi = -1, dipho_mass = -1;
-   
-   double dijet_pt = -1, dijet_eta = -1, dijet_phi = -1, dijet_mass = -1;
-   
-   double cand4_pt = -1, cand4_eta = -1, cand4_phi = -1, cand4_mass = -1;
-   
-   double pho1_pt = -1, pho1_eta = -1, pho1_phi = -1;
-   double pho1_hoe = -1, pho1_sieie = -1, pho1_r9 = -1, pho1_chiso = -1, pho1_nhiso = -1, pho1_phiso = -1;
-   int pho1_elveto = -1;
-   
-   double pho2_pt = -1, pho2_eta = -1, pho2_phi = -1;
-   double pho2_hoe = -1, pho2_sieie = -1, pho2_r9 = -1, pho2_chiso = -1, pho2_nhiso = -1, pho2_phiso = -1;
-   int pho2_elveto = -1;
-   
-   double jet1_pt = -1, jet1_eta = -1, jet1_phi = -1, jet1_bDis = -1, jet1_PUid = -1, jet1_drPho1 = -1, jet1_drPho2 = -1;
-   double jet2_pt = -1, jet2_eta = -1, jet2_phi = -1, jet2_bDis = -1, jet2_PUid = -1, jet2_drPho1 = -1, jet2_drPho2 = -1;
-
+	             
    Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
    iEvent.getByToken( diPhotonToken_, diPhotons );
    Handle<View<flashgg::Jet> > theJets;
@@ -292,7 +314,84 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
    const double rhoFixedGrd = *( rhoHandle.product() );
    tools_.setRho(rhoFixedGrd);
+   
+	bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+	if(!passedSelection) return;
 
+	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
+	//Photon Variables
+ 	double dipho_pt = diphoCand->pt();
+ 	double dipho_eta = diphoCand->eta();
+ 	double dipho_phi = diphoCand->phi();
+ 	double dipho_mass = diphoCand->mass();
+ 	
+ 	double pho1_pt = diphoCand->leadingPhoton()->pt();		
+ 	double pho2_pt = diphoCand->subLeadingPhoton()->pt();
+ 	double pho1_eta = diphoCand->leadingPhoton()->superCluster()->eta();
+ 	double pho2_eta = diphoCand->subLeadingPhoton()->superCluster()->eta();
+ 	double pho1_phi = diphoCand->leadingPhoton()->superCluster()->phi();
+ 	double pho2_phi = diphoCand->subLeadingPhoton()->superCluster()->phi();
+ 	double pho1_hoe = diphoCand->leadingPhoton()->hadronicOverEm(); 	
+ 	double pho2_hoe = diphoCand->subLeadingPhoton()->hadronicOverEm();
+ 	double pho1_sieie = diphoCand->leadingPhoton()->full5x5_sigmaIetaIeta();
+ 	double pho2_sieie = diphoCand->subLeadingPhoton()->full5x5_sigmaIetaIeta();
+ 	double pho1_r9 = diphoCand->leadingPhoton()->r9();		
+ 	double pho2_r9 = diphoCand->subLeadingPhoton()->r9();
+ 	double pho1_elveto = diphoCand->leadingPhoton()->passElectronVeto();
+ 	double pho2_elveto = diphoCand->subLeadingPhoton()->passElectronVeto();
+ 	
+ 	double pho1_chiso = tools_.getCHisoToCutValue( diphoCand, 0);
+ 	double pho2_chiso = tools_.getCHisoToCutValue( diphoCand, 1);
+ 	double pho1_nhiso = tools_.getNHisoToCutValue( diphoCand->leadingPhoton() );
+ 	double pho2_nhiso = tools_.getNHisoToCutValue( diphoCand->subLeadingPhoton() );
+ 	double pho1_phiso = tools_.getPHisoToCutValue( diphoCand->leadingPhoton() );
+ 	double pho2_phiso = tools_.getPHisoToCutValue( diphoCand->subLeadingPhoton() ); 
+ 	//END photon Variables
+	edm::Ptr<flashgg::Jet> LeadingJet = tools_.GetSelected_leadingJetCandidate();
+	//Leading Jet Variables
+	double jet1_pt = LeadingJet->pt();
+	double jet1_eta = LeadingJet->eta();
+	double jet1_phi = LeadingJet->phi();
+	double jet1_bDis = LeadingJet->bDiscriminator(bTagType);
+	double jet1_PUid = LeadingJet->passesPuJetId(diphoCand->vtx());
+	double jet1_drPho1 = tools_.DeltaR(LeadingJet->p4(), diphoCand->leadingPhoton()->p4() );
+	double jet1_drPho2 = tools_.DeltaR(LeadingJet->p4(), diphoCand->subLeadingPhoton()->p4() );
+	//END Leading Jet Variables
+	edm::Ptr<flashgg::Jet> SubLeadingJet = tools_.GetSelected_subleadingJetCandidate();
+	//SubLeading Jet Variables
+	double jet2_pt = SubLeadingJet->pt();
+	double jet2_eta = SubLeadingJet->eta();
+	double jet2_phi = SubLeadingJet->phi();
+	double jet2_bDis = SubLeadingJet->bDiscriminator(bTagType);
+	double jet2_PUid = SubLeadingJet->passesPuJetId(diphoCand->vtx());
+	double jet2_drPho1 = tools_.DeltaR(SubLeadingJet->p4(), diphoCand->leadingPhoton()->p4() );
+	double jet2_drPho2 = tools_.DeltaR(SubLeadingJet->p4(), diphoCand->subLeadingPhoton()->p4() );
+	//END SubLeading Jet Variables
+	//DiJet Variables
+	LorentzVector DiJet = LeadingJet->p4() + SubLeadingJet->p4();
+    double dijet_pt = DiJet.pt();
+ 	double dijet_eta = DiJet.eta();
+ 	double dijet_phi = DiJet.phi();
+ 	double dijet_mass = DiJet.mass();
+    double deltaR = tools_.DeltaR(DiJet, diphoCand->p4());
+    double dijet_sumbdis = jet1_bDis + jet2_bDis;
+	//END DiJet Variables
+	//HH Candidate Variables
+	LorentzVector HHCandidate = DiJet + diphoCand->p4();
+    double cand4_pt = HHCandidate.pt();
+ 	double cand4_eta = HHCandidate.eta();
+ 	double cand4_phi = HHCandidate.phi();
+ 	double cand4_mass = HHCandidate.mass();
+	//END HH Candidate Variables
+	//Other variables
+	double candmass_minDeltaR_lJP = (jet1_drPho1 < jet1_drPho2) ? jet1_drPho1 : jet1_drPho2;
+	double candmass_minDeltaR_sJP = (jet2_drPho1 < jet2_drPho2) ? jet2_drPho1 : jet2_drPho2;
+
+	if(candmass_minDeltaR_lJP < 0 || candmass_minDeltaR_sJP < 0 ) std::cout << "NEGATIVE!!!! " << candmass_minDeltaR_lJP << "\t" << candmass_minDeltaR_sJP << std::endl;
+
+	int nbjets = -1;
+
+	/*
    bool isValidDiPhotonCandidate = false;
 
    edm::Ptr<reco::Vertex> CandVtx;
@@ -493,7 +592,8 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    if(cand4_mass < cand_mass[0] || cand4_mass > cand_mass[1] ) return;
    if(DEBUG) std::cout << "Passed 4-candidate selection..." << std::endl;
    //END Candidate assignment ---------------------------------------------------------- 
-
+*/
+	
    if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
 
    hists2D["jet1bdis_jet2bdis"].Fill(jet1_bDis, jet2_bDis);
@@ -505,7 +605,9 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    hists2D["candmass_deltar"].Fill( cand4_mass, deltaR );
    hists2D["candmass_dijetmass"].Fill(cand4_mass, dijet_mass);
    hists2D["candmass_diphomass"].Fill(cand4_mass, dipho_mass);
-
+   hists2D["candmass_minDeltaR_lJP"].Fill(cand4_mass, candmass_minDeltaR_lJP);
+   hists2D["candmass_minDeltaR_sJP"].Fill(cand4_mass, candmass_minDeltaR_sJP);
+	   
    hists["dipho_pt"].Fill(dipho_pt);
    hists["dipho_eta"].Fill(dipho_eta);
    hists["dipho_phi"].Fill(dipho_phi);
@@ -516,6 +618,12 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    hists["dijet_phi"].Fill(dijet_phi);
    hists["dijet_mass"].Fill(dijet_mass);
    hists["dijet_sumbdis"].Fill(dijet_sumbdis);
+   
+   hists2D["dijetmass_deltar"].Fill(dijet_mass, deltaR);
+   hists2D["dijetmass_minDeltaR_lJP"].Fill(dijet_mass, candmass_minDeltaR_lJP);
+   hists2D["dijetmass_minDeltaR_sJP"].Fill(dijet_mass, candmass_minDeltaR_lJP);
+   hists2D["dijetmass_lJpt"].Fill(dijet_mass, jet1_pt);
+   hists2D["dijetmass_sJpt"].Fill(dijet_mass, jet2_pt);
 	
    hists["cand4_pt"].Fill(cand4_pt);
    hists["cand4_eta"].Fill(cand4_eta);
@@ -580,7 +688,7 @@ bbggPlotter::beginJob()
 	hists["dijet_pt"] 	= TH1F("dijet_pt", "DiJet p_{T}; p_{T}(jj) (GeV); Events", 100, 0, 500);
 	hists["dijet_eta"] 	= TH1F("dijet_eta", "DiJet #eta; #eta(jj); Events", 100, -5, 5);
 	hists["dijet_phi"]	= TH1F("dijet_phi", "DiJet #phi; #phi(jj); Events", 100, -3.5, 3.5);
-	hists["dijet_mass"] 	= TH1F("dijet_mass", "DiJet Mass; M(jj); Events", 100, 0, 500);
+	hists["dijet_mass"] 	= TH1F("dijet_mass", "DiJet Mass; M(jj); Events", 100, 30, 300);
 	hists["dijet_sumbdis"]  = TH1F("dijet_sumbdis", "Sum of b-Discriminant of DiJet; Sum b-Dis; Events", 100, -0.1, 2.1); 
 
 	hists["dr_dijetdipho"]	= TH1F("dr_dijetdipho", "DeltaR between DiJet and DiPhoton; #DeltaR(#gamma#gamma,jj); Events", 100, -1, 10);
@@ -633,10 +741,17 @@ bbggPlotter::beginJob()
 
 	hists["n_bjets"]	= TH1F("n_bjets", "Number of jets passing b-Dis requirement; #bJets; Events", 22, -1, 11);
 
-	hists2D["candmass_dijetmass"] = TH2F("candmass_dijetmass", "DiHiggs Candidate Mass vs DiJet Mass; M((jj#gamma#gamma) (GeV); M(jj)", 100, 100, 800, 100, 0, 500);
-	hists2D["candmass_diphomass"] = TH2F("candmass_diphomass", "DiHiggs Candidate Mass vs DiPhoton Mass; M((jj#gamma#gamma) (GeV); M(#gamma#gamma)", 100, 100, 800, 100, 110, 150);
-	hists2D["candmass_deltar"]    = TH2F("candmass_deltar", "DiHiggs Candidate Mass vs DeltaR between DiCandidates; M((jj#gamma#gamma) (GeV); #DeltaR(#gamma#gamma,jj)", 100, 100, 800, 100, -1, 10);
+	hists2D["candmass_dijetmass"] = TH2F("candmass_dijetmass", "DiHiggs Candidate Mass vs DiJet Mass; M(jj#gamma#gamma) (GeV); M(jj)", 100, 100, 800, 100, 50, 300);
+	hists2D["candmass_diphomass"] = TH2F("candmass_diphomass", "DiHiggs Candidate Mass vs DiPhoton Mass; M(jj#gamma#gamma) (GeV); M(#gamma#gamma)", 100, 100, 800, 100, 110, 150);
+	hists2D["candmass_deltar"]    = TH2F("candmass_deltar", "DiHiggs Candidate Mass vs DeltaR between DiCandidates; M(jj#gamma#gamma) (GeV); #DeltaR(#gamma#gamma,jj)", 100, 100, 800, 100, -1, 10);
+	hists2D["candmass_minDeltaR_lJP"]= TH2F("candmass_minDeltaR_lJP", "DiHiggs Candidate Mass vs Minimum DeltaR between LeadingJet and Photons; M(jj#gamma#gamma) (GeV); Min(#DeltaR(Leading Jet,Leading Photon), #DeltaR(Leading Jet,subLeading Photon))", 100, 100, 800, 100, 0, 5 );
+	hists2D["candmass_minDeltaR_sJP"]= TH2F("candmass_minDeltaR_sJP", "DiHiggs Candidate Mass vs Minimum DeltaR between subLeadingJet and Photons; M(jj#gamma#gamma) (GeV); Min(#DeltaR(subLeadingJet Jet,Leading Photon), #DeltaR(subLeadingJet Jet,subLeading Photon))", 100, 100, 800, 100, 0, 5 );
 	hists2D["jet1bdis_jet2bdis"]    = TH2F("jet1bdis_jet2bdis", "Jet1 bDis vs Jet2 bDis; Jet1 bDis; Jet2 bDis", 100, 0., 1., 100, 0., 1.);
+	hists2D["dijetmass_deltar"] 	= TH2F("dijetmass_deltar", "DiJet Mass vs DeltaR between DiCandidates; M(jj); #DeltaR(#gamma#gamma,jj)", 100, 50, 300, 100, -0.1, 10);
+	hists2D["dijetmass_minDeltaR_lJP"] = TH2F("dijetmass_minDeltaR_lJP", "DiJet Mass vs Minimum DeltaR between LeadingJet and Photons; M(jj); Min(#DeltaR())", 100, 50, 300, 100, 0, 5 );
+	hists2D["dijetmass_minDeltaR_sJP"] = TH2F("dijetmass_minDeltaR_sJP", "DiJet Mass vs Minimum DeltaR between subLeadingJet and Photons; M(jj); Min(#DeltaR())", 100, 50, 300, 100, 0, 5 );
+	hists2D["dijetmass_lJpt"] = TH2F("dijetmass_minDeltaR_lJP", "DiJet Mass vs LeadingJet Pt (GeV); M(jj); p_{T}(leading jet) (GeV)", 100, 50, 300, 100, 0, 300);
+	hists2D["dijetmass_sJpt"] = TH2F("dijetmass_minDeltaR_sJP", "DiJet Mass vs subLeadingJet Pt (GeV); M(jj); p_{T}(leading jet) (GeV)", 100, 50, 300, 100, 0, 300);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

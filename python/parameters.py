@@ -35,7 +35,8 @@ _DiPhotonMassWindow			=	cms.untracked.vdouble(80., 165.)
 #If you only want to look at first diphoton pair: 1; if all: 0
 _DiPhotonOnlyFirst			=	cms.untracked.uint32(1)
 #0: jet1, 1: jet2
-_JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 25.)
+#_JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 25.)
+_JetPtOverDiJetMass			=	cms.untracked.vdouble(0.33, 0.25)
 #0: jet1, 1: jet2
 _JetEta						=	cms.untracked.vdouble(2.5, 2.5)
 #0: lowest b-tag requirement for any jet (default 0), standard b-tag cut (loose, medium, tight) 
@@ -49,7 +50,7 @@ _DiJetPt					=	cms.untracked.vdouble(10.)
 #0: upper boundary for dijet pt
 _DiJetEta					=	cms.untracked.vdouble(20.)
 #0: DiJet mass window lower boundary, 1: upper boundary
-_DiJetMassWindow			=	cms.untracked.vdouble(40., 200.)
+_DiJetMassWindow			=	cms.untracked.vdouble(50., 300.)
 #0: 4-candidate mass window lower boundary, 1: upper boundary
 _CandidateMassWindow		=	cms.untracked.vdouble(0, 9000.)
 #0 4-candidate pt lower bound
@@ -58,3 +59,7 @@ _CandidatePt				=	cms.untracked.vdouble(0.)
 _CandidateEta				=	cms.untracked.vdouble(20.)
 #string for btag algorithm
 _bTagType					=	cms.untracked.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+#DeltaR between jets and photon
+_JetDrPho					=	cms.untracked.vdouble(0.4, 0.4)
+#DeltaR between dijet and diphoton candidates
+_CandidatesDeltaR			=	cms.untracked.vdouble(0.0)
