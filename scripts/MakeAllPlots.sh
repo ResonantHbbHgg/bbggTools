@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed "s/XXX/Rad/g" TEMPLATE_MakePlots.py > TEMPLATERAD_MakePlots.py
+sed "s/XXX/Rad/g" ${CMSSW_BASE}/src/flashgg/bbggTools/test/TEMPLATE_MakePlots.py > TEMPLATERAD_MakePlots.py
 for RadMass in 320 340 350 400 600 650 700
 do
 	echo "Running on Radion sample with M = "$RadMass
@@ -10,7 +10,7 @@ done
 rm TEMPLATERAD_MakePlots.py
 #rm RadMass*MakePlots.py
 
-sed "s/XXX/Grav/g" TEMPLATE_MakePlots.py > TEMPLATEGRAV_MakePlots.py
+sed "s/XXX/Grav/g" ${CMSSW_BASE}/src/flashgg/bbggTools/test/TEMPLATE_MakePlots.py > TEMPLATEGRAV_MakePlots.py
 for GravMass in 260 270 280 320 350 500 550
 do
         echo "Running on Graviton sample with M = "$GravMass

@@ -323,10 +323,10 @@ bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandid
     {
     	edm::Ptr<flashgg::Jet> jet = jetsCol->ptrAt( jetIndex );
     	bool isJet1 = true, isJet2 = true;
-//    	if(jet->pt() < _JetPt[0]) isJet1 = false;
+    	if(jet->pt() < _JetPt[0]) isJet1 = false;
     	if(fabs(jet->eta()) > _JetEta[0] ) isJet1 = false;
     	if( _JetDoPUID[0] && jet->passesPuJetId(CandVtx) == 0 ) isJet1 = false;
-//    	if(jet->pt() < _JetPt[1]) isJet2 = false;
+    	if(jet->pt() < _JetPt[1]) isJet2 = false;
     	if(fabs(jet->eta()) > _JetEta[1] ) isJet2 = false;
     	if( _JetDoPUID[1] && jet->passesPuJetId(CandVtx) == 0 ) isJet2 = false;
     	if(isJet1) nJet1++;
@@ -344,8 +344,8 @@ bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandid
     edm::Ptr<flashgg::Jet> jet1, jet2;
     bbggTools::LorentzVector DiJet(0,0,0,0);
 //    double dijetPt_ref = 0;
-		double sumbtag_ref = 0;
-//	double sumpt_ref = 0;
+//	double sumbtag_ref = 0;
+	double sumpt_ref = 0;
     bool hasDiJet = false;
 
     for(unsigned int iJet = 0; iJet < Jets.size(); iJet++)
@@ -366,20 +366,23 @@ bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandid
 			
 			if( bbggTools::DeltaR( dijet, diphoCandidate->p4() ) < _CandidatesDeltaR[0] ) continue;
 			
-			if( Jets[iJet]->pt() < _JetPt[0]*dijet.mass() ) continue;
-			if( Jets[jJet]->pt() < _JetPt[1]*dijet.mass() ) continue;
+//			if( Jets[iJet]->pt() < 0.3*dijet.mass() + 15 ) continue;
+//			if( Jets[jJet]->pt() < 0.3*dijet.mass() + 15) continue;
+//			if( Jets[iJet]->pt() <  25. + 0.01*exp( 0.05*dijet.mass()) ) continue;
+//			if( Jets[jJet]->pt() <  25. + 0.01*exp( 0.05*dijet.mass()) ) continue;
+//			if( Jets[jJet]->pt() < 10) continue;
 						
-						double sumbtag = Jets[iJet]->bDiscriminator(_bTagType) + Jets[jJet]->bDiscriminator(_bTagType);
-//			double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
+//			double sumbtag = Jets[iJet]->bDiscriminator(_bTagType) + Jets[jJet]->bDiscriminator(_bTagType);
+			double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
 
 // 	  		if(dijet.pt() > dijetPt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
- 	  		if(sumbtag > sumbtag_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
-// 	  		if(sumpt > sumpt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
+// 	  		if(sumbtag > sumbtag_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
+ 	  		if(sumpt > sumpt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
  	  		{
 				hasDiJet = true;
 //				dijetPt_ref = dijet.pt();
-				sumbtag_ref = sumbtag;
-//				sumpt_ref = sumpt;
+//				sumbtag_ref = sumbtag;
+				sumpt_ref = sumpt;
 				if( Jets[iJet]->pt() > Jets[jJet]->pt() ) {
 					jet1 = Jets.at(iJet);
 					jet2 = Jets.at(jJet);

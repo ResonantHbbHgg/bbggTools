@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 #from mAOD_RadFiles import *
 from microAOD_RadFiles import *
 
-process = cms.Process("bbggplotter")
+process = cms.Process("bbggmcmatch")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
@@ -20,8 +20,8 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.load("flashgg.bbggTools.bbggPlotter_cfi")
-process.bbggplotter.OutFileName = cms.untracked.string('myPlots.root')
+process.load("flashgg.bbggTools.bbggMCMatch_cfi")
+process.bbggmcmatch.OutFileName = cms.untracked.string('mcMatched.root')
 
 
-process.p = cms.Path(process.bbggplotter)
+process.p = cms.Path(process.bbggmcmatch)

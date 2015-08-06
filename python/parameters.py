@@ -4,6 +4,7 @@ import FWCore.ParameterSet.Config as cms
 _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
 _rhoFixedGridCollection		=	cms.untracked.InputTag('fixedGridRhoAll')
+_GenTag						=	cms.untracked.InputTag('prunedGenParticles')
 #0: Pho1, 1: Pho2
 _PhotonPtOverDiPhotonMass	=	cms.untracked.vdouble( 0.333, 0.25 )
 #0: First upper boundary (EB), 1: second upper boundary (EE) (only (1) is used to cut on both)
@@ -35,8 +36,8 @@ _DiPhotonMassWindow			=	cms.untracked.vdouble(80., 165.)
 #If you only want to look at first diphoton pair: 1; if all: 0
 _DiPhotonOnlyFirst			=	cms.untracked.uint32(1)
 #0: jet1, 1: jet2
-#_JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 25.)
-_JetPtOverDiJetMass			=	cms.untracked.vdouble(0.33, 0.25)
+_JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 25.)
+#_JetPtOverDiJetMass			=	cms.untracked.vdouble(0.4, 0.3)
 #0: jet1, 1: jet2
 _JetEta						=	cms.untracked.vdouble(2.5, 2.5)
 #0: lowest b-tag requirement for any jet (default 0), standard b-tag cut (loose, medium, tight) 
@@ -46,7 +47,7 @@ _JetDoPUID					=	cms.untracked.vint32(1, 1)
 #Number of required jets passing requirements in JetBDiscriminant
 _n_bJets					=	cms.untracked.uint32(0)
 #0: lower boundary for dijet pt
-_DiJetPt					=	cms.untracked.vdouble(10.)
+_DiJetPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary for dijet pt
 _DiJetEta					=	cms.untracked.vdouble(20.)
 #0: DiJet mass window lower boundary, 1: upper boundary

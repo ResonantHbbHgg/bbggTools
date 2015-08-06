@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    flashgg/bbggPlotter
-// Class:      bbggPlotter
+// Package:    flashgg/bbggMCMatch
+// Class:      bbggMCMatch
 // 
-/**\class bbggPlotter bbggPlotter.cc flashgg/bbggPlotter/plugins/bbggPlotter.cc
+/**\class bbggMCMatch bbggMCMatch.cc flashgg/bbggMCMatch/plugins/bbggMCMatch.cc
 
  Description: [one line class summary]
 
@@ -45,20 +45,21 @@
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
-
+#include "flashgg/bbggTools/interface/bbggMC.h"
 //
 // class declaration
 //
 
 const int DEBUG = 0;
 
-class bbggPlotter : public edm::EDAnalyzer {
+class bbggMCMatch : public edm::EDAnalyzer {
    public:
-      explicit bbggPlotter(const edm::ParameterSet&);
-      ~bbggPlotter();
+      explicit bbggMCMatch(const edm::ParameterSet&);
+      ~bbggMCMatch();
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
       typedef math::XYZTLorentzVector LorentzVector;
@@ -70,47 +71,14 @@ class bbggPlotter : public edm::EDAnalyzer {
       virtual void endJob() override;
 
       // ----------member data ---------------------------
+	  bbggMC	mcTools_;
 	  bbggTools tools_;
       //Parameter tokens
       edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
       edm::EDGetTokenT<edm::View<flashgg::Jet> > thejetToken_;
+      edm::EDGetTokenT<edm::View<reco::GenParticle> > genToken_;
       edm::InputTag rhoFixedGrid_;
       std::string bTagType;
-
-      //Thresholds
-      std::vector<double> ph_pt;
-      std::vector<double> ph_eta;
-      std::vector<double> ph_hoe;
-      std::vector<double> ph_sieie;
-      std::vector<double> ph_r9;
-      std::vector<double> ph_chIso;
-      std::vector<double> ph_nhIso;
-      std::vector<double> ph_phIso;
-      std::vector<int> ph_elVeto;
-      std::vector<int> ph_doID;
-      std::vector<int> ph_doISO;
-
-      std::vector<double> diph_pt;
-      std::vector<double> diph_eta;
-      std::vector<double> diph_mass;
-      unsigned int diph_onlyfirst;
-
-      std::vector<double> jt_pt;
-      std::vector<double> jt_eta;
-      std::vector<double> jt_drPho;
-      std::vector<double> jt_bDis;
-      std::vector<int> jt_doPU;
-      unsigned int n_bJets;
-
-      std::vector<double> dijt_pt;
-      std::vector<double> dijt_eta;
-      std::vector<double> dijt_mass; 
-
-      std::vector<double> cand_pt;
-      std::vector<double> cand_eta;
-      std::vector<double> cand_mass;
-	  
-	  std::vector<double> dr_cands;
 
       //OutFile & Hists
       TFile* outFile;
@@ -122,170 +90,27 @@ class bbggPlotter : public edm::EDAnalyzer {
       long unsigned int EvtCount;
 };
 
-bbggPlotter::bbggPlotter(const edm::ParameterSet& iConfig) :
+bbggMCMatch::bbggMCMatch(const edm::ParameterSet& iConfig) :
 diPhotonToken_( consumes<edm::View<flashgg::DiPhotonCandidate> >( iConfig.getUntrackedParameter<edm::InputTag> ( "DiPhotonTag", edm::InputTag( "flashggDiPhotons" ) ) ) ),
-thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<edm::InputTag>( "JetTag", edm::InputTag( "flashggJets" ) ) ) )
+thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<edm::InputTag>( "JetTag", edm::InputTag( "flashggJets" ) ) ) ),
+genToken_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) )
 {
    //now do what ever initialization is needed
+	  mcTools_ = bbggMC();
 	  tools_ = bbggTools();
    	  EvtCount = 0;
-//Default values for thresholds
-      std::vector<double> def_ph_pt;
-      std::vector<double> def_ph_eta;
-      std::vector<double> def_ph_hoe;
-      std::vector<double> def_ph_sieie;
-      std::vector<double> def_ph_r9;
-      std::vector<double> def_ph_chIso;
-      std::vector<double> def_ph_nhIso;
-      std::vector<double> def_ph_phIso;
-      std::vector<int> def_ph_elVeto;
-      std::vector<int> def_ph_doID;
-      std::vector<int> def_ph_doISO;
-
-      std::vector<double> def_diph_pt;
-      std::vector<double> def_diph_eta;
-      std::vector<double> def_diph_mass;
-      unsigned int def_diph_onlyfirst;
-
-      std::vector<double> def_jt_pt;
-      std::vector<double> def_jt_eta;
-      std::vector<double> def_jt_drPho;
-      std::vector<double> def_jt_bDis;
-      std::vector<int> def_jt_doPU;
-      unsigned int def_n_bJets;
-
-      std::vector<double> def_dijt_pt;
-      std::vector<double> def_dijt_eta;
-      std::vector<double> def_dijt_mass;
-
-      std::vector<double> def_cand_pt;
-      std::vector<double> def_cand_eta;
-      std::vector<double> def_cand_mass;
-
-	  std::vector<double> def_dr_cands;
-
-      std::string def_bTagType;
-
-      std::string def_fileName;
-
-      def_ph_pt.push_back(10.);         def_ph_pt.push_back(10.);
-      def_ph_eta.push_back(20.);         def_ph_eta.push_back(20.);
-      def_ph_hoe.push_back(-1.);        def_ph_hoe.push_back(-1.);
-      def_ph_sieie.push_back(-1.);      def_ph_sieie.push_back(-1.);
-      def_ph_r9.push_back(-1.);         def_ph_r9.push_back(-1.);
-      def_ph_chIso.push_back(-1.);      def_ph_chIso.push_back(-1.);
-      def_ph_nhIso.push_back(-1.);      def_ph_nhIso.push_back(-1.);
-      def_ph_phIso.push_back(-1.);      def_ph_phIso.push_back(-1.);
-      def_ph_elVeto.push_back(-1.);     def_ph_elVeto.push_back(-1.);
-      def_ph_doID.push_back(0);		def_ph_doID.push_back(0);
-      def_ph_doISO.push_back(0);	def_ph_doISO.push_back(0);
-
-      def_diph_pt.push_back(10.);       def_diph_pt.push_back(10.);
-      def_diph_eta.push_back(0.);       def_diph_eta.push_back(0.);
-      def_diph_mass.push_back(0.);      def_diph_mass.push_back(1000.);
-      def_diph_onlyfirst = 0;
-			
-      def_jt_pt.push_back(10.);         def_jt_pt.push_back(10.);
-      def_jt_eta.push_back(20.);         def_jt_eta.push_back(20.);
-      def_jt_bDis.push_back(0.);        def_jt_bDis.push_back(0.);
-      def_jt_doPU.push_back(0);         def_jt_doPU.push_back(0);
-
-      def_n_bJets = 0;
-
-      def_dijt_pt.push_back(10.);       def_dijt_pt.push_back(10.);
-      def_dijt_eta.push_back(20.);       def_dijt_eta.push_back(20.);
-      def_dijt_mass.push_back(0.);      def_dijt_mass.push_back(1000.);
-      def_jt_drPho.push_back(0.5);
-
-      def_cand_pt.push_back(0.);
-      def_cand_eta.push_back(20.);
-      def_cand_mass.push_back(0.);		def_cand_mass.push_back(2000.);
-	  
-	  def_dr_cands.push_back(0.11);
-
-
-      def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
-      def_fileName =  "out.root";
-
-//Get thresholds from config file
-      ph_pt     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonPtOverDiPhotonMass", def_ph_pt);
-      ph_eta    = iConfig.getUntrackedParameter<std::vector<double > >("PhotonEta", def_ph_eta);
-      ph_hoe    = iConfig.getUntrackedParameter<std::vector<double > >("PhotonHoverE", def_ph_hoe);
-      ph_sieie  = iConfig.getUntrackedParameter<std::vector<double > >("PhotonSieie", def_ph_sieie);
-      ph_r9     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonR9", def_ph_r9);
-      ph_chIso  = iConfig.getUntrackedParameter<std::vector<double > >("PhotonChargedIso", def_ph_chIso);
-      ph_nhIso  = iConfig.getUntrackedParameter<std::vector<double > >("PhotonNeutralIso", def_ph_nhIso);
-      ph_phIso  = iConfig.getUntrackedParameter<std::vector<double > >("PhotonPhotonIso", def_ph_phIso);
-      ph_elVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonElectronVeto", def_ph_elVeto);
-      ph_doID   = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoID", def_ph_doID);
-      ph_doISO  = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoISO", def_ph_doID);
-
-      diph_pt   = iConfig.getUntrackedParameter<std::vector<double > >("DiPhotonPt", def_diph_pt);
-      diph_eta  = iConfig.getUntrackedParameter<std::vector<double > >("DiPhotonEta", def_diph_eta);
-      diph_mass = iConfig.getUntrackedParameter<std::vector<double > >("DiPhotonMassWindow", def_diph_mass);
-      diph_onlyfirst = iConfig.getUntrackedParameter<unsigned int>("DiPhotonOnlyFirst", def_diph_onlyfirst);
-
-      jt_pt     = iConfig.getUntrackedParameter<std::vector<double > >("JetPtOverDiJetMass", def_jt_pt);
-      jt_eta    = iConfig.getUntrackedParameter<std::vector<double > >("JetEta", def_jt_eta);
-      jt_drPho  = iConfig.getUntrackedParameter<std::vector<double > >("JetDrPho", def_jt_drPho);
-      jt_bDis   = iConfig.getUntrackedParameter<std::vector<double > >("JetBDiscriminant", def_jt_bDis);
-      jt_doPU   = iConfig.getUntrackedParameter<std::vector<int > >("JetDoPUID", def_jt_doPU);
-
-      n_bJets = iConfig.getUntrackedParameter<unsigned int>("n_bJets", def_n_bJets);
-
-      dijt_pt   = iConfig.getUntrackedParameter<std::vector<double > >("DiJetPt", def_dijt_pt);
-      dijt_eta  = iConfig.getUntrackedParameter<std::vector<double > >("DiJetEta", def_dijt_eta);
-      dijt_mass = iConfig.getUntrackedParameter<std::vector<double > >("DiJetMassWindow", def_dijt_mass);
-
-      cand_pt 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidatePt", def_cand_mass);
-      cand_eta 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidateEta", def_cand_mass);
-      cand_mass = iConfig.getUntrackedParameter<std::vector<double > >("CandidateMassWindow", def_cand_mass);
-	  
-	  dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
-
+      std::string def_fileName =  "out.root";
+	  std::string def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
       rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
-
       bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
-
-      fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
+      fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );	  
 	  
-	  tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
-	  tools_.SetCut_PhotonEta( ph_eta );
-	  tools_.SetCut_PhotonDoID( ph_doID );
-	  tools_.SetCut_PhotonDoISO( ph_doISO );
-	  tools_.SetCut_PhotonHoverE( ph_hoe );
-	  tools_.SetCut_PhotonSieie( ph_sieie );
-	  tools_.SetCut_PhotonR9( ph_r9 );
-	  tools_.SetCut_PhotonChargedIso( ph_chIso );
-	  tools_.SetCut_PhotonNeutralIso( ph_nhIso);
-	  tools_.SetCut_PhotonPhotonIso( ph_phIso);
-	  tools_.SetCut_PhotonElectronVeto( ph_elVeto );
-	  tools_.SetCut_DiPhotonPt( diph_pt );
-	  tools_.SetCut_DiPhotonEta( diph_eta );
-	  tools_.SetCut_DiPhotonMassWindow( diph_mass );
-	  tools_.SetCut_DiPhotonOnlyFirst( diph_onlyfirst );
-	  tools_.SetCut_JetPt( jt_pt );
-	  tools_.SetCut_JetEta( jt_eta );
-	  tools_.SetCut_JetBDiscriminant( jt_bDis );
-	  tools_.SetCut_JetDrPho( jt_drPho  );
-	  tools_.SetCut_JetDoPUID( jt_doPU );
-	  tools_.SetCut_n_bJets( n_bJets );
-	  tools_.SetCut_DiJetPt( dijt_pt );
-	  tools_.SetCut_DiJetEta( dijt_eta );
-	  tools_.SetCut_DiJetMassWindow( dijt_mass );
-	  tools_.SetCut_CandidateMassWindow( cand_mass );
-	  tools_.SetCut_CandidatePt( cand_pt );
-	  tools_.SetCut_CandidateEta( cand_eta );
-	  tools_.SetCut_bTagType( bTagType );
-	  tools_.SetCut_CandidatesDeltaR( dr_cands );
-	  
-	  
-      std::cout << "Parameters initialized... cand_mass[0]: " << cand_mass[0] << "\t" << "cand_mass[1] " << cand_mass[1] << std::endl;
+      std::cout << "Parameters initialized... out file name: " << fileName << std::endl;
 
 }
 
 
-bbggPlotter::~bbggPlotter()
+bbggMCMatch::~bbggMCMatch()
 {
  
    // do anything here that needs to be done at desctruction time
@@ -300,9 +125,9 @@ bbggPlotter::~bbggPlotter()
 
 // ------------ method called for each event  ------------
 void
-bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+bbggMCMatch::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   if( EvtCount%100 == 0 ) std::cout << "[bbggPlotter::analyze] Analyzing event number: " << EvtCount << std::endl;
+   if( EvtCount%100 == 0 ) std::cout << "[bbggMCMatch::analyze] Analyzing event number: " << EvtCount << std::endl;
    EvtCount++;
    using namespace edm;
 	             
@@ -310,15 +135,17 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken( diPhotonToken_, diPhotons );
    Handle<View<flashgg::Jet> > theJets;
    iEvent.getByToken( thejetToken_, theJets );
+   Handle<View<reco::GenParticle> > genParticles;
+   iEvent.getByToken( genToken_, genParticles);
    Handle<double> rhoHandle;        // the old way for now...move to getbytoken?
    iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
    const double rhoFixedGrd = *( rhoHandle.product() );
    tools_.setRho(rhoFixedGrd);
    
-	bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+	bool passedSelection = mcTools_.MatchTruth(diPhotons, theJets, genParticles);
 	if(!passedSelection) return;
-
-	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
+		
+	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = mcTools_.GetSelected_diphoCandidate();
 	//Photon Variables
  	double dipho_pt = diphoCand->pt();
  	double dipho_eta = diphoCand->eta();
@@ -347,7 +174,7 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
  	double pho1_phiso = tools_.getPHisoToCutValue( diphoCand->leadingPhoton() );
  	double pho2_phiso = tools_.getPHisoToCutValue( diphoCand->subLeadingPhoton() ); 
  	//END photon Variables
-	edm::Ptr<flashgg::Jet> LeadingJet = tools_.GetSelected_leadingJetCandidate();
+	edm::Ptr<flashgg::Jet> LeadingJet = mcTools_.GetSelected_leadingJetCandidate();
 	//Leading Jet Variables
 	double jet1_pt = LeadingJet->pt();
 	double jet1_eta = LeadingJet->eta();
@@ -357,7 +184,7 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double jet1_drPho1 = tools_.DeltaR(LeadingJet->p4(), diphoCand->leadingPhoton()->p4() );
 	double jet1_drPho2 = tools_.DeltaR(LeadingJet->p4(), diphoCand->subLeadingPhoton()->p4() );
 	//END Leading Jet Variables
-	edm::Ptr<flashgg::Jet> SubLeadingJet = tools_.GetSelected_subleadingJetCandidate();
+	edm::Ptr<flashgg::Jet> SubLeadingJet = mcTools_.GetSelected_subleadingJetCandidate();
 	//SubLeading Jet Variables
 	double jet2_pt = SubLeadingJet->pt();
 	double jet2_eta = SubLeadingJet->eta();
@@ -479,7 +306,7 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-bbggPlotter::beginJob()
+bbggMCMatch::beginJob()
 {
 	outFile = new TFile(fileName.c_str(), "RECREATE");
 
@@ -568,7 +395,7 @@ bbggPlotter::beginJob()
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-bbggPlotter::endJob() 
+bbggMCMatch::endJob() 
 {
 	outFile->cd();
 	for(std::map<std::string, TH1F>::iterator it = hists.begin(); it != hists.end(); ++it)
@@ -587,7 +414,7 @@ bbggPlotter::endJob()
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-bbggPlotter::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+bbggMCMatch::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -596,4 +423,4 @@ bbggPlotter::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(bbggPlotter);
+DEFINE_FWK_MODULE(bbggMCMatch);
