@@ -104,7 +104,10 @@ bool bbggMC::MatchTruth( edm::Handle<edm::View<flashgg::DiPhotonCandidate> > dip
 		unsigned int iMatched = 1000;
 		for (unsigned int iJet = 0; iJet < jetsCol->size(); iJet++)
 		{
-			LorentzVector lJet = jetsCol->ptrAt( iJet )->p4(); //Jet->p4();
+			edm::Ptr<flashgg::Jet> jet = jetsCol->ptrAt( iJet );
+			LorentzVector lJet = jet->p4(); //Jet->p4();
+//			if(jet->partonFlavour() != 5 || jet->partonFlavour() != -5) continue;
+			if(!jet->passesPuJetId(diphoCandidate->vtx())) continue;
 			if( DeltaR(lJet, diphoCandidate->leadingPhoton()->p4()) < 0.4) continue;
 			if( DeltaR(lJet, diphoCandidate->subLeadingPhoton()->p4()) < 0.4) continue;
 			if(DeltaR(lJet, genJets[GJet]) < minDR) {

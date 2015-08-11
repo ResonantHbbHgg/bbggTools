@@ -15,7 +15,7 @@ do
 	cmsRun RadMass_${RadMass}_MakeTruthDiff.py
 EOF
 	chmod a+rwx RadMass_${RadMass}_MakeTruthDiff.sh
-	bsub -J Tree_R${RadMass} -q ${queue} < RadMass_${RadMass}_MakeTruthDiff.sh 
+	bsub -J TrDif_R${RadMass} -q ${queue} < RadMass_${RadMass}_MakeTruthDiff.sh 
 done
 rm TEMPLATERAD_MakeTruthDiff.py
 #rm RadMass*MakeTruthDiff.py
@@ -32,7 +32,7 @@ do
 	cmsRun GravMass_${GravMass}_MakeTruthDiff.py
 EOF
 	chmod a+rwx GravMass_${GravMass}_MakeTruthDiff.sh
-	bsub -J Tree_G${GravMass} -q ${queue} < GravMass_${GravMass}_MakeTruthDiff.sh 
+	bsub -J TrDif_G${GravMass} -q ${queue} < GravMass_${GravMass}_MakeTruthDiff.sh 
 done
 rm TEMPLATEGRAV_MakeTruthDiff.py
 #rm GravMass*MakeTruthDiff.py

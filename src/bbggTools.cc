@@ -53,6 +53,24 @@ double bbggTools::getNHisoToCutValue(const flashgg::Photon* pho)
 	return finalValue;
 }
 
+double bbggTools::getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr)
+{
+	if(rho_ == -10 ){
+		cout << "[bbggTools::getNHisoToCutValue] You have to do tools->setRho(rho)!" << endl;
+		return -1;
+	}
+	if( nhCorr.size() < 2 ) {
+		cout << "[bbggTools::getNHisoToCutValue] nhCorr vector not initialized correctly!" << endl;
+		return -1;
+	}
+	double PFIso = pho->pfNeutIso03();
+	double eta = pho->superCluster()->eta();
+	double EA = bbggTools::getEA(eta, 1);
+	double extraFactor = exp(nhCorr[0]*pho->pt()+nhCorr[1]);
+	double finalValue = fmax(PFIso - rho_*EA, 0.) - extraFactor;
+	return finalValue;
+}
+
 double bbggTools::getPHisoToCutValue(const flashgg::Photon* pho)
 {
 	if(rho_ == -10 ){
@@ -65,6 +83,24 @@ double bbggTools::getPHisoToCutValue(const flashgg::Photon* pho)
 	double extraFactor = 0;
 	if(fabs(eta) < 1.479) extraFactor = 0.0014*pho->pt();
 	if(fabs(eta) > 1.479) extraFactor = 0.0091*pho->pt();
+	double finalValue = fmax(PFIso - rho_*EA, 0.) - extraFactor;
+	return finalValue;
+}
+
+double bbggTools::getPHisoToCutValue(const flashgg::Photon* pho, vector<double> phCorr)
+{
+	if(rho_ == -10 ){
+		cout << "[bbggTools::getPHisoToCutValue] You have to do tools->setRho(rho)!" << endl;
+		return -1;
+	}
+	if( phCorr.size() < 2 ) {
+		cout << "[bbggTools::getPHisoToCutValue] phCorr vector not initialized correctly!" << endl;
+		return -1;
+	}
+	double PFIso = pho->pfPhoIso03();
+	double eta = pho->superCluster()->eta();
+	double EA = bbggTools::getEA(eta, 2);
+	double extraFactor = phCorr[0]*pho->pt() + phCorr[1];
 	double finalValue = fmax(PFIso - rho_*EA, 0.) - extraFactor;
 	return finalValue;
 }
@@ -126,6 +162,28 @@ bool bbggTools::isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts)
 	return isid;
 }
 
+bool bbggTools::isPhoID(const flashgg::Photon* pho, vector<double> cuts)
+{
+	if(rho_ == -10 ){
+		cout << "[bbggTools::isPhoID] You have to do tools->setRho(rho)!" << endl;
+		return -1;
+	}
+	if(cuts.size() != 3){
+		cout << "[bbggTools::isPhoID] ERROR: the input cuts vector must have size three (sieie/hoe/el-veto)" << endl;
+		return 0;
+	}
+	bool isid = true;
+	double hoe = pho->hadronicOverEm();
+	double sieie = pho->full5x5_sigmaIetaIeta();
+	int elveto = pho->passElectronVeto();
+	
+	if( hoe > cuts[0] ) 	isid = false;
+  	if( sieie > cuts[1] ) isid = false;
+	if( elveto != (int) cuts[2] ) isid = false;
+	
+	return isid;
+}
+
 bool bbggTools::isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho, vector<double> cuts)
 {
 	if(rho_ == -10 ){
@@ -143,11 +201,15 @@ bool bbggTools::isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPh
 	
   	double chiso = 0, nhiso = 0, phiso = 0;
 	chiso = bbggTools::getCHisoToCutValue( dipho, whichPho);
+	const flashgg::Photon* pho = (whichPho) ? dipho->subLeadingPhoton() : dipho->leadingPhoton();
+	nhiso = bbggTools::getNHisoToCutValue( pho );
+	phiso = bbggTools::getPHisoToCutValue( pho );
+	/*
   	if(whichPho == 0) nhiso = bbggTools::getNHisoToCutValue( dipho->leadingPhoton() );
   	if(whichPho == 1) nhiso = bbggTools::getNHisoToCutValue( dipho->subLeadingPhoton() );
   	if(whichPho == 0) phiso = bbggTools::getPHisoToCutValue( dipho->leadingPhoton() );
 	if(whichPho == 1) phiso = bbggTools::getPHisoToCutValue( dipho->subLeadingPhoton() );
-	
+	*/
 	bool isiso = true;
 	if(chiso > cuts[0]) isiso = false;
 	if(nhiso > cuts[1]) isiso = false;
@@ -156,6 +218,42 @@ bool bbggTools::isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPh
 	return isiso;
 	
 }
+
+bool bbggTools::isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr)
+{
+	if(rho_ == -10 ){
+		cout << "[bbggTools::isPhoISO] You have to do tools->setRho(rho)!" << endl;
+		return -1;
+	}
+	if(cuts.size() != 3){
+		cout << "[bbggTools::isPhoISO] ERROR: the input cuts vector must have size three (ch/nh/ph)" << endl;
+		return 0;
+	}
+	if(whichPho != 0 && whichPho != 1){
+		cout << "[bbggTools::isPhoISO] ERROR: whichPho should be 0 (leading photon) or 1 (subleading photon)" << endl;
+		return 0;
+	}
+	
+  	double chiso = 0, nhiso = 0, phiso = 0;
+	chiso = bbggTools::getCHisoToCutValue( dipho, whichPho);
+	const flashgg::Photon* pho = (whichPho) ? dipho->subLeadingPhoton() : dipho->leadingPhoton();
+	nhiso = bbggTools::getNHisoToCutValue( pho, nhCorr );
+	phiso = bbggTools::getPHisoToCutValue( pho, phCorr );
+	/*
+  	if(whichPho == 0) nhiso = bbggTools::getNHisoToCutValue( dipho->leadingPhoton() );
+  	if(whichPho == 1) nhiso = bbggTools::getNHisoToCutValue( dipho->subLeadingPhoton() );
+  	if(whichPho == 0) phiso = bbggTools::getPHisoToCutValue( dipho->leadingPhoton() );
+	if(whichPho == 1) phiso = bbggTools::getPHisoToCutValue( dipho->subLeadingPhoton() );
+	*/	
+	bool isiso = true;
+	if(chiso > cuts[0]) isiso = false;
+	if(nhiso > cuts[1]) isiso = false;
+	if(phiso > cuts[2]) isiso = false;
+	
+	return isiso;
+	
+}
+
 
 bool bbggTools::CheckCuts()
 {

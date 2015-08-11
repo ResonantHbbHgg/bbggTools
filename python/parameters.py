@@ -1,5 +1,6 @@
 ### Parameters to be used in the configuration files
 import FWCore.ParameterSet.Config as cms
+#import flashgg.Taggers.flashggTags_cff as flashggTags
 
 _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
@@ -64,3 +65,29 @@ _bTagType					=	cms.untracked.string('pfCombinedInclusiveSecondaryVertexV2BJetTa
 _JetDrPho					=	cms.untracked.vdouble(0.4, 0.4)
 #DeltaR between dijet and diphoton candidates
 _CandidatesDeltaR			=	cms.untracked.vdouble(0.0)
+
+#_inputTagJets = flashggTags.UnpackedJetCollectionVInputTag
+
+#H/E, Sigma_iEtaiEta, R9, electron veto
+_phoIDlooseEB				=	cms.untracked.vdouble(0.05, 0.0103, 1.0)
+_phoIDmediumEB				=	cms.untracked.vdouble(0.05, 0.0100, 1.0)
+_phoIDtightEB				=	cms.untracked.vdouble(0.05, 0.0100, 1.0)
+
+_phoIDlooseEE				=	cms.untracked.vdouble(0.05, 0.0277, 1.0)
+_phoIDmediumEE				=	cms.untracked.vdouble(0.05, 0.0267, 1.0)
+_phoIDtightEE				=	cms.untracked.vdouble(0.05, 0.0267, 1.0)
+
+#charged, neutral, photon
+_phoISOlooseEB				=	cms.untracked.vdouble(2.44, 2.57, 1.92)
+_phoISOmediumEB				=	cms.untracked.vdouble(1.31, 0.60, 1.33)
+_phoISOtightEB				=	cms.untracked.vdouble(0.91, 0.33, 0.61)
+
+_phoISOlooseEE				=	cms.untracked.vdouble(1.84, 4.00, 2.15)
+_phoISOmediumEE				=	cms.untracked.vdouble(1.25, 1.65, 1.02)
+_phoISOtightEE				=	cms.untracked.vdouble(0.65, 0.93, 0.54)
+
+#[0]*pho + [1]
+_nhCorrEB					=	cms.untracked.vdouble(0.0044, 0.5809)
+_phCorrEB					=	cms.untracked.vdouble(0.0043, 0.)
+_nhCorrEE					=	cms.untracked.vdouble(0.0040, 0.9402)
+_phCorrEE					=	cms.untracked.vdouble(0.0041, 0.)

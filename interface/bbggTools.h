@@ -31,9 +31,13 @@ public:
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
     double getNHisoToCutValue(const flashgg::Photon* pho);
 	double getPHisoToCutValue(const flashgg::Photon* pho);
+    double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
+	double getPHisoToCutValue(const flashgg::Photon* pho, vector<double> phCorr);
 	double getEA( float eta, int whichEA);
 	double DeltaR( bbggTools::LorentzVector vec1, bbggTools::LorentzVector vec2);
 	bool isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts);
+	bool isPhoID(const flashgg::Photon* pho, vector<double> cuts);
+	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts);
 	void setRho(double rho) {rho_ = rho;}
 	
