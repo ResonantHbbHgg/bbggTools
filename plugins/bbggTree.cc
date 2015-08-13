@@ -319,7 +319,7 @@ void
 bbggTree::endJob() 
 {
 	outFile->cd();
-//	tree->Write();
+	tree->Write();
 	outFile->Close();
 }
 

@@ -1,0 +1,193 @@
+{
+	"Grav260" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163406/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Grav270" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163445/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Grav280" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163557/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	}, 
+	"Grav320" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163633/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163633/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Grav350" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163711/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163711/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163711/0000/myMicroAODOutputFile_3.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163711/0000/myMicroAODOutputFile_4.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Grav500" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163745/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163745/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Grav550" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163822/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163822/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Rad320" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-320_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163857/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Rad340" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_163934/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Rad350" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-350_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164010/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-350_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164010/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			}			
+		]
+	},
+	"Rad400" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-400_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164048/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-400_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164048/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Rad600" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164123/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164123/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Rad650" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164203/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164203/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	},
+	"Rad700" : {
+		"files" : [
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-700_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164253/0000/myMicroAODOutputFile_1.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-700_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164253/0000/myMicroAODOutputFile_2.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-700_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164253/0000/myMicroAODOutputFile_3.root",
+				"nevents" : -1,
+				"weights" : -1
+			},
+			{
+				"name" : "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-700_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164253/0000/myMicroAODOutputFile_4.root",
+				"nevents" : -1,
+				"weights" : -1
+			}
+		]
+	}
+}

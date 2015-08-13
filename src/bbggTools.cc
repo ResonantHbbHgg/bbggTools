@@ -24,11 +24,11 @@ double bbggTools::getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho,
 	}
 	double PFIso = -1, eta = -99;
 	if(whichPho == 0) {
-		PFIso = dipho->leadingView().pfChIso03WrtChosenVtx();
+		PFIso = dipho->leadingView()->pfChIso03WrtChosenVtx();
 		eta = dipho->leadingPhoton()->superCluster()->eta();
 	}
 	if(whichPho == 1) {
-		PFIso = dipho->subLeadingView().pfChIso03WrtChosenVtx();
+		PFIso = dipho->subLeadingView()->pfChIso03WrtChosenVtx();
 		eta = dipho->subLeadingPhoton()->superCluster()->eta();
 	}
 	
