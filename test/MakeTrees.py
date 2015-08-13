@@ -3,11 +3,29 @@ from flashgg.bbggTools.microAOD_RadFiles import *
 from flashgg.bbggTools.microAOD_GravFiles import *
 from flashgg.bbggTools.More_microAOD_DJet40Inf import *
 
+##### Arguments
+import flashgg.bbggTools.VarParsing as opts
+options = opts.VarParsing('analysis')
+options.parseArguments()
+
+maxEvents = -1
+if options.maxEvents:
+        maxEvents = int(options.maxEvents)
+
+inputFile = RadFiles['700']
+if options.inputFiles:
+        inputFile = options.inputFiles
+
+outputFile = "rest_rad700.root"
+if options.outputFile:
+        outputFile = options.outputFile
+######
+
 process = cms.Process("bbggtree")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(maxEvents) )
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 2000 )
 
 ## Available mass points:
@@ -18,12 +36,12 @@ NonResPhys14 = 'file:/afs/cern.ch/work/r/rateixei/work/DiHiggs/FLASHggPreSel/CMS
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        RadFiles['320']
+        inputFile
     )
 )
 
 process.load("flashgg.bbggTools.bbggTree_cfi")
-process.bbggtree.OutFileName = cms.untracked.string('myTree.root')
+process.bbggtree.OutFileName = cms.untracked.string(outputFile)
 
 
 process.p = cms.Path(process.bbggtree)
