@@ -6,13 +6,21 @@ from flashgg.bbggTools.More_microAOD_DJet40Inf import *
 ##### Arguments
 import flashgg.bbggTools.VarParsing as opts
 options = opts.VarParsing('analysis')
+#------- Add extra option
+options.register('doSelection',
+					False,
+					opts.VarParsing.multiplicity.singleton,
+					opts.VarParsing.varType.bool,
+					'False: Make tree before selection; True: Make tree after selection')
+#-------
+
 options.parseArguments()
 
 maxEvents = -1
 if options.maxEvents:
         maxEvents = int(options.maxEvents)
 
-inputFile = RadFiles['700']
+inputFile = "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164203/0000/myMicroAODOutputFile_1.root" #RadFiles['650']
 if options.inputFiles:
         inputFile = options.inputFiles
 
@@ -42,6 +50,11 @@ process.source = cms.Source("PoolSource",
 
 process.load("flashgg.bbggTools.bbggTree_cfi")
 process.bbggtree.OutFileName = cms.untracked.string(outputFile)
-
+print "is it doing selection?",options.doSelection
+if options.doSelection is True:
+	process.bbggtree.doSelection = cms.untracked.uint32(1)
+if options.doSelection is False:
+	print "TEST"
+	process.bbggtree.doSelection = cms.untracked.uint32(0)
 
 process.p = cms.Path(process.bbggtree)

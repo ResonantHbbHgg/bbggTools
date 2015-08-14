@@ -51,4 +51,5 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	phCorrEB=param._phCorrEB,
 	nhCorrEE=param._nhCorrEE,
 	phCorrEE=param._phCorrEE
+#	doSelectionTree=param._doSelectionTree
 )

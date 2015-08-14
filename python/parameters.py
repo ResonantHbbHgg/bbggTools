@@ -33,7 +33,7 @@ _DiPhotonPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary
 _DiPhotonEta				=	cms.untracked.vdouble(2.5)
 #0: DiPhoton mass window lower boundary, 1: upper boundary
-_DiPhotonMassWindow			=	cms.untracked.vdouble(80., 165.)
+_DiPhotonMassWindow			=	cms.untracked.vdouble(0., 300.)
 #If you only want to look at first diphoton pair: 1; if all: 0
 _DiPhotonOnlyFirst			=	cms.untracked.uint32(1)
 #0: jet1, 1: jet2
@@ -52,7 +52,7 @@ _DiJetPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary for dijet pt
 _DiJetEta					=	cms.untracked.vdouble(20.)
 #0: DiJet mass window lower boundary, 1: upper boundary
-_DiJetMassWindow			=	cms.untracked.vdouble(50., 300.)
+_DiJetMassWindow			=	cms.untracked.vdouble(0., 1000.)
 #0: 4-candidate mass window lower boundary, 1: upper boundary
 _CandidateMassWindow		=	cms.untracked.vdouble(0, 9000.)
 #0 4-candidate pt lower bound
@@ -91,3 +91,6 @@ _nhCorrEB					=	cms.untracked.vdouble(0.0044, 0.5809)
 _phCorrEB					=	cms.untracked.vdouble(0.0043, 0.)
 _nhCorrEE					=	cms.untracked.vdouble(0.0040, 0.9402)
 _phCorrEE					=	cms.untracked.vdouble(0.0041, 0.)
+
+#if true, make selection tree, if false, make tree before selection
+_doSelectionTree			= cms.untracked.uint32(1)

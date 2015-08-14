@@ -10,7 +10,7 @@
 
 using namespace std;
 
-bool DEBUG = false;
+bool DEBUG = 0;
 
 double bbggTools::getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho)
 {
@@ -319,6 +319,12 @@ edm::Ptr<flashgg::Jet> bbggTools::GetSelected_subleadingJetCandidate()
 bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandidate> > diphoCol, 
 						edm::Handle<edm::View<flashgg::Jet> > jetsCol )
 {
+	bool cutsChecked = bbggTools::CheckCuts();
+	if(!cutsChecked) {
+		std::cout << "You haven't filled all the cuts correctly!" << std::endl;
+		return 0;
+	}
+	
     bool isValidDiPhotonCandidate = false;
     if(DEBUG) std::cout << "Being AnalysisSelection..." << std::endl;
 
@@ -435,17 +441,20 @@ bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandid
              || bbggTools::DeltaR(jet->p4(), diphoCandidate->subLeadingPhoton()->p4()) < _JetDrPho[0] ) continue;
  		Jets.push_back(jet);
 	}
-
+	if(DEBUG) std::cout << "After Jet selection... 1, Jets.size(): " << Jets.size() << std::endl;
 
     if(Jets.size() < 2 ) return 0;
+	
+	if(DEBUG) std::cout << "After Jet selection... 2" << std::endl;
 
     edm::Ptr<flashgg::Jet> jet1, jet2;
     bbggTools::LorentzVector DiJet(0,0,0,0);
 //    double dijetPt_ref = 0;
-//	double sumbtag_ref = 0;
-	double sumpt_ref = 0;
+	double sumbtag_ref = 0;
+//	double sumpt_ref = 0;
     bool hasDiJet = false;
 
+	if(DEBUG) std::cout << "Jet sorting... " << std::endl;
     for(unsigned int iJet = 0; iJet < Jets.size(); iJet++)
     {
  		unsigned int isbjet = 0;
@@ -454,33 +463,23 @@ bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandid
  		{
  	  	 	unsigned int isbjet2 = 0;
  	  		if( Jets[jJet]->bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet2 = 1;
-	  
  	  		unsigned int totalbjet = isbjet + isbjet2;
  	  		if(_n_bJets && totalbjet != _n_bJets) continue;
- //	  if(totalbjet != n_bJets) continue;
 
  	  		bbggTools::LorentzVector dijet = Jets[iJet]->p4() + Jets[jJet]->p4();
 	  		if(dijet.mass() < _DiJetMassWindow[0] || dijet.mass() > _DiJetMassWindow[1]) continue;
-			
 			if( bbggTools::DeltaR( dijet, diphoCandidate->p4() ) < _CandidatesDeltaR[0] ) continue;
-			
-//			if( Jets[iJet]->pt() < 0.3*dijet.mass() + 15 ) continue;
-//			if( Jets[jJet]->pt() < 0.3*dijet.mass() + 15) continue;
-//			if( Jets[iJet]->pt() <  25. + 0.01*exp( 0.05*dijet.mass()) ) continue;
-//			if( Jets[jJet]->pt() <  25. + 0.01*exp( 0.05*dijet.mass()) ) continue;
-//			if( Jets[jJet]->pt() < 10) continue;
 						
-//			double sumbtag = Jets[iJet]->bDiscriminator(_bTagType) + Jets[jJet]->bDiscriminator(_bTagType);
-			double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
-
+			double sumbtag = Jets[iJet]->bDiscriminator(_bTagType) + Jets[jJet]->bDiscriminator(_bTagType);
+//			double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
 // 	  		if(dijet.pt() > dijetPt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
-// 	  		if(sumbtag > sumbtag_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
- 	  		if(sumpt > sumpt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
+ 	  		if(sumbtag > sumbtag_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
+// 	  		if(sumpt > sumpt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
  	  		{
 				hasDiJet = true;
 //				dijetPt_ref = dijet.pt();
-//				sumbtag_ref = sumbtag;
-				sumpt_ref = sumpt;
+				sumbtag_ref = sumbtag;
+//				sumpt_ref = sumpt;
 				if( Jets[iJet]->pt() > Jets[jJet]->pt() ) {
 					jet1 = Jets.at(iJet);
 					jet2 = Jets.at(jJet);
@@ -499,5 +498,6 @@ bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandid
 	subleadingJetCandidate = jet2;
 	hasSubJet = true;
 
+	if(DEBUG) std::cout << "Passed analysis selection!..." << std::endl;
 	return 1;
 }
