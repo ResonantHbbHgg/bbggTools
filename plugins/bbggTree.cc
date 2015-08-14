@@ -311,7 +311,6 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
 	  tools_.SetCut_bTagType( bTagType );
 	  tools_.SetCut_CandidatesDeltaR( dr_cands );
 	  
-
       std::cout << "Parameters initialized... \n ############ Doing selection tree or before selection tree? : " << (doSelection ? "Selection!":"Before selection!") <<  std::endl;
 
 }

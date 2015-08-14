@@ -52,20 +52,21 @@ process.source = cms.Source("PoolSource",
 process.load("flashgg.bbggTools.bbggTree_cfi")
 process.bbggtree.OutFileName = cms.untracked.string(outputFile)
 
-print bcolors.OKBLUE + "#####################################################################" + bcolors.ENDC
-print bcolors.OKBLUE + " _   _  _   _  _      _                     _____                    " + bcolors.ENDC
-print bcolors.OKBLUE + "| | | || | | || |    | |                   |_   _|                   " + bcolors.ENDC
-print bcolors.OKBLUE + "| |_| || |_| || |__  | |__    __ _   __ _    | |   _ __   ___   ___  " + bcolors.ENDC
-print bcolors.OKBLUE + "|  _  ||  _  || '_ \ | '_ \  / _` | / _` |   | |  | '__| / _ \ / _ \ " + bcolors.ENDC
-print bcolors.OKBLUE + "| | | || | | || |_) || |_) || (_| || (_| |   | |  | |   |  __/|  __/ " + bcolors.ENDC
-print bcolors.OKBLUE + "\_| |_/\_| |_/|_.__/ |_.__/  \__, | \__, |   \_/  |_|    \___| \___| " + bcolors.ENDC
-print bcolors.OKBLUE + "                              __/ |  __/ |                           " + bcolors.ENDC
-print bcolors.OKBLUE + "                             |___/  |___/                            " + bcolors.ENDC
-print bcolors.OKBLUE + "#####################################################################" + bcolors.ENDC
+print bcolors.OKBLUE + "########################################################################" + bcolors.ENDC
+print bcolors.OKBLUE + "#  _   _  _   _  _      _                     _____                    #" + bcolors.ENDC
+print bcolors.OKBLUE + "# | | | || | | || |    | |                   |_   _|                   #" + bcolors.ENDC
+print bcolors.OKBLUE + "# | |_| || |_| || |__  | |__    __ _   __ _    | |   _ __   ___   ___  #" + bcolors.ENDC
+print bcolors.OKBLUE + "# |  _  ||  _  || '_ \ | '_ \  / _` | / _` |   | |  | '__| / _ \ / _ \ #" + bcolors.ENDC
+print bcolors.OKBLUE + "# | | | || | | || |_) || |_) || (_| || (_| |   | |  | |   |  __/|  __/ #" + bcolors.ENDC
+print bcolors.OKBLUE + "# \_| |_/\_| |_/|_.__/ |_.__/  \__, | \__, |   \_/  |_|    \___| \___| #" + bcolors.ENDC
+print bcolors.OKBLUE + "#                               __/ |  __/ |                           #" + bcolors.ENDC
+print bcolors.OKBLUE + "#                              |___/  |___/                            #" + bcolors.ENDC
+print bcolors.OKBLUE + "########################################################################" + bcolors.ENDC
 print bcolors.FAIL + "Is it performing the analysis selection?",options.doSelection, bcolors.ENDC
 if options.doSelection is True:
-	process.bbggtree.doSelection = cms.untracked.uint32(1)
+	print "HELOOOO"
+	process.bbggtree.doSelectionTree = cms.untracked.uint32(1)
 if options.doSelection is False:
-	process.bbggtree.doSelection = cms.untracked.uint32(0)
+	process.bbggtree.doSelectionTree = cms.untracked.uint32(0)
 
 process.p = cms.Path(process.bbggtree)
