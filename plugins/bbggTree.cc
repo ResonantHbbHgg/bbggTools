@@ -35,6 +35,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 //FLASHgg files
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
@@ -91,6 +92,8 @@ class bbggTree : public edm::EDAnalyzer {
 	  float subleadingJet_bDis;
 	  LorentzVector dijetCandidate;
 	  LorentzVector diHiggsCandidate;
+	  vector<double> genWeights;
+	  double genTotalWeight;
 
       //Thresholds
 	  std::vector<double> phoIDlooseEB;
@@ -355,6 +358,19 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     const double rhoFixedGrd = *( rhoHandle.product() );
     tools_.setRho(rhoFixedGrd);
 
+    //MC Weights
+//    edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_("generator");
+    Handle<GenEventInfoProduct> genInfo;
+    try {
+	iEvent.getByLabel( "generator", genInfo );
+    } catch (...) {;}
+    if( genInfo.isValid() ) {
+        genTotalWeight = genInfo->weight();
+	std::cout << "Total weight! " << genTotalWeight << std::endl;
+    } else {
+	genTotalWeight = 1;
+    }
+
 //	if(diPhotons->size() < 1) return;
 //	if(theJets->size() < 2) return;
 	
@@ -561,6 +577,8 @@ bbggTree::beginJob()
 	outFile = new TFile(fileName.c_str(), "RECREATE");
     if(!doSelection) {
 		tree = new TTree("bbggTree", "Flat tree for HH->bbgg analyses (no selection)");
+		tree->Branch("genWeights", &genWeights);
+		tree->Branch("genTotalWeight", &genTotalWeight, "genTotalWeight/D");
 		tree->Branch("leadingPhoton", &leadingPhoton);
 		tree->Branch("leadingPhotonID", &leadingPhotonID);
 		tree->Branch("leadingPhotonISO", &leadingPhotonISO);
@@ -573,6 +591,8 @@ bbggTree::beginJob()
 	}
 	if(doSelection) {
 		tree = new TTree("bbggSelectionTree", "Flat tree for HH->bbgg analyses (after pre selection)");
+		tree->Branch("genWeights", &genWeights);
+		tree->Branch("genTotalWeight", &genTotalWeight, "genTotalWeight/D");
 		tree->Branch("leadingPhoton", &leadingPhoton);
 		tree->Branch("leadingPhotonID", &leadingPhotonID);
 		tree->Branch("leadingPhotonISO", &leadingPhotonISO);

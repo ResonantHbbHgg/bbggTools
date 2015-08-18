@@ -12,5 +12,6 @@
 <use   name="DataFormats/Common"/>
 <use   name="DataFormats/JetReco"/>
 <use name="flashgg/bbggTools"/>
+<use name="SimDataFormats/GeneratorProducts"/>
 
 <flags EDM_PLUGIN="1"/>

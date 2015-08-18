@@ -11,7 +11,7 @@ eval \`scramv1 runtime -sh\`
 data_file = open( localDir + '/../MetaData/microAODdatasets/Spring15BetaV2_MetaV3/signalMC.json')
 data = json.load(data_file)
 
-eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/bbggTrees/signal/'
+eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/bbggSelectionTrees/signal/'
 
 massPoints = ['Grav260', 'Grav270', 'Grav280', 'Grav320', 'Grav350',
 				'Grav500', 'Grav550', 'Rad320', 'Rad340', 'Rad350', 
@@ -28,8 +28,8 @@ for mPoint in massPoints:
 		rFiles += files['name']
 		if counter < len(dataFiles): rFiles += ','
 	print rFiles
-	outputFile = "/tmp/bbggTree_" + str(mPoint) + ".root"
-	command = "\ncmsRun MakeTrees.py inputFiles=" + str(rFiles) + " outputFile=" + outputFile
+	outputFile = "/tmp/bbggSelectionTree_" + str(mPoint) + ".root"
+	command = "\ncmsRun MakeTrees.py inputFiles=" + str(rFiles) + " outputFile=" + outputFile + " doSelection=1"
 	batchFinish = "\n\n/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select cp " + outputFile + " " + eosOutput + "\nrm " + outputFile
 	batchName = "TreeMaker_"+str(mPoint)+".sh"
 	batchFile = open(batchName, "w")
@@ -38,5 +38,5 @@ for mPoint in massPoints:
 	batchFile.write(batchFinish)
 	batchFile.close()
 	os.system("chmod +x "+batchName)
-#	os.system("bsub -q 1nh -J t"+str(mPoint)+" < "+batchName)
+	os.system("bsub -q 1nh -J t"+str(mPoint)+" < "+batchName)
 #	break
