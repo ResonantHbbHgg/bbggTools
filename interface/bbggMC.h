@@ -9,6 +9,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 // system include files
 #include <memory>
 #include <vector>
@@ -34,13 +35,22 @@ public:
 		
 	//Perform event selection
 	bool MatchTruth( edm::Handle<edm::View<flashgg::DiPhotonCandidate> > diphoCol, 
-							edm::Handle<edm::View<flashgg::Jet> > jetsCol,
-							edm::Handle<edm::View<reco::GenParticle> > genCol );
+					 edm::Handle<edm::View<flashgg::Jet> > jetsCol,
+					 edm::Handle<edm::View<reco::GenParticle> > genCol );
+					 
 	//Get selected objects
 	edm::Ptr<flashgg::DiPhotonCandidate> GetSelected_diphoCandidate();
 	edm::Ptr<flashgg::Jet> GetSelected_leadingJetCandidate();
 	edm::Ptr<flashgg::Jet> GetSelected_subleadingJetCandidate();
-	
+
+	//Count prompt photons
+	unsigned int CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandidate> dipho, 
+											edm::Handle<edm::View<pat::PackedGenParticle> > genCol);
+//											edm::Handle<edm::View<reco::GenParticle> > genCol);
+
+	unsigned int CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandidate> dipho, 
+											edm::Handle<edm::View<reco::GenParticle> > genCol);
+												
 	//Other
 	double DeltaR(bbggMC::LorentzVector vec1, bbggMC::LorentzVector vec2);
 

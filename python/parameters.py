@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
 _rhoFixedGridCollection		=	cms.untracked.InputTag('fixedGridRhoAll')
-_GenTag						=	cms.untracked.InputTag('prunedGenParticles')
+_GenTag						=	cms.untracked.InputTag('flashggGenPhotons')
 #0: Pho1, 1: Pho2
 _PhotonPtOverDiPhotonMass	=	cms.untracked.vdouble( 0.333, 0.25 )
 #0: First upper boundary (EB), 1: second upper boundary (EE) (only (1) is used to cut on both)

@@ -6,6 +6,7 @@ import flashgg.bbggTools.parameters as param
 bbggtree = cms.EDAnalyzer('bbggTree',
 	DiPhotonTag=param._DiPhotonTag,
 	JetTag=param._JetTag,
+	GenTag=param._GenTag,
 	rhoFixedGridCollection=param._rhoFixedGridCollection,
 	PhotonPtOverDiPhotonMass=param._PhotonPtOverDiPhotonMass,
 	PhotonEta=param._PhotonEta,

@@ -13,11 +13,22 @@ options.register('doSelection',
 					opts.VarParsing.multiplicity.singleton,
 					opts.VarParsing.varType.bool,
 					'False: Make tree before selection; True: Make tree after selection')
+options.register('doDoubleCountingMitigation',
+					False,
+					opts.VarParsing.multiplicity.singleton,
+					opts.VarParsing.varType.bool,
+					'False: Do not remove double counted photons from QCD/GJet/DiPhotonJets; True: Remove double counted photons from QCD/GJet/DiPhotonJets')
+options.register('nPromptPhotons',
+					0,
+					opts.VarParsing.multiplicity.singleton,
+					opts.VarParsing.varType.int,
+					'Number of prompt photons to be selected - to use this, set doDoubleCountingMitigation=1')
+
 #-------
 
 options.parseArguments()
 
-maxEvents = -1
+maxEvents = 50
 if options.maxEvents:
         maxEvents = int(options.maxEvents)
 
@@ -63,10 +74,16 @@ print bcolors.OKBLUE + "#                               __/ |  __/ |            
 print bcolors.OKBLUE + "#                              |___/  |___/                            #" + bcolors.ENDC
 print bcolors.OKBLUE + "########################################################################" + bcolors.ENDC
 print bcolors.FAIL + "Is it performing the analysis selection?",options.doSelection, bcolors.ENDC
+print bcolors.FAIL + "Is it removing double counted photons from QCD/GJet/DiPhotonJets?",options.doDoubleCountingMitigation, bcolors.ENDC
 if options.doSelection is True:
-	print "HELOOOO"
 	process.bbggtree.doSelectionTree = cms.untracked.uint32(1)
 if options.doSelection is False:
 	process.bbggtree.doSelectionTree = cms.untracked.uint32(0)
+if options.doDoubleCountingMitigation is True:
+	process.bbggtree.doDoubleCountingMitigation = cms.untracked.uint32(1)
+	process.bbggtree.nPromptPhotons = cms.untracked.uint32(options.nPromptPhotons)
+	print "Number of prompt photons in DiPhotonCandidate:",options.nPromptPhotons
+if options.doDoubleCountingMitigation is False:
+	process.bbggtree.doDoubleCountingMitigation = cms.untracked.uint32(0)
 
 process.p = cms.Path(process.bbggtree)

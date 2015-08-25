@@ -22,6 +22,9 @@ QCD30to40 = ['QCD30to40',
 QCD40toInf = ['QCD40toInf',
 '/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/mdonega-RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1-99bc95700bc743151c172a409f08df19/USER'
 ]
+QCD30toInf = ['QCD30toInf',
+'/QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUETP8M1_13TeV_Pythia8/mdonega-RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1-99bc95700bc743151c172a409f08df19/USER'
+]
 
 p_DYJets = ['DYJets',
 '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/musella-EXOSpring15_v1-Spring15BetaV2-v0-RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2-aca3e57a154f8ee20c72275035ffe5ba/USER'
@@ -30,7 +33,12 @@ p_DiPhotonJetsSherpa = ['DiPhotonJetsSherpa',
 '/DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa/crovelli-RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v3-99bc95700bc743151c172a409f08df19/USER'
 ]
 
-bkgSample = GJets20to40
+#bkgSample = p_DiPhotonJetsSherpa
+#bkgSample = p_DYJets
+#bkgSample = QCD40toInf
+#bkgSample = QCD30to40
+#bkgSample = GJets40toInf
+#bkgSample = GJets20to40
 
 localDir = os.getcwd()
 
@@ -55,11 +63,20 @@ eval \`scramv1 runtime -sh\`
 
 fileNameBase = "/tmp/bbggTree_" + bkgSample[0]
 
+extraCommand = ''
+if 'QCD' in bkgSample[0]:
+	extraCommand += ' doDoubleCountingMitigation=1 nPromptPhotons=0 '
+if 'GJets' in bkgSample[0]:
+	extraCommand += ' doDoubleCountingMitigation=1 nPromptPhotons=1 '
+if 'DiPhotonJets' in bkgSample[0]:
+	extraCommand += ' doDoubleCountingMitigation=1 nPromptPhotons=2 '
+
+
 doSelection = True
 if(doSelection):
 	fileNameBase = "/tmp/bbggSelectionTree_" + bkgSample[0]
-	eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/bbggSelectionTrees/bkg/'
-
+	eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/new_bbggSelectionTrees/bkg/'
+	extraCommand += ' doSelection=1'
 
 for files in dataFiles:
 	if int(files['nevents']) == 0: continue
@@ -68,9 +85,6 @@ for files in dataFiles:
 	fileNumber = fileNumber_temp.split(".")[0]
 	print fileNumber
 	outputFile = fileNameBase + '_' + str(fileNumber) + ".root"
-	extraCommand = ''
-	if(doSelection):
-		extraCommand = ' doSelection=1'
 	command = "cmsRun MakeTrees.py inputFiles=" + str(files['name']) + " outputFile=" + outputFile + extraCommand
 	print bcolors.OKBLUE + "Command to be issued in batch:" + bcolors.ENDC
 	print bcolors.OKBLUE + bcolors.BOLD + "\t"+command + bcolors.ENDC

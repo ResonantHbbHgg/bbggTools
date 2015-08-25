@@ -116,7 +116,9 @@ class bbggTruthDiff : public edm::EDAnalyzer {
       std::vector<double> cand_mass;
 	  
 	  std::vector<double> dr_cands;
-
+	  unsigned int nPromptPhotons;
+	  unsigned int doDoubleCountingMitigation;
+	  
       //OutFile & Hists
       TFile* outFile;
       std::map<std::string, TH1F> hists;
@@ -211,6 +213,9 @@ genToken_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParamete
       def_cand_mass.push_back(0.);		def_cand_mass.push_back(2000.);
 	  
 	  def_dr_cands.push_back(0.11);
+	  
+	  unsigned int def_nPromptPhotons = 0;
+	  unsigned int def_doDoubleCountingMitigation = 0;
 
 
       def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
@@ -257,6 +262,10 @@ genToken_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParamete
       bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
 
       fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
+	  
+	  nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
+	  doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
+	  
 	  
 	  tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
 	  tools_.SetCut_PhotonEta( ph_eta );
@@ -328,8 +337,24 @@ bbggTruthDiff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    Handle<View<reco::GenParticle> > genParticles;
    iEvent.getByToken( genToken_, genParticles);
    
+//PreLoop
+	vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoVec;
+	for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
+	{
+		edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
+		if(doDoubleCountingMitigation){
+			bbggMC _mcTools = bbggMC();
+			unsigned int nPrompt = _mcTools.CheckNumberOfPromptPhotons(dipho, genParticles);
+			if (nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
+			else continue;
+		} else {
+			diphoVec.push_back(dipho);
+		}
+	}
    
-	bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+   
+//	bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+	bool passedSelection = tools_.AnalysisSelection(diphoVec, theJets);
 	if(!passedSelection) return;
 	
 	bool passedMCSelection = mcTools_.MatchTruth(diPhotons, theJets, genParticles);

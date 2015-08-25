@@ -44,9 +44,13 @@
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
+#include "flashgg/bbggTools/interface/bbggMC.h"
+
 //
 // class declaration
 //
@@ -71,6 +75,8 @@ class bbggTree : public edm::EDAnalyzer {
       //Parameter tokens
       edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
       edm::EDGetTokenT<edm::View<flashgg::Jet> > thejetToken_;
+//	  edm::EDGetTokenT<edm::View<reco::GenParticle> > genToken_;
+	  edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > genToken_;
       edm::InputTag rhoFixedGrid_;
       std::string bTagType;
 	  unsigned int doSelection;
@@ -94,6 +100,9 @@ class bbggTree : public edm::EDAnalyzer {
 	  LorentzVector diHiggsCandidate;
 	  vector<double> genWeights;
 	  double genTotalWeight;
+	  unsigned int nPromptInDiPhoton;
+	  int leadingPhotonEVeto;
+	  int subleadingPhotonEVeto;
 
       //Thresholds
 	  std::vector<double> phoIDlooseEB;
@@ -141,7 +150,8 @@ class bbggTree : public edm::EDAnalyzer {
       std::vector<double> cand_eta;
       std::vector<double> cand_mass;
 	  std::vector<double> dr_cands;
-	  
+	  unsigned int nPromptPhotons;
+	  unsigned int doDoubleCountingMitigation;
 
       //OutFile & Hists
       TFile* outFile;
@@ -157,7 +167,9 @@ class bbggTree : public edm::EDAnalyzer {
 //
 bbggTree::bbggTree(const edm::ParameterSet& iConfig) :
 diPhotonToken_( consumes<edm::View<flashgg::DiPhotonCandidate> >( iConfig.getUntrackedParameter<edm::InputTag> ( "DiPhotonTag", edm::InputTag( "flashggDiPhotons" ) ) ) ),
-thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<edm::InputTag>( "JetTag", edm::InputTag( "flashggJets" ) ) ) )
+thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<edm::InputTag>( "JetTag", edm::InputTag( "flashggJets" ) ) ) ),
+genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) )
+//genToken_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) )
 {
    //now do what ever initialization is needed
 	  tools_ = bbggTools();
@@ -223,6 +235,8 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
 	 
 	  def_dr_cands.push_back(0.11);
 	  
+	  unsigned int def_nPromptPhotons = 0;
+	  unsigned int def_doDoubleCountingMitigation = 0;
 	  
 
       std::string def_fileName;
@@ -277,6 +291,8 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
       cand_mass = iConfig.getUntrackedParameter<std::vector<double > >("CandidateMassWindow", def_cand_mass);
 	  dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
 	  
+	  nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
+	  doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
 
       rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
 
@@ -357,7 +373,8 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
     const double rhoFixedGrd = *( rhoHandle.product() );
     tools_.setRho(rhoFixedGrd);
-
+//	Handle<View<reco::GenParticle> > genParticles;
+	Handle<View<pat::PackedGenParticle> > genParticles;
     //MC Weights
 //    edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_("generator");
     Handle<GenEventInfoProduct> genInfo;
@@ -366,7 +383,7 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     } catch (...) {;}
     if( genInfo.isValid() ) {
         genTotalWeight = genInfo->weight();
-	std::cout << "Total weight! " << genTotalWeight << std::endl;
+	    iEvent.getByToken( genToken_, genParticles);
     } else {
 	genTotalWeight = 1;
     }
@@ -374,13 +391,39 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 //	if(diPhotons->size() < 1) return;
 //	if(theJets->size() < 2) return;
 	
+	
+	//PreLoop
+	vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoVec;
+	for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
+	{
+		edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
+		if(doDoubleCountingMitigation){
+			if ( !genInfo.isValid() ) {
+				std::cout << "[bbggTree::analyze] Oh, man! You're trying to get MC information from data. Pay attention to what you're doing!" << std::endl;
+				return;
+			}
+			bbggMC _mcTools = bbggMC();
+			unsigned int nPrompt = _mcTools.CheckNumberOfPromptPhotons(dipho, genParticles);
+			if (nPromptPhotons > 0 && nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
+			if (nPromptPhotons == 0) {
+				if (nPrompt == 0) diphoVec.push_back(dipho);
+				else if (nPrompt == 1) diphoVec.push_back(dipho);
+			}
+		} else {
+			diphoVec.push_back(dipho);
+		}
+	}
+	
+	if (diphoVec.size() < 1) return;
+	
 	if(doSelection) {
 		bool cutsChecked = tools_.CheckCuts();
 		if(!cutsChecked) {
 			std::cout << "You haven't filled all the cuts correctly!" << std::endl;
 			return;
 		}
-		bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+//		bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+		bool passedSelection = tools_.AnalysisSelection(diphoVec, theJets);
 		if(!passedSelection) return;
 		
 		if(DEBUG) std::cout << "[bbggTree::analyze] tools_.AnalysisSelection returned " << passedSelection << std::endl;
@@ -388,6 +431,12 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
 		edm::Ptr<flashgg::Jet> LeadingJet = tools_.GetSelected_leadingJetCandidate();
 		edm::Ptr<flashgg::Jet> SubLeadingJet = tools_.GetSelected_subleadingJetCandidate();
+		
+		nPromptInDiPhoton = 999;
+		if ( genInfo.isValid() ){
+			bbggMC _mcTools = bbggMC();
+			nPromptInDiPhoton = _mcTools.CheckNumberOfPromptPhotons(diphoCand, genParticles);
+		}
 		
 		diphotonCandidate = diphoCand->p4();
 		leadingPhoton = diphoCand->leadingPhoton()->p4();
@@ -465,6 +514,9 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		subleadingPhotonISO.push_back(sphoISOmedium);
 		subleadingPhotonISO.push_back(sphoISOtight);
 		
+		leadingPhotonEVeto = diphoCand->leadingPhoton()->passElectronVeto();
+		subleadingPhotonEVeto = diphoCand->subLeadingPhoton()->passElectronVeto();
+				
 		if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
 		tree->Fill();
 
@@ -550,6 +602,9 @@ bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		subleadingPhotonISO.push_back(sphoISOloose);
 		subleadingPhotonISO.push_back(sphoISOmedium);
 		subleadingPhotonISO.push_back(sphoISOtight);
+		
+		leadingPhotonEVeto = diphoCand->leadingPhoton()->passElectronVeto();
+		subleadingPhotonEVeto = diphoCand->subLeadingPhoton()->passElectronVeto();
 
 		for( unsigned int jetIndex = 0; jetIndex < theJets->size(); jetIndex++ )
 		{
@@ -582,9 +637,12 @@ bbggTree::beginJob()
 		tree->Branch("leadingPhoton", &leadingPhoton);
 		tree->Branch("leadingPhotonID", &leadingPhotonID);
 		tree->Branch("leadingPhotonISO", &leadingPhotonISO);
+		tree->Branch("leadingPhotonEVeto", &leadingPhotonEVeto, "leadingPhotonEVeto/I");
 		tree->Branch("subleadingPhoton", &subleadingPhoton);
 		tree->Branch("subleadingPhotonID", &subleadingPhotonID);
 		tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
+		tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
+		tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
 		tree->Branch("Jets", &jets);
 		tree->Branch("Jets_bDiscriminant", &jets_bDiscriminant);
 		tree->Branch("Jets_PUid", &jets_PUid);
@@ -596,10 +654,13 @@ bbggTree::beginJob()
 		tree->Branch("leadingPhoton", &leadingPhoton);
 		tree->Branch("leadingPhotonID", &leadingPhotonID);
 		tree->Branch("leadingPhotonISO", &leadingPhotonISO);
+		tree->Branch("leadingPhotonEVeto", &leadingPhotonEVeto, "leadingPhotonEVeto/I");
 		tree->Branch("subleadingPhoton", &subleadingPhoton);
 		tree->Branch("subleadingPhotonID", &subleadingPhotonID);
 		tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
+		tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
 		tree->Branch("diphotonCandidate", &diphotonCandidate);
+		tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
 		tree->Branch("leadingJet", &leadingJet);
 		tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
 		tree->Branch("subleadingJet", &subleadingJet);

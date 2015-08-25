@@ -23,8 +23,7 @@ fileNameBase = "/tmp/bbggTree_data_"
 doSelection = True
 if(doSelection):
 	fileNameBase = "/tmp/bbggSelectionTree_data_"
-	eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/bbggSelectionTrees/data/'
-
+	eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/new_bbggSelectionTrees/data/'
 
 for files in dataFiles:
 	if int(files['nevents']) == 0: continue

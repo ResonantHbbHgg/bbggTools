@@ -48,6 +48,7 @@
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
+#include "flashgg/bbggTools/interface/bbggMC.h"
 
 //
 // class declaration
@@ -74,6 +75,8 @@ class bbggPlotter : public edm::EDAnalyzer {
       //Parameter tokens
       edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
       edm::EDGetTokenT<edm::View<flashgg::Jet> > thejetToken_;
+	  edm::EDGetTokenT<edm::View<reco::GenParticle> > genToken_;
+	  
       edm::InputTag rhoFixedGrid_;
       std::string bTagType;
 
@@ -111,6 +114,8 @@ class bbggPlotter : public edm::EDAnalyzer {
       std::vector<double> cand_mass;
 	  
 	  std::vector<double> dr_cands;
+	  unsigned int nPromptPhotons;
+	  unsigned int doDoubleCountingMitigation;
 
       //OutFile & Hists
       TFile* outFile;
@@ -124,7 +129,8 @@ class bbggPlotter : public edm::EDAnalyzer {
 
 bbggPlotter::bbggPlotter(const edm::ParameterSet& iConfig) :
 diPhotonToken_( consumes<edm::View<flashgg::DiPhotonCandidate> >( iConfig.getUntrackedParameter<edm::InputTag> ( "DiPhotonTag", edm::InputTag( "flashggDiPhotons" ) ) ) ),
-thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<edm::InputTag>( "JetTag", edm::InputTag( "flashggJets" ) ) ) )
+thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<edm::InputTag>( "JetTag", edm::InputTag( "flashggJets" ) ) ) ),
+genToken_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) )
 {
    //now do what ever initialization is needed
 	  tools_ = bbggTools();
@@ -202,6 +208,9 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
       def_cand_mass.push_back(0.);		def_cand_mass.push_back(2000.);
 	  
 	  def_dr_cands.push_back(0.11);
+	  
+	  unsigned int def_nPromptPhotons = 0;
+	  unsigned int def_doDoubleCountingMitigation = 0;
 
 
       def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
@@ -248,6 +257,10 @@ thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<
       bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
 
       fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
+	  
+	  nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
+	  doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
+	  
 	  
 	  tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
 	  tools_.SetCut_PhotonEta( ph_eta );
@@ -314,8 +327,29 @@ bbggPlotter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
    const double rhoFixedGrd = *( rhoHandle.product() );
    tools_.setRho(rhoFixedGrd);
+   Handle<View<reco::GenParticle> > genParticles;
    
-	bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+   
+//PreLoop
+	vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoVec;
+	for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
+	{
+		edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
+		if(doDoubleCountingMitigation){
+			bbggMC _mcTools = bbggMC();
+			unsigned int nPrompt = _mcTools.CheckNumberOfPromptPhotons(dipho, genParticles);
+			if (nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
+			else continue;
+		} else {
+			diphoVec.push_back(dipho);
+		}
+	}
+	if (diphoVec.size() < 1) return;
+	
+   
+//	bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
+	bool passedSelection = tools_.AnalysisSelection(diphoVec, theJets);
+
 	if(!passedSelection) return;
 
 	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();

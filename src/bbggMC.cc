@@ -47,6 +47,75 @@ edm::Ptr<flashgg::Jet> bbggMC::GetSelected_subleadingJetCandidate()
 	return subleadingJetCandidate;
 }
 
+unsigned int bbggMC::CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandidate> dipho, edm::Handle<edm::View<pat::PackedGenParticle> > genCol)
+{
+	vector<unsigned int> iGenPho;
+	for( unsigned int iGen = 0; iGen < genCol->size(); iGen++)
+	{
+		edm::Ptr<pat::PackedGenParticle> genPar = genCol->ptrAt(iGen);
+		int id = genPar->pdgId();
+		if( id == 22 ) std::cout << "Is this gen pho prompt? " << genPar->isPromptFinalState() << std::endl;
+		if( id == 22 ) std::cout << "Status? " << genPar->status() << std::endl;
+
+		if( id == 22 && genPar->isPromptFinalState() == 1) iGenPho.push_back(iGen);
+	}
+	std::cout << "Number of isPromptFinalState gen photons: " << iGenPho.size() << std::endl;
+	
+	vector<LorentzVector> phos;
+	phos.push_back(dipho->leadingPhoton()->p4());
+	phos.push_back(dipho->subLeadingPhoton()->p4());
+	unsigned int nPromptMatched = 0;
+	for(unsigned int iPho = 0; iPho < phos.size(); iPho++)
+	{
+		for(unsigned int iGen = 0; iGen < iGenPho.size(); iGen++)
+		{
+			LorentzVector genP4 = genCol->ptrAt( iGenPho[iGen] )->p4();
+			if(bbggMC::DeltaR(genP4, phos[iPho]) < 0.3) {
+				nPromptMatched++;
+				break;
+			}
+		}
+	}
+	
+	return nPromptMatched;
+
+}
+
+unsigned int bbggMC::CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandidate> dipho, edm::Handle<edm::View<reco::GenParticle> > genCol)
+{
+	vector<unsigned int> iGenPho;
+	for( unsigned int iGen = 0; iGen < genCol->size(); iGen++)
+	{
+		edm::Ptr<reco::GenParticle> genPar = genCol->ptrAt(iGen);
+		int id = genPar->pdgId();
+//		if( id == 22 ) std::cout << "Is this gen pho prompt? " << genPar->isPromptFinalState() << std::endl;
+//		if( id == 22 ) std::cout << "Status? " << genPar->status() << std::endl;
+
+		if( id == 22 && genPar->isPromptFinalState() == 1) iGenPho.push_back(iGen);
+	}
+//	std::cout << "Number of isPromptFinalState gen photons: " << iGenPho.size() << std::endl;
+	
+	vector<LorentzVector> phos;
+	phos.push_back(dipho->leadingPhoton()->p4());
+	phos.push_back(dipho->subLeadingPhoton()->p4());
+	unsigned int nPromptMatched = 0;
+	for(unsigned int iPho = 0; iPho < phos.size(); iPho++)
+	{
+		for(unsigned int iGen = 0; iGen < iGenPho.size(); iGen++)
+		{
+			LorentzVector genP4 = genCol->ptrAt( iGenPho[iGen] )->p4();
+			if(bbggMC::DeltaR(genP4, phos[iPho]) < 0.3) {
+				nPromptMatched++;
+				break;
+			}
+		}
+	}
+	
+	return nPromptMatched;
+
+}
+
+
 bool bbggMC::MatchTruth( edm::Handle<edm::View<flashgg::DiPhotonCandidate> > diphoCol, 
 						edm::Handle<edm::View<flashgg::Jet> > jetsCol,
 						edm::Handle<edm::View<reco::GenParticle> > genCol )

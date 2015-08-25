@@ -73,8 +73,11 @@ public:
 	void SetCut_CandidatesDeltaR( vector<double> cuts) { _CandidatesDeltaR = cuts; }
 		
 	//Perform event selection
-	bool AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandidate> > diphoCol, 
+	bool AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
 							edm::Handle<edm::View<flashgg::Jet> > jetsCol );
+							
+//	bool AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandidate> > diphoCol, 
+//							edm::Handle<edm::View<flashgg::Jet> > jetsCol );
 	//Get selected objects
 	edm::Ptr<flashgg::DiPhotonCandidate> GetSelected_diphoCandidate();
 	edm::Ptr<flashgg::Jet> GetSelected_leadingJetCandidate();

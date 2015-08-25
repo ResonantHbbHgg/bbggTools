@@ -113,14 +113,23 @@ double bbggTools::getEA( float eta, int whichEA){
 
         float EA[7][3];
 
-        EA[0][0] = 0.0234; EA[0][1] = 0.0053; EA[0][2] = 0.078;
-        EA[1][0] = 0.0189; EA[1][1] = 0.0103; EA[1][2] = 0.0629;
-        EA[2][0] = 0.0171; EA[2][1] = 0.0057; EA[2][2] = 0.0264;
-        EA[3][0] = 0.0129; EA[3][1] = 0.0070; EA[3][2] = 0.0462;
-        EA[4][0] = 0.0110; EA[4][1] = 0.0152; EA[4][2] = 0.0740;
-        EA[5][0] = 0.0074; EA[5][1] = 0.0232; EA[5][2] = 0.0924;
-        EA[6][0] = 0.0035; EA[6][1] = 0.1709; EA[6][2] = 0.1484;
-
+		//PHYS14 values
+        // EA[0][0] = 0.0234; EA[0][1] = 0.0053; EA[0][2] = 0.078;
+        // EA[1][0] = 0.0189; EA[1][1] = 0.0103; EA[1][2] = 0.0629;
+        // EA[2][0] = 0.0171; EA[2][1] = 0.0057; EA[2][2] = 0.0264;
+        // EA[3][0] = 0.0129; EA[3][1] = 0.0070; EA[3][2] = 0.0462;
+        // EA[4][0] = 0.0110; EA[4][1] = 0.0152; EA[4][2] = 0.0740;
+        // EA[5][0] = 0.0074; EA[5][1] = 0.0232; EA[5][2] = 0.0924;
+        // EA[6][0] = 0.0035; EA[6][1] = 0.1709; EA[6][2] = 0.1484;
+        //50ns values
+		EA[0][0] = 0.0158; EA[0][1] = 0.0143; EA[0][2] = 0.0725;
+        EA[1][0] = 0.0143; EA[1][1] = 0.0210; EA[1][2] = 0.0604;
+        EA[2][0] = 0.0115; EA[2][1] = 0.0147; EA[2][2] = 0.0320;
+        EA[3][0] = 0.0094; EA[3][1] = 0.0082; EA[3][2] = 0.0512;
+        EA[4][0] = 0.0095; EA[4][1] = 0.0124; EA[4][2] = 0.0766;
+        EA[5][0] = 0.0068; EA[5][1] = 0.0186; EA[5][2] = 0.0949;
+        EA[6][0] = 0.0053; EA[6][1] = 0.0320; EA[6][2] = 0.1160;
+		
         float feta = fabs(eta);
 
         if(feta > 0.000 && feta < 1.000 ) return EA[0][whichEA];
@@ -153,11 +162,11 @@ bool bbggTools::isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts)
 	bool isid = true;
 	double hoe = pho->hadronicOverEm();
 	double sieie = pho->full5x5_sigmaIetaIeta();
-	int elveto = pho->passElectronVeto();
+//	int elveto = pho->passElectronVeto();
 	
 	if( hoe > cuts[0] ) 	isid = false;
   	if( sieie > cuts[1] ) isid = false;
-	if( elveto != (int) cuts[2] ) isid = false;
+//	if( elveto != (int) cuts[2] ) isid = false;
 	
 	return isid;
 }
@@ -175,11 +184,11 @@ bool bbggTools::isPhoID(const flashgg::Photon* pho, vector<double> cuts)
 	bool isid = true;
 	double hoe = pho->hadronicOverEm();
 	double sieie = pho->full5x5_sigmaIetaIeta();
-	int elveto = pho->passElectronVeto();
+//	int elveto = pho->passElectronVeto();
 	
 	if( hoe > cuts[0] ) 	isid = false;
   	if( sieie > cuts[1] ) isid = false;
-	if( elveto != (int) cuts[2] ) isid = false;
+//	if( elveto != (int) cuts[2] ) isid = false;
 	
 	return isid;
 }
@@ -316,8 +325,12 @@ edm::Ptr<flashgg::Jet> bbggTools::GetSelected_subleadingJetCandidate()
 	return subleadingJetCandidate;
 }
 
-bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandidate> > diphoCol, 
-						edm::Handle<edm::View<flashgg::Jet> > jetsCol )
+bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol,
+//								   edm::Handle<edm::View<flashgg::DiPhotonCandidate> > diphoCol, 
+								   edm::Handle<edm::View<flashgg::Jet> > jetsCol)
+//								   edm::Handle<edm::View<reco::GenParticle> > genCol,
+//								   unsigned int nPromptPhotons,
+//								   unsigned int doDoubleCountingMitigation)
 {
 	bool cutsChecked = bbggTools::CheckCuts();
 	if(!cutsChecked) {
@@ -331,12 +344,14 @@ bool bbggTools::AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandid
     edm::Ptr<reco::Vertex> CandVtx;
 
     //Begin DiPhoton Loop/Selection -----------------------------------------------------------
-    for( unsigned int diphoIndex = 0; diphoIndex < diphoCol->size(); diphoIndex++ )
+    for( unsigned int diphoIndex = 0; diphoIndex < diphoCol.size(); diphoIndex++ )
+//    for( unsigned int diphoIndex = 0; diphoIndex < diphoCol->size(); diphoIndex++ )
     {
  	 if(_DiPhotonOnlyFirst && diphoIndex > 0 ) break;
 
- 	 edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol->ptrAt( diphoIndex );
-	 
+// 	 edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol->ptrAt( diphoIndex );
+ 	 edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[ diphoIndex ];
+	 	 
  	 double dipho_pt = dipho->pt();
 	 double dipho_eta = dipho->eta();
 	 double dipho_mass = dipho->mass();
