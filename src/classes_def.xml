@@ -1,3 +1,5 @@
 <lcgdict>
-	<class name="bbggTools"/>
+<!--	<class name="bbggTools"/>
+	<class name="bbggMC"/> -->
+    <class name="bbggLTMaker"/>
 </lcgdict>

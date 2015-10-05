@@ -12,6 +12,8 @@
 
 using namespace std;
 
+const int DEBUG = 0;
+
 //bool DEBUG = false;
 
 double bbggMC::DeltaR(bbggMC::LorentzVector vec1, bbggMC::LorentzVector vec2)
@@ -54,12 +56,12 @@ unsigned int bbggMC::CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandid
 	{
 		edm::Ptr<pat::PackedGenParticle> genPar = genCol->ptrAt(iGen);
 		int id = genPar->pdgId();
-		if( id == 22 ) std::cout << "Is this gen pho prompt? " << genPar->isPromptFinalState() << std::endl;
-		if( id == 22 ) std::cout << "Status? " << genPar->status() << std::endl;
+		if( DEBUG && id == 22 ) std::cout << "Is this gen pho prompt? " << genPar->isPromptFinalState() << std::endl;
+		if( DEBUG && id == 22 ) std::cout << "Status? " << genPar->status() << std::endl;
 
 		if( id == 22 && genPar->isPromptFinalState() == 1) iGenPho.push_back(iGen);
 	}
-	std::cout << "Number of isPromptFinalState gen photons: " << iGenPho.size() << std::endl;
+	if (DEBUG ) std::cout << "Number of isPromptFinalState gen photons: " << iGenPho.size() << std::endl;
 	
 	vector<LorentzVector> phos;
 	phos.push_back(dipho->leadingPhoton()->p4());

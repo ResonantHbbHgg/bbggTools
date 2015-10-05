@@ -29,9 +29,13 @@
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
+#include "flashgg/bbggTools/interface/bbggMC.h"
+#include "flashgg/bbggTools/interface/bbggLTMaker.h"
 
 namespace {
 	struct dictionary {
-		bbggTools dummy_tools;
+//		bbggTools dummy_tools;
+ //       bbggLTMaker dummy_ltree;
+        bbggMC dummy_mc;
 	};
 }

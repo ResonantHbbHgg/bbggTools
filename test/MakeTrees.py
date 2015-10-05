@@ -3,6 +3,7 @@ from flashgg.bbggTools.microAOD_RadFiles import *
 from flashgg.bbggTools.microAOD_GravFiles import *
 from flashgg.bbggTools.More_microAOD_DJet40Inf import *
 from flashgg.bbggTools.pColors import *
+import flashgg.Taggers.flashggTags_cff as flashggTags
 
 ##### Arguments
 import flashgg.bbggTools.VarParsing as opts
@@ -61,6 +62,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.load("flashgg.bbggTools.bbggTree_cfi")
+process.load("flashgg.Taggers.flashggTags_cff")
 process.bbggtree.OutFileName = cms.untracked.string(outputFile)
 
 print bcolors.OKBLUE + "########################################################################" + bcolors.ENDC
@@ -86,4 +88,7 @@ if options.doDoubleCountingMitigation is True:
 if options.doDoubleCountingMitigation is False:
 	process.bbggtree.doDoubleCountingMitigation = cms.untracked.uint32(0)
 
-process.p = cms.Path(process.bbggtree)
+#process.p = cms.Path(process.bbggtree)
+
+
+process.p = cms.Path(flashggTags.flashggUnpackedJets*process.bbggtree)

@@ -1,21 +1,23 @@
 import FWCore.ParameterSet.Config as cms
 import flashgg.bbggTools.parameters as param
+import flashgg.Taggers.flashggTags_cff as flashggTags
 
 ### For more information on each parameter, see parameters.py
 
 bbggtree = cms.EDAnalyzer('bbggTree',
 	DiPhotonTag=param._DiPhotonTag,
 	JetTag=param._JetTag,
+	inputTagJets= flashggTags.UnpackedJetCollectionVInputTag, #param._inputTagJets,
 	GenTag=param._GenTag,
 	rhoFixedGridCollection=param._rhoFixedGridCollection,
 	PhotonPtOverDiPhotonMass=param._PhotonPtOverDiPhotonMass,
 	PhotonEta=param._PhotonEta,
-	PhotonHoverE=param._PhotonHoverE,
-	PhotonSieie=param._PhotonSieie,
+#	PhotonHoverE=param._PhotonHoverE,
+#	PhotonSieie=param._PhotonSieie,
 	PhotonR9=param._PhotonR9,
-	PhotonChargedIso=param._PhotonChargedIso,
-	PhotonNeutralIso=param._PhotonNeutralIso,
-	PhotonPhotonIso=param._PhotonPhotonIso,
+#	PhotonChargedIso=param._PhotonChargedIso,
+#	PhotonNeutralIso=param._PhotonNeutralIso,
+#	PhotonPhotonIso=param._PhotonPhotonIso,
 	PhotonElectronVeto=param._PhotonElectronVeto,
 	PhotonDoID=param._PhotonDoID,
 	PhotonDoISO=param._PhotonDoISO,

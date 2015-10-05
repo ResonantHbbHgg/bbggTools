@@ -1,9 +1,12 @@
 ### Parameters to be used in the configuration files
 import FWCore.ParameterSet.Config as cms
-#import flashgg.Taggers.flashggTags_cff as flashggTags
+import flashgg.Taggers.flashggTags_cff as flashggTags
+
+
 
 _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
+#_inputTagJets					=	flashggTags.UnpackedJetCollectionVInputTag,
 _rhoFixedGridCollection		=	cms.untracked.InputTag('fixedGridRhoAll')
 _GenTag						=	cms.untracked.InputTag('flashggGenPhotons')
 #0: Pho1, 1: Pho2
@@ -11,19 +14,11 @@ _PhotonPtOverDiPhotonMass	=	cms.untracked.vdouble( 0.333, 0.25 )
 #0: First upper boundary (EB), 1: second upper boundary (EE) (only (1) is used to cut on both)
 _PhotonEta					=	cms.untracked.vdouble(1.479, 2.50)
 #0: Pho1 EB, 1: Pho1 EE, 2: Pho2 EB, 3: Pho2 EE
-_PhotonHoverE				=	cms.untracked.vdouble(0.012, 0.023, 0.012, 0.023 )
-#0: Pho1 EB, 1: Pho1 EE, 2: Pho2 EB, 3: Pho2 EE
-_PhotonSieie				=	cms.untracked.vdouble(0.0100, 0.0267, 0.0100, 0.0267 )
-#0: Pho1 EB, 1: Pho1 EE, 2: Pho2 EB, 3: Pho2 EE
 _PhotonR9					=	cms.untracked.vdouble(0., 0.)
-#0: Pho1 EB, 1: Pho1 EE, 2: Pho2 EB, 3: Pho2 EE
-_PhotonChargedIso			=	cms.untracked.vdouble(1.79, 1.09, 1.79, 1.09 )
-#0: Pho1 EB, 1: Pho1 EE, 2: Pho2 EB, 3: Pho2 EE
-_PhotonNeutralIso			=	cms.untracked.vdouble(0.16, 4.31, 0.16, 4.31)
-#0: Pho1 EB, 1: Pho1 EE, 2: Pho2 EB, 3: Pho2 EE
-_PhotonPhotonIso			=	cms.untracked.vdouble(1.90, 1.90, 1.90, 1.90)
 #0: Pho1, 1: Pho2
 _PhotonElectronVeto			=	cms.untracked.vint32(1, 1)
+#0: Pho1, 1: Pho2
+_PhotonDoElectronVeto		=	cms.untracked.vint32(0 , 0)
 #0: Pho1, 1: Pho2
 _PhotonDoID					=	cms.untracked.vint32(0 , 0)
 #0: Pho1, 1: Pho2
@@ -94,3 +89,12 @@ _phCorrEE					=	cms.untracked.vdouble(0.0041, 0.)
 
 #if true, make selection tree, if false, make tree before selection
 _doSelectionTree			= cms.untracked.uint32(1)
+
+#Which photon ID working point? loose, medium or tight
+_PhotonWhichID				=	cms.untracked.vstring("loose", "loose")
+
+#Which photon ISO working point? loose, medium or tight
+_PhotonWhichISO				=	cms.untracked.vstring("loose", "loose")
+
+#Do jet ID? 0: jet1, 1: jet2
+_JetDoID					=	cms.untracked.vint32(1, 1)

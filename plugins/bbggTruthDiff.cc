@@ -37,6 +37,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 //FLASHgg files
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
@@ -63,6 +64,7 @@ class bbggTruthDiff : public edm::EDAnalyzer {
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
       typedef math::XYZTLorentzVector LorentzVector;
+      typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
 
    private:
@@ -76,48 +78,60 @@ class bbggTruthDiff : public edm::EDAnalyzer {
 	  
       //Parameter tokens
       edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
-      edm::EDGetTokenT<edm::View<flashgg::Jet> > thejetToken_;
+      std::vector<edm::InputTag> inputTagJets_;
       edm::EDGetTokenT<edm::View<reco::GenJet> > genjetToken_;
       edm::EDGetTokenT<edm::View<reco::GenParticle> > genToken_;
       edm::InputTag rhoFixedGrid_;
       std::string bTagType;
+      double genTotalWeight;
 
       //Thresholds
+      std::vector<double> phoIDlooseEB;
+      std::vector<double> phoIDlooseEE;
+      std::vector<double> phoIDmediumEB;
+      std::vector<double> phoIDmediumEE;
+      std::vector<double> phoIDtightEB;
+      std::vector<double> phoIDtightEE;
+      std::vector<double> phoISOlooseEB;
+      std::vector<double> phoISOlooseEE;
+      std::vector<double> phoISOmediumEB;
+      std::vector<double> phoISOmediumEE;
+      std::vector<double> phoISOtightEB;
+      std::vector<double> phoISOtightEE;
+      std::vector<double> nhCorrEB;
+      std::vector<double> nhCorrEE;
+      std::vector<double> phCorrEB;	  
+      std::vector<double> phCorrEE;
+	  
       std::vector<double> ph_pt;
       std::vector<double> ph_eta;
-      std::vector<double> ph_hoe;
-      std::vector<double> ph_sieie;
       std::vector<double> ph_r9;
-      std::vector<double> ph_chIso;
-      std::vector<double> ph_nhIso;
-      std::vector<double> ph_phIso;
       std::vector<int> ph_elVeto;
+      std::vector<int> ph_doelVeto;
       std::vector<int> ph_doID;
+      std::vector<std::string> ph_whichID;
       std::vector<int> ph_doISO;
-
+      std::vector<std::string> ph_whichISO;
       std::vector<double> diph_pt;
       std::vector<double> diph_eta;
       std::vector<double> diph_mass;
       unsigned int diph_onlyfirst;
-
       std::vector<double> jt_pt;
       std::vector<double> jt_eta;
       std::vector<double> jt_drPho;
       std::vector<double> jt_bDis;
       std::vector<int> jt_doPU;
+      std::vector<int> jt_doID;
       unsigned int n_bJets;
-
       std::vector<double> dijt_pt;
       std::vector<double> dijt_eta;
       std::vector<double> dijt_mass; 
-
       std::vector<double> cand_pt;
       std::vector<double> cand_eta;
       std::vector<double> cand_mass;
-	  
-	  std::vector<double> dr_cands;
-	  unsigned int nPromptPhotons;
-	  unsigned int doDoubleCountingMitigation;
+      std::vector<double> dr_cands;
+      unsigned int nPromptPhotons;
+      unsigned int doDoubleCountingMitigation;
 	  
       //OutFile & Hists
       TFile* outFile;
@@ -131,7 +145,7 @@ class bbggTruthDiff : public edm::EDAnalyzer {
 
 bbggTruthDiff::bbggTruthDiff(const edm::ParameterSet& iConfig) :
 diPhotonToken_( consumes<edm::View<flashgg::DiPhotonCandidate> >( iConfig.getUntrackedParameter<edm::InputTag> ( "DiPhotonTag", edm::InputTag( "flashggDiPhotons" ) ) ) ),
-thejetToken_( consumes<edm::View<flashgg::Jet> >( iConfig.getUntrackedParameter<edm::InputTag>( "JetTag", edm::InputTag( "flashggJets" ) ) ) ),
+inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) ),
 genjetToken_( consumes<edm::View<reco::GenJet> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenJetTag", edm::InputTag( "slimmedGenJets" ) ) ) ),
 genToken_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) )
 {
@@ -141,161 +155,196 @@ genToken_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParamete
 	  
    	  EvtCount = 0;
 //Default values for thresholds
+      std::string def_bTagType;
       std::vector<double> def_ph_pt;
       std::vector<double> def_ph_eta;
-      std::vector<double> def_ph_hoe;
-      std::vector<double> def_ph_sieie;
       std::vector<double> def_ph_r9;
-      std::vector<double> def_ph_chIso;
-      std::vector<double> def_ph_nhIso;
-      std::vector<double> def_ph_phIso;
       std::vector<int> def_ph_elVeto;
+      std::vector<int> def_ph_doelVeto;
       std::vector<int> def_ph_doID;
+      std::vector<std::string> def_ph_whichID;
       std::vector<int> def_ph_doISO;
-
+      std::vector<std::string> def_ph_whichISO;
       std::vector<double> def_diph_pt;
       std::vector<double> def_diph_eta;
       std::vector<double> def_diph_mass;
       unsigned int def_diph_onlyfirst;
-
       std::vector<double> def_jt_pt;
       std::vector<double> def_jt_eta;
       std::vector<double> def_jt_drPho;
       std::vector<double> def_jt_bDis;
       std::vector<int> def_jt_doPU;
+      std::vector<int> def_jt_doID;
       unsigned int def_n_bJets;
-
       std::vector<double> def_dijt_pt;
       std::vector<double> def_dijt_eta;
       std::vector<double> def_dijt_mass;
-
       std::vector<double> def_cand_pt;
       std::vector<double> def_cand_eta;
       std::vector<double> def_cand_mass;
-
-	  std::vector<double> def_dr_cands;
-
-      std::string def_bTagType;
-
-      std::string def_fileName;
-
-      def_ph_pt.push_back(10.);         def_ph_pt.push_back(10.);
-      def_ph_eta.push_back(20.);         def_ph_eta.push_back(20.);
-      def_ph_hoe.push_back(-1.);        def_ph_hoe.push_back(-1.);
-      def_ph_sieie.push_back(-1.);      def_ph_sieie.push_back(-1.);
-      def_ph_r9.push_back(-1.);         def_ph_r9.push_back(-1.);
-      def_ph_chIso.push_back(-1.);      def_ph_chIso.push_back(-1.);
-      def_ph_nhIso.push_back(-1.);      def_ph_nhIso.push_back(-1.);
-      def_ph_phIso.push_back(-1.);      def_ph_phIso.push_back(-1.);
-      def_ph_elVeto.push_back(-1.);     def_ph_elVeto.push_back(-1.);
-      def_ph_doID.push_back(0);		def_ph_doID.push_back(0);
-      def_ph_doISO.push_back(0);	def_ph_doISO.push_back(0);
-
-      def_diph_pt.push_back(10.);       def_diph_pt.push_back(10.);
-      def_diph_eta.push_back(0.);       def_diph_eta.push_back(0.);
-      def_diph_mass.push_back(0.);      def_diph_mass.push_back(1000.);
+      std::vector<double> def_dr_cands;
+      def_ph_pt.push_back(10.);           def_ph_pt.push_back(10.);
+      def_ph_eta.push_back(20.);          def_ph_eta.push_back(20.);
+      def_ph_r9.push_back(-1.);           def_ph_r9.push_back(-1.);
+      def_ph_elVeto.push_back(-1);       def_ph_elVeto.push_back(-1);
+      def_ph_doelVeto.push_back(0);       def_ph_elVeto.push_back(0);
+      def_ph_doID.push_back(0);		    def_ph_doID.push_back(0);
+      def_ph_whichID.push_back("loose");  def_ph_whichID.push_back("loose");
+      def_ph_doISO.push_back(0);	        def_ph_doISO.push_back(0);
+      def_ph_whichISO.push_back("loose"); def_ph_whichISO.push_back("loose");
+      def_diph_pt.push_back(10.);         def_diph_pt.push_back(10.);
+      def_diph_eta.push_back(0.);         def_diph_eta.push_back(0.);
+      def_diph_mass.push_back(0.);        def_diph_mass.push_back(1000.);
       def_diph_onlyfirst = 0;
-			
-      def_jt_pt.push_back(10.);         def_jt_pt.push_back(10.);
-      def_jt_eta.push_back(20.);         def_jt_eta.push_back(20.);
-      def_jt_bDis.push_back(0.);        def_jt_bDis.push_back(0.);
-      def_jt_doPU.push_back(0);         def_jt_doPU.push_back(0);
-
+      def_jt_pt.push_back(10.);           def_jt_pt.push_back(10.);
+      def_jt_eta.push_back(20.);          def_jt_eta.push_back(20.);
+      def_jt_bDis.push_back(0.);          def_jt_bDis.push_back(0.);
+      def_jt_doPU.push_back(0);           def_jt_doPU.push_back(0);
+      def_jt_doID.push_back(0);           def_jt_doID.push_back(0);
       def_n_bJets = 0;
-
-      def_dijt_pt.push_back(10.);       def_dijt_pt.push_back(10.);
-      def_dijt_eta.push_back(20.);       def_dijt_eta.push_back(20.);
-      def_dijt_mass.push_back(0.);      def_dijt_mass.push_back(1000.);
+      def_dijt_pt.push_back(10.);         def_dijt_pt.push_back(10.);
+      def_dijt_eta.push_back(20.);        def_dijt_eta.push_back(20.);
+      def_dijt_mass.push_back(0.);        def_dijt_mass.push_back(1000.);
       def_jt_drPho.push_back(0.5);
-
       def_cand_pt.push_back(0.);
       def_cand_eta.push_back(20.);
       def_cand_mass.push_back(0.);		def_cand_mass.push_back(2000.);
+	 
+      def_dr_cands.push_back(0.11);
 	  
-	  def_dr_cands.push_back(0.11);
+      unsigned int def_nPromptPhotons = 0;
+      unsigned int def_doDoubleCountingMitigation = 0;
 	  
-	  unsigned int def_nPromptPhotons = 0;
-	  unsigned int def_doDoubleCountingMitigation = 0;
 
+      std::string def_fileName;
 
       def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
       def_fileName =  "out.root";
 
-//Get thresholds from config file
+      //Get thresholds from config file
+      //Get thresholds from config file
+      phoIDlooseEB = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEB");
+      phoIDlooseEE = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEE");
+      phoIDmediumEB = iConfig.getUntrackedParameter<std::vector<double > >("phoIDmediumEB");
+      phoIDmediumEE = iConfig.getUntrackedParameter<std::vector<double > >("phoIDmediumEE");
+      phoIDtightEB = iConfig.getUntrackedParameter<std::vector<double > >("phoIDtightEB");
+      phoIDtightEE = iConfig.getUntrackedParameter<std::vector<double > >("phoIDtightEE");
+      phoISOlooseEB = iConfig.getUntrackedParameter<std::vector<double > >("phoISOlooseEB");
+      phoISOlooseEE = iConfig.getUntrackedParameter<std::vector<double > >("phoISOlooseEE");
+      phoISOmediumEB = iConfig.getUntrackedParameter<std::vector<double > >("phoISOmediumEB");
+      phoISOmediumEE = iConfig.getUntrackedParameter<std::vector<double > >("phoISOmediumEE");
+      phoISOtightEB = iConfig.getUntrackedParameter<std::vector<double > >("phoISOtightEB");
+      phoISOtightEE = iConfig.getUntrackedParameter<std::vector<double > >("phoISOtightEE");
+      nhCorrEB = iConfig.getUntrackedParameter<std::vector<double > >("nhCorrEB");
+      nhCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("nhCorrEE");
+      phCorrEB = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEB");
+      phCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEE");
+    
       ph_pt     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonPtOverDiPhotonMass", def_ph_pt);
       ph_eta    = iConfig.getUntrackedParameter<std::vector<double > >("PhotonEta", def_ph_eta);
-      ph_hoe    = iConfig.getUntrackedParameter<std::vector<double > >("PhotonHoverE", def_ph_hoe);
-      ph_sieie  = iConfig.getUntrackedParameter<std::vector<double > >("PhotonSieie", def_ph_sieie);
       ph_r9     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonR9", def_ph_r9);
-      ph_chIso  = iConfig.getUntrackedParameter<std::vector<double > >("PhotonChargedIso", def_ph_chIso);
-      ph_nhIso  = iConfig.getUntrackedParameter<std::vector<double > >("PhotonNeutralIso", def_ph_nhIso);
-      ph_phIso  = iConfig.getUntrackedParameter<std::vector<double > >("PhotonPhotonIso", def_ph_phIso);
       ph_elVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonElectronVeto", def_ph_elVeto);
+      ph_doelVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoElectronVeto", def_ph_doelVeto);
       ph_doID   = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoID", def_ph_doID);
-      ph_doISO  = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoISO", def_ph_doID);
-
+      ph_whichID   = iConfig.getUntrackedParameter<std::vector<std::string> >("PhotonWhichID", def_ph_whichID);
+      ph_doISO  = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoISO", def_ph_doISO);
+      ph_whichISO  = iConfig.getUntrackedParameter<std::vector<std::string > >("PhotonWhichISO", def_ph_whichISO);
       diph_pt   = iConfig.getUntrackedParameter<std::vector<double > >("DiPhotonPt", def_diph_pt);
       diph_eta  = iConfig.getUntrackedParameter<std::vector<double > >("DiPhotonEta", def_diph_eta);
       diph_mass = iConfig.getUntrackedParameter<std::vector<double > >("DiPhotonMassWindow", def_diph_mass);
       diph_onlyfirst = iConfig.getUntrackedParameter<unsigned int>("DiPhotonOnlyFirst", def_diph_onlyfirst);
-
       jt_pt     = iConfig.getUntrackedParameter<std::vector<double > >("JetPtOverDiJetMass", def_jt_pt);
       jt_eta    = iConfig.getUntrackedParameter<std::vector<double > >("JetEta", def_jt_eta);
       jt_drPho  = iConfig.getUntrackedParameter<std::vector<double > >("JetDrPho", def_jt_drPho);
       jt_bDis   = iConfig.getUntrackedParameter<std::vector<double > >("JetBDiscriminant", def_jt_bDis);
       jt_doPU   = iConfig.getUntrackedParameter<std::vector<int > >("JetDoPUID", def_jt_doPU);
-
+      jt_doID   = iConfig.getUntrackedParameter<std::vector<int > >("JetDoID", def_jt_doID);
       n_bJets = iConfig.getUntrackedParameter<unsigned int>("n_bJets", def_n_bJets);
-
       dijt_pt   = iConfig.getUntrackedParameter<std::vector<double > >("DiJetPt", def_dijt_pt);
       dijt_eta  = iConfig.getUntrackedParameter<std::vector<double > >("DiJetEta", def_dijt_eta);
       dijt_mass = iConfig.getUntrackedParameter<std::vector<double > >("DiJetMassWindow", def_dijt_mass);
-
       cand_pt 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidatePt", def_cand_mass);
       cand_eta 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidateEta", def_cand_mass);
       cand_mass = iConfig.getUntrackedParameter<std::vector<double > >("CandidateMassWindow", def_cand_mass);
+      dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
 	  
-	  dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
+      nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
+      doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
 
       rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
 
       bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
 
       fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
-	  
-	  nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
-	  doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
-	  
-	  
-	  tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
-	  tools_.SetCut_PhotonEta( ph_eta );
-	  tools_.SetCut_PhotonDoID( ph_doID );
-	  tools_.SetCut_PhotonDoISO( ph_doISO );
-	  tools_.SetCut_PhotonHoverE( ph_hoe );
-	  tools_.SetCut_PhotonSieie( ph_sieie );
-	  tools_.SetCut_PhotonR9( ph_r9 );
-	  tools_.SetCut_PhotonChargedIso( ph_chIso );
-	  tools_.SetCut_PhotonNeutralIso( ph_nhIso);
-	  tools_.SetCut_PhotonPhotonIso( ph_phIso);
-	  tools_.SetCut_PhotonElectronVeto( ph_elVeto );
-	  tools_.SetCut_DiPhotonPt( diph_pt );
-	  tools_.SetCut_DiPhotonEta( diph_eta );
-	  tools_.SetCut_DiPhotonMassWindow( diph_mass );
-	  tools_.SetCut_DiPhotonOnlyFirst( diph_onlyfirst );
-	  tools_.SetCut_JetPt( jt_pt );
-	  tools_.SetCut_JetEta( jt_eta );
-	  tools_.SetCut_JetBDiscriminant( jt_bDis );
-	  tools_.SetCut_JetDrPho( jt_drPho  );
-	  tools_.SetCut_JetDoPUID( jt_doPU );
-	  tools_.SetCut_n_bJets( n_bJets );
-	  tools_.SetCut_DiJetPt( dijt_pt );
-	  tools_.SetCut_DiJetEta( dijt_eta );
-	  tools_.SetCut_DiJetMassWindow( dijt_mass );
-	  tools_.SetCut_CandidateMassWindow( cand_mass );
-	  tools_.SetCut_CandidatePt( cand_pt );
-	  tools_.SetCut_CandidateEta( cand_eta );
-	  tools_.SetCut_bTagType( bTagType );
-	  tools_.SetCut_CandidatesDeltaR( dr_cands );
+	
+      tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
+      tools_.SetCut_PhotonEta( ph_eta );
+      tools_.SetCut_PhotonDoID( ph_doID );
+      tools_.SetCut_PhotonDoISO( ph_doISO );
+      tools_.SetCut_PhotonR9( ph_r9 );
+      tools_.SetCut_PhotonElectronVeto( ph_elVeto );
+      tools_.SetCut_DiPhotonPt( diph_pt );
+      tools_.SetCut_DiPhotonEta( diph_eta );
+      tools_.SetCut_DiPhotonMassWindow( diph_mass );
+      tools_.SetCut_DiPhotonOnlyFirst( diph_onlyfirst );
+      tools_.SetCut_JetPt( jt_pt );
+      tools_.SetCut_JetEta( jt_eta );
+      tools_.SetCut_JetBDiscriminant( jt_bDis );
+      tools_.SetCut_JetDrPho( jt_drPho  );
+      tools_.SetCut_JetDoPUID( jt_doPU );
+      tools_.SetCut_JetDoID( jt_doID );
+      tools_.SetCut_n_bJets( n_bJets );
+      tools_.SetCut_DiJetPt( dijt_pt );
+      tools_.SetCut_DiJetEta( dijt_eta );
+      tools_.SetCut_DiJetMassWindow( dijt_mass );
+      tools_.SetCut_CandidateMassWindow( cand_mass );
+      tools_.SetCut_CandidatePt( cand_pt );
+      tools_.SetCut_CandidateEta( cand_eta );
+      tools_.SetCut_bTagType( bTagType );
+      tools_.SetCut_CandidatesDeltaR( dr_cands );
+    
+      std::map<int, vector<double> > phoIDloose;
+      phoIDloose[0] = phoIDlooseEB;
+      phoIDloose[1] = phoIDlooseEE;
+      tools_.SetCut_phoIDloose(phoIDloose);
+    
+      std::map<int, vector<double> > phoIDmedium;
+      phoIDmedium[0] = phoIDmediumEB;
+      phoIDmedium[1] = phoIDmediumEE;
+      tools_.SetCut_phoIDmedium(phoIDmedium);
+    
+      std::map<int, vector<double> > phoIDtight;
+      phoIDtight[0] = phoIDtightEB;
+      phoIDtight[1] = phoIDtightEE;
+      tools_.SetCut_phoIDtight(phoIDtight);
+    
+      std::map<int, vector<double> > phoISOloose;
+      phoISOloose[0] = phoISOlooseEB;
+      phoISOloose[1] = phoISOlooseEE;
+      tools_.SetCut_phoISOloose(phoISOloose);
+    
+      std::map<int, vector<double> > phoISOmedium;
+      phoISOmedium[0] = phoISOmediumEB;
+      phoISOmedium[1] = phoISOmediumEE;
+      tools_.SetCut_phoISOmedium(phoISOmedium);
+    
+      std::map<int, vector<double> > phoISOtight;
+      phoISOtight[0] = phoISOtightEB;
+      phoISOtight[1] = phoISOtightEE;
+      tools_.SetCut_phoISOtight(phoISOtight);
+    
+      std::map<int, vector<double> > nhCorr;
+      nhCorr[0] = nhCorrEB;
+      nhCorr[1] = nhCorrEE;
+      tools_.SetCut_nhCorr(nhCorr);
+    
+      std::map<int, vector<double> > phCorr;
+      phCorr[0] = phCorrEB;
+      phCorr[1] = phCorrEE;
+      tools_.SetCut_phCorr(phCorr);
+ 
+      tools_.SetCut_phoWhichID(ph_whichID);
+      tools_.SetCut_phoWhichISO(ph_whichISO);
 	  
 	  
       std::cout << "Parameters initialized... cand_mass[0]: " << cand_mass[0] << "\t" << "cand_mass[1] " << cand_mass[1] << std::endl;
@@ -326,14 +375,22 @@ bbggTruthDiff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	             
    Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
    iEvent.getByToken( diPhotonToken_, diPhotons );
-   Handle<View<flashgg::Jet> > theJets;
-   iEvent.getByToken( thejetToken_, theJets );
+   
+   //Get Jets collections!
+   JetCollectionVector theJetsCols( inputTagJets_.size() );
+   for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
+       iEvent.getByLabel( inputTagJets_[j], theJetsCols[j] );
+   }
+
+   
    Handle<View<reco::GenJet> > genJets;
    iEvent.getByToken( genjetToken_, genJets );
+   
    Handle<double> rhoHandle;        // the old way for now...move to getbytoken?
    iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
    const double rhoFixedGrd = *( rhoHandle.product() );
    tools_.setRho(rhoFixedGrd);
+   
    Handle<View<reco::GenParticle> > genParticles;
    iEvent.getByToken( genToken_, genParticles);
    
@@ -354,13 +411,16 @@ bbggTruthDiff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    
    
 //	bool passedSelection = tools_.AnalysisSelection(diPhotons, theJets);
-	bool passedSelection = tools_.AnalysisSelection(diphoVec, theJets);
+	bool passedSelection = tools_.AnalysisSelection(diphoVec, theJetsCols);
 	if(!passedSelection) return;
 	
-	bool passedMCSelection = mcTools_.MatchTruth(diPhotons, theJets, genParticles);
+	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
+    unsigned int jetCollectionIndex = diphoCand->jetCollectionIndex();
+    
+    
+	bool passedMCSelection = mcTools_.MatchTruth(diPhotons, theJetsCols[jetCollectionIndex], genParticles);
 	if(!passedMCSelection) return;
 
-	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
 	edm::Ptr<flashgg::DiPhotonCandidate> diphoCandMC = mcTools_.GetSelected_diphoCandidate();
 
 	//Photon Variables
