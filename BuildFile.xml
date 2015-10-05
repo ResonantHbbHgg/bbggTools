@@ -4,7 +4,7 @@
 <use name="flashgg/DataFormats"/>
 <use name="FWCore/Utilities"/>
 <use name="root"/>
-<use name="rootcling"/>
+<!--<use name="rootcling"/>
 <use name="rooteve"/>
 <use name="rootgeompainter"/>
 <use name="rootguihtml"/>
@@ -31,10 +31,10 @@
 <use name="rootgraphics"/>
 <use name="roothtml"/>
 <use name="rootmathcore"/>
-<use name="rootmlp"/>
+<use name="rootmlp"/> -->
 <use name="rootrflx"/>
-<use name="rootrio"/>
-<use name="roottmva"/>
+<!--<use name="rootrio"/>
+<use name="roottmva"/> -->
 <use name="DataFormats/Candidate"/>
 <use name="DataFormats/PatCandidates"/>
 <use name="CommonTools/CandUtils"/>
