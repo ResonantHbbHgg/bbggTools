@@ -9,10 +9,10 @@ cd ../test/
 eval \`scramv1 runtime -sh\`
 '''
 
-data_file = open(localDir + '/../MetaData/microAODdatasets/Spring15BetaV2_MetaV3/datasets.json')
+data_file = open(localDir + '/../MetaData/microAODdatasets/Spring15BetaV5/datasets.json')
 data = json.load(data_file)
 
-eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/bbggTrees/data/'
+eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/bbggTrees/data/Spring15BetaV5/'
 
 Run2015B = '/DoubleEG/mdonega-RunIISpring15-50ns-Spring15BetaV2-v0-Run2015B-PromptReco-v1-0433f895d0be63f5c271ad0870ad8023/USER'
 

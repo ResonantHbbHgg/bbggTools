@@ -4,7 +4,7 @@ from AvailableSamples import *
 import getopt, sys
 
 def main(argv):
-	eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/RunIISpring15-50ns-Spring15BetaV4/'
+	eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/RunIISpring15-50ns-Spring15BetaV5/'
 	campaign = ''
 	sample = ''
 	Type = 'bkg/'
@@ -96,7 +96,8 @@ def main(argv):
 			batchFile.write(batchFinish)
 			batchFile.close()
 			os.system("chmod +x "+batchName)
-#			os.system("bsub -q 1nh -J t"+str(sample) + '_' +fileNumber+" < "+batchName)
+			os.system("bsub -q 1nh -J t"+str(sample) + '_' +fileNumber+" < "+batchName)
+			os.system("rm "+batchName)
 			print ''
 	
 	if gotIt is False:
