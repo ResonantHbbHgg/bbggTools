@@ -4,6 +4,37 @@ from copy import deepcopy
 from math import *
 from array import array
 
+def getRatio(hist1, hist2):
+	graph = TGraphAsymmErrors(hist1)
+	npoint = 0
+	for i in xrange(0, hist1.GetNbinsX()):
+		Bin = i+1
+		b1 = hist1.GetBinContent(Bin)
+		b2 = hist2.GetBinContent(Bin)
+
+		if b1 == 0 or b2 == 0:
+			continue
+
+		ratio = b1/b2
+
+		b1sq = b1*b1
+		b2sq = b2*b2
+
+		e1sq_up = hist1.GetBinErrorUp(Bin)*hist1.GetBinErrorUp(Bin)
+		e2sq_up = hist2.GetBinErrorUp(Bin)*hist2.GetBinErrorUp(Bin)
+
+		e1sq_low = hist1.GetBinErrorLow(Bin)*hist1.GetBinErrorLow(Bin)
+		e2sq_low = hist2.GetBinErrorLow(Bin)*hist2.GetBinErrorLow(Bin)
+
+		error_up = sqrt((e1sq_up * b2sq + e2sq_up * b1sq) / (b2sq * b2sq))
+		error_low = sqrt((e1sq_low * b2sq + e2sq_low * b1sq) / (b2sq * b2sq))
+
+		graph.SetPoint(npoint, hist1.GetBinCenter(Bin), ratio)
+		graph.SetPointError(npoint, 0, 0, error_low, error_up)
+		npoint += 1
+	graph.Set(npoint)
+	return graph
+
 #
 # The following function was copied (with permission) from the Latino's GitHub:
 # https://github.com/latinos/LatinoAnalysis/blob/master/ShapeAnalysis/scripts/mkPlot.py#L437
@@ -66,7 +97,7 @@ def doPull(bkg, data, stack):
 		bin_center = data.GetBinCenter(x+1)
 		bWidth = data.GetBinWidth(x+1)*0.5
 		px.append(bin_center)
-		pey.append(0)
+		pey.append(1)
 		pex.append(bWidth)
 		pxh.append(0)
 		pxl.append(0)
@@ -101,17 +132,19 @@ def doPull(bkg, data, stack):
 	pE = array('d', pe)
 	pEY = array('d', pey)
 	pEX = array('d', pex)
-	pullData = TGraphAsymmErrors(len(pX), pX, pY, pXL, pXH, pYL, pYH) #points
+#	pullData = TGraphAsymmErrors(len(pX), pX, pY, pXL, pXH, pYL, pYH) #points
+	pullData = getRatio(data, bkg) #TGraphAsymmErrors(len(pX), pX, pY, pXL, pXH, pYL, pYH) #points
 	pullError = TGraphErrors(len(pX), pX, pEY, pEX, pE) #bars
-	pullError.SetMaximum(largest*1.2)
-	pullError.SetMinimum(largest*(-1.2))
-	pullData.SetMaximum(largest*1.2)
-	pullData.SetMinimum(largest*(-1.2))
-	if largest == 0:
-		pullError.SetMaximum(1.)
-		pullError.SetMinimum(-1.)	
-		pullData.SetMaximum(1.)
-		pullData.SetMinimum(-1.)
+	Largest = ceil(largest*1.2)
+	pullError.SetMaximum(Largest + 1)
+	pullError.SetMinimum(Largest*(-1.) + 1)
+	pullData.SetMaximum(Largest + 1)
+	pullData.SetMinimum(Largest*(-1.) +1)
+	if largest == 1.00001:
+		pullError.SetMaximum(2.)
+		pullError.SetMinimum(0.)	
+		pullData.SetMaximum(2.)
+		pullData.SetMinimum(0.)
 	pullError.SetTitle("")
 	pullData.SetTitle("")
 	pullError.SetFillColor(kGray)
@@ -128,10 +161,10 @@ def SaveNoPull(data, bkg, fileName):
 	c0.cd()
 	data.Draw()
 	bkg.Draw('same')
-	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".pdf")
-	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".png")
+#	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".pdf")
+#	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".png")
 
-def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName):
+def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName):
 	data.SetStats(0)
 	Font = 43
 	labelSize = 20
@@ -159,7 +192,8 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName):
 	pullE.GetXaxis().SetTitle(varName)
 	pullE.GetXaxis().SetTitleFont(Font)
 	pullE.GetXaxis().SetTitleSize(titleSize)
-	pullE.GetXaxis().SetTitleOffset(5.0)
+	pullE.GetXaxis().SetTitleOffset(5)
+	pullE.GetXaxis().SetLabelOffset(0.05)
 
 	pullE.GetYaxis().SetTitle("Data/Background")
 	pullE.GetYaxis().SetTitleFont(Font)
@@ -167,13 +201,13 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName):
 	pullE.GetYaxis().SetTitleOffset(1.8)
 	pullE.GetYaxis().CenterTitle()
 	pullE.GetYaxis().SetLabelFont(Font)
-	pullE.GetYaxis().SetLabelSize(8)
+	pullE.GetYaxis().SetLabelSize(9)
 
 	pullE.GetYaxis().SetNdivisions(6)
 
 
 	ratio = 0.2
-	epsilon = 0.00
+	epsilon = 0.0
 	c1 = TCanvas("c1", "c1", 900, 800)
 	SetOwnership(c1,False) #If I don't put this, I get memory leak problems...
 	p1 = TPad("pad1","pad1", 0, float(ratio - epsilon), 1, 1)
@@ -183,7 +217,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName):
 	SetOwnership(p2,False)
 	p2.SetFillColor(0)
 	p2.SetFillStyle(0)
-	p2.SetTopMargin(0.06)
+	p2.SetTopMargin(0.075)
 	p2.SetBottomMargin(0.35)
 	p2.SetGridy()
 	p1.cd()
@@ -208,24 +242,25 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName):
 	for leg in legend:
 		leg.Draw('same')
 	p2.cd()
+	pullE.GetYaxis().SetNdivisions(4, False)
 	pullE.Draw("A5")
 	pullH.Draw("Psame")
 	c1.cd()
 	p2.Draw()
 	p1.Draw()
 	c1.Update()
-	c1.SaveAs("/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/" + fileName + ".pdf")
-	c1.SaveAs("/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/" + fileName + ".png")
+	c1.SaveAs(dirName+"/" + fileName + ".pdf")
+	c1.SaveAs(dirName+"/" + fileName + ".png")
 
 	p1.cd()
 	p1.SetLogy()
 	p1.Update()
 	c1.cd()
 	c1.Update()
-	c1.SaveAs("/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/LOG_" + fileName + ".pdf")
-	c1.SaveAs("/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/LOG_" + fileName + ".png")
+	c1.SaveAs(dirName+"/LOG_" + fileName + ".pdf")
+	c1.SaveAs(dirName+"/LOG_" + fileName + ".png")
 
-def SavePull(pullH, pullE, LowEdge, UpEdge):
+def SavePull(pullH, pullE, LowEdge, UpEdge, dirName):
 	ca = TCanvas("ca", "ca", 1000, 800)
 	ca.cd()
 	pullE.Draw("A2")
@@ -236,8 +271,8 @@ def SavePull(pullH, pullE, LowEdge, UpEdge):
 #		pullH.Draw("A*")
 #		pullH.GetXaxis().SetRangeUser(LowEdge,UpEdge)
 #		pullE.Draw("same2")
-	ca.SaveAs("/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/pull.pdf")
-	ca.SaveAs("/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/pull.png")
+#	ca.SaveAs(dirName + "/pull.pdf")
+#	ca.SaveAs(dirName + "/pull.png")
 	
 
 def MakeLegend(HistList, DataHist):
@@ -284,7 +319,7 @@ def MakeLegend(HistList, DataHist):
 #	leg3.SetTextFont(textFont)
 #	leg3.SetTextSize(textSize)
 
-	leg3.AddEntry(DataHist, " Data (40/pb)", "lep")
+	leg3.AddEntry(DataHist, " Data (150/pb)", "lep")
 	
 	for i,hist in enumerate(HistList):
 		if i+1 < nPerGroup:

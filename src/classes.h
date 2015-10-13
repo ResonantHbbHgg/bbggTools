@@ -31,11 +31,13 @@
 #include "flashgg/bbggTools/interface/bbggTools.h"
 #include "flashgg/bbggTools/interface/bbggMC.h"
 #include "flashgg/bbggTools/interface/bbggLTMaker.h"
+#include "flashgg/bbggTools/interface/bbgg2DFitter.h"
 
 namespace {
 	struct dictionary {
 //		bbggTools dummy_tools;
  //       bbggLTMaker dummy_ltree;
-        bbggMC dummy_mc;
+//        bbggMC dummy_mc;
+//        bbgg2DFitter dummy_fit;
 	};
 }

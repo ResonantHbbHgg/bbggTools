@@ -13,7 +13,9 @@ class myStack:
 	myData = ''
 	dataLegend = ''
 	varName = ''
-	def __init__(self, name, title, varName):
+	dirName = ''
+	lumi = ''
+	def __init__(self, name, title, varName, dirName, lumi):
 		self.myHistograms = []
 		self.tStack = ''
 		self.mySumHists = ''
@@ -22,6 +24,8 @@ class myStack:
 		self.varName = ''
 		self.tStack = THStack(str(name), str(title))
 		self.varName = varName
+		self.dirName = dirName
+		self.lumi = lumi
 	def addHist(self, hist, legend, norm):
 		self.myHistograms.append([deepcopy(hist), str(legend), norm])
 	def addData(self, hist, legend):
@@ -53,7 +57,7 @@ class myStack:
 		LowEdge = pullHandE[2]
 		UpEdge = pullHandE[3]
 		legend = MakeLegend(self.myHistograms, self.myData)
-		SavePull(pullH, pullE, LowEdge, UpEdge)
+		SavePull(pullH, pullE, LowEdge, UpEdge, self.dirName)
 		SaveNoPull(self.myData, self.tStack, fileName)
-		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName)
+		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName, self.dirName)
 

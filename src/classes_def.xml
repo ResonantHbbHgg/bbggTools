@@ -2,4 +2,5 @@
 <!--	<class name="bbggTools"/>
 	<class name="bbggMC"/> -->
     <class name="bbggLTMaker"/>
+    <class name="bbgg2DFitter"/>
 </lcgdict>

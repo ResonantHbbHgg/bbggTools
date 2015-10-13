@@ -4,7 +4,10 @@
 <use name="flashgg/DataFormats"/>
 <use name="FWCore/Utilities"/>
 <use name="root"/>
-<use name="rootcling"/>
+<use name="roofit"/>
+<use name="rootcore"/>
+<use name="roostats"/>
+<!--<use name="rootcling"/>
 <use name="rooteve"/>
 <use name="rootgeompainter"/>
 <use name="rootguihtml"/>
@@ -31,7 +34,9 @@
 <use name="rootgraphics"/>
 <use name="roothtml"/>
 <use name="rootmathcore"/>
-<use name="rootmlp"/>
+<use name="rootmlp"/> -->
+<use name="boost"/>
+<use name="boost_header"/>
 <use name="rootrflx"/>
 <use name="rootrio"/>
 <use name="roottmva"/>
@@ -44,4 +49,6 @@
 <use name="DataFormats/HepMCCandidate"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="FWCore/TFWLiteSelector"/>
+<use name="flashgg/bbggTools"/>
 <bin name="LimitTreeMaker" file="LimitTreeMaker.C"/>
+<bin name="bbgg2DFit" file="bbgg2DFit.C"/>
