@@ -1,0 +1,20 @@
+{
+        "signal" : {
+                "type" : "Radion",
+                "dir" : "/a/b/c/d",
+                "mass" : 270,
+                "nonresFile" : "Lam_1d0_Yt_1d0_c2_0d0",
+		"signalModelCard" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/Spring15BetaV5/CMSSW_7_4_12/src/flashgg/bbggTools/LimitSetting/Models/models_2D.rs"
+        },
+        "other" : {
+                "integratedLumi" : 19.8,
+                "energy" : "8TeV",
+                "higgsMass" : 125.0,
+                "addHiggs" : 1,
+                "doBlinding" : 0,
+                "doBands" : 1,
+                "ncat" : 2,
+                "analysisType" : "fitTo2D_resSearch_withRegKinFit",
+                "useSigTheoryUnc" : 0
+        }
+}

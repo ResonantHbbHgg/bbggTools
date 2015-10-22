@@ -83,7 +83,7 @@ int main(int argc, const char* argv[])
   Float_t mass = 1;
   Float_t lumi = 1;
   Bool_t doBands = 1;
-  int version = 1;
+  int version = 44;
   string analysisType = "a";
   string nonresFile = "b";
   Bool_t useSigTheoryUnc = 1;
@@ -94,6 +94,7 @@ int main(int argc, const char* argv[])
   string signalType = "a";
   string signalDir = "a";
   string energy = "13TeV";
+  string cardName = "";
 
 
   //Read config file
@@ -114,8 +115,10 @@ int main(int argc, const char* argv[])
                 signalType = rowPair.second.get<std::string>("type");
                 signalDir = rowPair.second.get<std::string>("dir");
                 sigMass = rowPair.second.get<int>("mass");
+		cardName = rowPair.second.get<std::string>("signalModelCard");
                 cout << "\t Signal type: " << signalType << endl;
                 cout << "\t Signal samples location: " << signalDir << endl;
+		cout << "\t Signal model card: " << cardName << endl;
                 cout << "\t Signal mass: " << mass << endl;
                 if (mass == 0 ) {
                         cout << "Mass == 0 means non-resonant analysis, therefore:" << endl;
@@ -207,7 +210,7 @@ int main(int argc, const char* argv[])
 		cout << "\t Add an uncertainty to the datacard for the SM diHiggs theory uncertainty: " << useSigTheoryUnc << endl;
 	}*/
   }
-  return 0;
+//  return 0;
 
 /*
   Float_t mass = 1;
@@ -222,6 +225,7 @@ int main(int argc, const char* argv[])
   Int_t NCAT = 1;
   bool addHiggs =1;
  */
+/*
   try
     {
       boost::program_options::options_description desc("Allowed options");
@@ -253,7 +257,7 @@ int main(int argc, const char* argv[])
     cerr << "Exception of unknown type!\n";
   }
   // end of argument parsing
-  
+  */
 
   TString fileBaseName = TString::Format("hgg.mH%.1f_8TeV", mass);
   TString fileHiggsNameggh = TString::Format("hgg.hig.mH%.1f_8TeV.ggh", mass);
@@ -262,7 +266,8 @@ int main(int argc, const char* argv[])
   TString fileHiggsNamevh = TString::Format("hgg.hig.mH%.1f_8TeV.vh", mass);
   TString fileHiggsNamebbh = TString::Format("hgg.hig.mH%.1f_8TeV.bbh", mass);
   TString fileBkgName = "hgg.inputbkg_8TeV";
-  TString card_name = "models_2D.rs"; // put the model parameters here!
+//  TString card_name = "LimitModels/models_2D.rs"; // put the model parameters here!
+  TString card_name(cardName); // put the model parameters here!
   HLFactory hlf("HLFactory", card_name, false);
   RooWorkspace* w = hlf.GetWs();
   

@@ -24,7 +24,7 @@ lumi = 150.0 #in pb
 datasets = []
 
 for bkg in data['background']:
-	tempfile = TFile(bkg['file'])
+	tempfile = TFile.Open(bkg['file'])
 	temptree = tempfile.Get('bbggSelectionTree')
 	normalization = (lumi*bkg['xsec']*bkg['sfactor'])/(bkg['weight'])
 	arr = [bkg['name'], bkg['legend'], bkg['file'], normalization, bkg['color']]
@@ -32,7 +32,7 @@ for bkg in data['background']:
 	datasets.append(dataset)
 
 print data['data']
-f = TFile( data['data'] )
+f = TFile.Open( data['data'] )
 t = f.Get('bbggSelectionTree')
 
 bhists = {}
