@@ -37,6 +37,8 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
 
    TString option = GetOption();
    TString fileName = "";
+//   TString mtotMin = "";
+//   TString mtotMax = "";
    TString cat = "";
    if(!option.Contains(";")) {
        std::cout << "[bbggLTMaker::Begin] Please, make sure your input is in the form \"<fileName>;<Category>\", where <Category> : 0 (no b-tag), 1 (loose b-tag), 2 (tight b-tag)." << endl;
@@ -48,7 +50,9 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
            TSelector::Abort("Array of options divided by ; contains less than 2 options");
        } else {
            fileName = ((TObjString *)(options->At(0)))->String();
-           cat = ((TObjString *)(options->At(1)))->String();
+	   mtotMin = (((TObjString *)(options->At(1)))->String()).Atof();
+	   mtotMax = (((TObjString *)(options->At(2)))->String()).Atof();
+           cat = ((TObjString *)(options->At(3)))->String();
        }
    }
    if(!fileName.Contains(".root")) {
@@ -62,21 +66,23 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
        o_category = -1;
        outFile = new TFile(fileName, "RECREATE");
        outTree = new TTree("bbggLimitTree", "Limit tree for HH->bbgg analyses");
-       outTree->Branch("category", &o_category, "o_category/I");
-       outTree->Branch("weight", &o_weight, "o_weight/D");
-       outTree->Branch("bbMass", &o_bbMass, "o_bbMass/D");
-       outTree->Branch("ggMass", &o_ggMass, "o_ggMass/D");
-       outTree->Branch("bbggMass", &o_bbggMass, "o_bbggMass/D");
+       outTree->Branch("cut_based_ct", &o_category, "o_category/I"); //0: 2btag, 1: 1btag
+       outTree->Branch("evWeight", &o_weight, "o_weight/D");
+       outTree->Branch("mjj", &o_bbMass, "o_bbMass/D");
+       outTree->Branch("mgg", &o_ggMass, "o_ggMass/D");
+       outTree->Branch("mtot", &o_bbggMass, "o_bbggMass/D"); //
    }
+/*
    std::cout << "[bbggLTMaker::Begin] Category chosen: " << cat << std::endl;
-   if ( (!cat.Contains("0")) && (!cat.Contains("1")) && (!cat.Contains("2"))) {
+ 
+  if ( (!cat.Contains("0")) && (!cat.Contains("1")) && (!cat.Contains("2"))) {
        std::cout << "[bbggLTMaker::Begin] Please, make sure your input is in the form \"<fileName>;<Category>\", where <Category> : 0 (no b-tag), 1 (loose b-tag), 2 (tight b-tag)." << endl;
        TSelector::Abort("Category is neither 0, 1 or 2");
    } else {
        if(cat.Contains("0")) o_category = 0;
        if(cat.Contains("1")) o_category = 1;
        if(cat.Contains("2")) o_category = 2;
-   }
+   }*/
    
 
 }
@@ -119,14 +125,15 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    o_ggMass = diphotonCandidate->M();
    o_bbggMass = diHiggsCandidate->M();
    double sumbtag = leadingJet_bDis + subleadingJet_bDis;
+  
+   //mtot cut
+   if(o_bbggMass < mtotMin || o_bbggMass > mtotMax)
+	return kTRUE;
    
-   if( o_category == 0 ) outTree->Fill();
-   if( o_category == 1 ) {
-       if (sumbtag > 0.82 && sumbtag < 1.64 ) outTree->Fill();
-   }
-   if( o_category == 2 ) {
-       if ( sumbtag > 1.64 ) outTree->Fill();
-   }
+   if ( sumbtag > 1.64 ) o_category = 0;
+   if (sumbtag > 0.82 && sumbtag < 1.64 ) o_category = 1;
+   if (sumbtag < 0.82 ) o_category = -1;
+   outTree->Fill();
 
    return kTRUE;
 }

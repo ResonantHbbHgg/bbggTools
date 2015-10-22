@@ -33,6 +33,8 @@ public :
    Double_t        o_bbMass;
    Double_t        o_ggMass;
    Double_t        o_bbggMass;
+   double mtotMin;
+   double mtotMax;
 
 //   Input tree
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain

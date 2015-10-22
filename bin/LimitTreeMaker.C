@@ -8,11 +8,15 @@
 
 using namespace std;
 
-int Process(string file, string outFile, string cat){
+int Process(string file, string outFile, string mtotMin, string mtotMax,string cat = "-1"){
     TFile* iFile = new TFile(TString(file), "READ");
     TTree* iTree = (TTree*) iFile->Get("bbggSelectionTree");
     cout << "[LimitTreeMaker:Process] Processing tree with " << iTree->GetEntries() << " entries." << endl;
     string option = outFile;
+    option.append(";");
+    option.append(mtotMin);
+    option.append(";");
+    option.append(mtotMax);
     option.append(";");
     option.append(cat);
     cout << "[LimitTreeMaker:Process] Option parsing: " << option << endl;
@@ -24,18 +28,22 @@ int Process(string file, string outFile, string cat){
 int main(int argc, char *argv[]) {
     string outputFile = "";
     string inputFile = "";
-    string category = "";
     string outputLocation = "";
-    if(argc < 4) {
-        cout << "[LimitTreeMaker] Usage: LimitTreeMaker <inputtextfile> <category: 0(no btag)/1(loose btag)/2(tight btag)> <outputLocation>" << endl;
+    string mtotMax = "";
+    string mtotMin = "";
+    if(argc < 5) {
+        cout << "[LimitTreeMaker] Usage: LimitTreeMaker <inputtextfile> <outputLocation> <mtotMax> <mtotMin>" << endl;
+
         return 0;
     } else {
         inputFile = argv[1];
-        category = argv[2];
-        outputLocation = argv[3];
+        outputLocation = argv[2];
+	mtotMin = argv[3];
+	mtotMax = argv[4];
         cout << "Opening file: " << argv[1] << endl;
-        cout << "Category used: " << argv[2] << endl;
-        cout << "Output location: " << argv[3] << endl;
+        cout << "Output location: " << argv[2] << endl;
+	cout << "Minimum 4-body mass: " << argv[3] << endl;
+	cout << "Maximum 4-body mass: " << argv[4] << endl;
     }
     ifstream infile(inputFile);
     string line;
@@ -56,11 +64,9 @@ int main(int argc, char *argv[]) {
         rootFileName.replace(sLoc, sLen, "");
         string outF = outputLocation;
         outF.append("/LT_");
-        outF.append(category);
-        outF.append("bTag_");
         outF.append(rootFileName);
         cout << "Output file: " << outF << endl;
-        Process(line, outF, category);
+        Process(line, outF, mtotMin, mtotMax);
     }
     
     return 0;
