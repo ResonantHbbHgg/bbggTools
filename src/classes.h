@@ -36,8 +36,8 @@
 namespace {
 	struct dictionary {
 //		bbggTools dummy_tools;
- //       bbggLTMaker dummy_ltree;
+       bbggLTMaker dummy_ltree;
 //        bbggMC dummy_mc;
-//        bbgg2DFitter dummy_fit;
+        bbgg2DFitter dummy_fit;
 	};
 }

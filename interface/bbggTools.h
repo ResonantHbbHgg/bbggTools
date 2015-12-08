@@ -28,14 +28,14 @@ public:
 	bbggTools() : hasDiPho( 0 ), hasLeadJet( 0 ), hasSubJet( 0 ) { rho_ = -10;}
 	~bbggTools() {}
 	typedef math::XYZTLorentzVector LorentzVector;
-    typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
-    
-    std::map<int, vector<double> > getWhichID (std::string wpoint);
-    std::map<int, vector<double> > getWhichISO (std::string wpoint);
+        typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
+
+        std::map<int, vector<double> > getWhichID (std::string wpoint);
+        std::map<int, vector<double> > getWhichISO (std::string wpoint);
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
-    double getNHisoToCutValue(const flashgg::Photon* pho);
+        double getNHisoToCutValue(const flashgg::Photon* pho);
 	double getPHisoToCutValue(const flashgg::Photon* pho);
-    double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
+        double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
 	double getPHisoToCutValue(const flashgg::Photon* pho, vector<double> phCorr);
 	double getEA( float eta, int whichEA);
 	double DeltaR( bbggTools::LorentzVector vec1, bbggTools::LorentzVector vec2);
@@ -43,7 +43,7 @@ public:
 	bool isPhoID(const flashgg::Photon* pho, vector<double> cuts);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts);
-    bool isJetID(edm::Ptr<flashgg::Jet> jet);
+        bool isJetID(edm::Ptr<flashgg::Jet> jet);
 	void setRho(double rho) {rho_ = rho;}
 	
 	//Set cuts for selection
@@ -77,48 +77,25 @@ public:
     
 	void SetCut_PhotonDoID( vector<int> cuts) { _PhotonDoID = cuts; }
 	void SetCut_PhotonDoISO( vector<int> cuts) { _PhotonDoISO = cuts; }
-    void SetCut_PhotonDoEVeto( vector<int> cuts) { _PhotonDoEVeto = cuts; }
+        void SetCut_PhotonDoEVeto( vector<int> cuts) { _PhotonDoEVeto = cuts; }
     
-    void SetCut_phoIDloose( std::map<int, vector<double> > cuts ) { _phoIDloose = cuts; }
-    void SetCut_phoIDmedium( std::map<int, vector<double> > cuts ) { _phoIDmedium  = cuts; }
-    void SetCut_phoIDtight( std::map<int, vector<double> > cuts ) { _phoIDtight = cuts; }
-    void SetCut_phoISOloose( std::map<int, vector<double> > cuts ) { _phoISOloose = cuts; }
-    void SetCut_phoISOmedium( std::map<int, vector<double> > cuts ) { _phoISOmedium = cuts; }
-    void SetCut_phoISOtight( std::map<int, vector<double> > cuts ) { _phoISOtight = cuts; }
-    /*
-    void SetCut_phoIDlooseEB( vector<double> cuts ) { _phoIDlooseEB = cuts; }
-    void SetCut_phoIDlooseEE( vector<double> cuts ) { _phoIDlooseEE = cuts; }
-    void SetCut_phoIDmediumEB( vector<double> cuts ) { _phoIDmediumEB = cuts; }
-    void SetCut_phoIDmediumEE( vector<double> cuts ) { _phoIDmediumEE = cuts; }
-    void SetCut_phoIDtightEB( vector<double> cuts ) { _phoIDtightEB = cuts; }
-    void SetCut_phoIDtightEE( vector<double> cuts ) { _phoIDtightEE = cuts; }
-    void SetCut_phoISOlooseEB( vector<double> cuts ) { _phoISOlooseEB = cuts; }
-    void SetCut_phoISOlooseEE( vector<double> cuts ) { _phoISOlooseEE = cuts; }
-    void SetCut_phoISOmediumEB( vector<double> cuts ) { _phoISOmediumEB = cuts; }
-    void SetCut_phoISOmediumEE( vector<double> cuts ) { _phoISOmediumEE = cuts; }
-    void SetCut_phoISOtightEB( vector<double> cuts ) { _phoISOtightEB = cuts; }
-    void SetCut_phoISOtightEE( vector<double> cuts ) { _phoISOtightEE = cuts; }
-    */
-    void SetCut_nhCorr( std::map<int, vector<double> > cuts ) { _nhCorr = cuts; }
-    void SetCut_phCorr( std::map<int, vector<double> > cuts ) { _phCorr = cuts; }
-    /*
-    void SetCut_nhCorrEB( vector<double> cuts ) { _nhCorrEB = cuts; }
-    void SetCut_nhCorrEE( vector<double> cuts ) { _nhCorrEE = cuts; }
-    void SetCut_phCorrEB( vector<double> cuts ) { _phCorrEB = cuts; }
-    void SetCut_phCorrEE( vector<double> cuts ) { _phCorrEE = cuts; }
-    */
-    void SetCut_phoWhichID( vector<std::string> cuts) { _phoWhichID = cuts; }
-    void SetCut_phoWhichISO( vector<std::string> cuts) { _phoWhichISO = cuts; }
+       void SetCut_phoIDloose( std::map<int, vector<double> > cuts ) { _phoIDloose = cuts; }
+       void SetCut_phoIDmedium( std::map<int, vector<double> > cuts ) { _phoIDmedium  = cuts; }
+       void SetCut_phoIDtight( std::map<int, vector<double> > cuts ) { _phoIDtight = cuts; }
+       void SetCut_phoISOloose( std::map<int, vector<double> > cuts ) { _phoISOloose = cuts; }
+       void SetCut_phoISOmedium( std::map<int, vector<double> > cuts ) { _phoISOmedium = cuts; }
+       void SetCut_phoISOtight( std::map<int, vector<double> > cuts ) { _phoISOtight = cuts; }
+       void SetCut_nhCorr( std::map<int, vector<double> > cuts ) { _nhCorr = cuts; }
+       void SetCut_phCorr( std::map<int, vector<double> > cuts ) { _phCorr = cuts; }
+       void SetCut_phoWhichID( vector<std::string> cuts) { _phoWhichID = cuts; }
+       void SetCut_phoWhichISO( vector<std::string> cuts) { _phoWhichISO = cuts; }
 		
 	//Perform event selection
 	bool AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
 							JetCollectionVector jetsCol );
 
-//	bool AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
-//							edm::Handle<edm::View<flashgg::Jet> > jetsCol );
-							
-//	bool AnalysisSelection( edm::Handle<edm::View<flashgg::DiPhotonCandidate> > diphoCol, 
-//							edm::Handle<edm::View<flashgg::Jet> > jetsCol );
+        bool DiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
+
 	//Get selected objects
 	edm::Ptr<flashgg::DiPhotonCandidate> GetSelected_diphoCandidate();
 	edm::Ptr<flashgg::Jet> GetSelected_leadingJetCandidate();

@@ -45,6 +45,7 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
        TSelector::Abort("Option input doesn't contain ;");
    } else {
        TObjArray *options = option.Tokenize(";");
+       std::cout << "[bbggLTMaker::Begin] Number of options passed: " << options->GetEntries() << std::endl;
        if (options->GetEntries() < 2) {
            std::cout << "[bbggLTMaker::Begin] Please, make sure your input is in the form \"<fileName>;<Category>\", where <Category> : 0 (no b-tag), 1 (loose b-tag), 2 (tight b-tag)." << endl;
            TSelector::Abort("Array of options divided by ; contains less than 2 options");
@@ -52,7 +53,11 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
            fileName = ((TObjString *)(options->At(0)))->String();
 	   mtotMin = (((TObjString *)(options->At(1)))->String()).Atof();
 	   mtotMax = (((TObjString *)(options->At(2)))->String()).Atof();
-           cat = ((TObjString *)(options->At(3)))->String();
+	   normalization = 1;
+       }
+       if (options->GetEntries() > 2) {
+	   normalization = (((TObjString *)(options->At(3)))->String()).Atof();
+	   std::cout << "[bbggLTMaker::Begin] Using normalization factor = " << normalization << std::endl;
        }
    }
    if(!fileName.Contains(".root")) {
@@ -64,8 +69,9 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
        o_ggMass = 0;
        o_bbggMass = 0;
        o_category = -1;
+       o_normalization = normalization;
        outFile = new TFile(fileName, "RECREATE");
-       outTree = new TTree("bbggLimitTree", "Limit tree for HH->bbgg analyses");
+       outTree = new TTree("TCVARS", "Limit tree for HH->bbgg analyses");
        outTree->Branch("cut_based_ct", &o_category, "o_category/I"); //0: 2btag, 1: 1btag
        outTree->Branch("evWeight", &o_weight, "o_weight/D");
        outTree->Branch("mjj", &o_bbMass, "o_bbMass/D");
@@ -120,7 +126,7 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    bbggLTMaker::GetEntry(entry);
    if( entry%1000 == 0 ) std::cout << "[bbggLTMaker::Process] Reading entry #" << entry << endl;   
    
-   o_weight = genTotalWeight;
+   o_weight = genTotalWeight*normalization;
    o_bbMass = dijetCandidate->M();
    o_ggMass = diphotonCandidate->M();
    o_bbggMass = diHiggsCandidate->M();

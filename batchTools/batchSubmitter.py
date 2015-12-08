@@ -4,14 +4,16 @@ from AvailableSamples import *
 import getopt, sys
 
 def main(argv):
-	eosOutput = '/eos/cms/store/user/rateixei/HHbbgg/RunIISpring15-50ns-Spring15BetaV5/'
+	eosOutput = '/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/'
 	campaign = ''
 	sample = ''
-	Type = 'bkg/'
+	Type = '/bkg/'
+	version = ""
+	doSelection = 1
 	try:
-		opts, args = getopt.getopt(argv,"hc:s:o:d",["campaign=", "sample=", "outputDir=", "isData"])
+		opts, args = getopt.getopt(argv,"hc:s:o:div:n",["campaign=", "sample=", "outputDir=", "isData", "isSignal", "version=", "noSelection"])
 	except getopt.GetoptError:
-		print 'batch_TreeMaker.py -c <campaign> -s <sample>'
+		print 'batchSubmitter.py -c <campaign> -s <sample>'
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
@@ -24,12 +26,22 @@ def main(argv):
 		elif opt in ("-o", "--outputDir"):
 			eosOutput = arg
 		elif opt in ("-d", "--isData"):
-			Type = 'data/'
+			Type = '/data/'
+		elif opt in ("-i", "--isSignal"):
+			Type = '/sig/'
+		elif opt in ("-v", "--version"):
+			version = arg
+		elif opt in ("-n", "--noSelection"):
+			doSelection = 0
 
-	eosOutput += Type
+	if version == "":
+		print "Please, specify version to be created (-v <version>)"
+		sys.exit(2)
+
+	eosOutput += version + Type
 	
-	if campaign is '' or sample is '':
-		print 'batch_TreeMaker.py -c <campaign> -s <sample>'
+	if sample is '' and "sig" not in Type:
+		print 'batchSubmitter.py -c <campaign> -s <sample>'
 		sys.exit()
 	
 	localDir = os.getcwd()
@@ -37,11 +49,12 @@ def main(argv):
 	divisor = "myMicroAODOutputFile_"
 	
 	campaignFile = '../../MetaData/data/' + campaign + '/datasets.json'
+
+	if "sig" in Type:
+#		campaignFile = '../MetaData/RunIISpring15-ReMiniAOD-BetaV7/datasets.json'
+		campaignFile = '../MetaData/Signal.json'
+
 	data_file_location = campaignFile #localDir + '/../MetaData/microAODdatasets/Spring15BetaV2_MetaV3/datasets.json'
-	# if 'crovelli' in bkgSample[1] or 'musella' in bkgSample[1]:
-	# 	data_file_location = localDir + '/../MetaData/microAODdatasets/Spring15BetaV2_MetaV3/bkgPasquale.json'
-	# if 'musella' in bkgSample[1]:
-	# 	divisor = "diphotonsMicroAOD_"
 	
 	data_file = open(data_file_location)
 	data = json.load(data_file)
@@ -58,7 +71,7 @@ def main(argv):
 		batchInit = '''#!/bin/bash
 		cd ''' + str(localDir) + '''
 		cd ../test/
-		eval \`scramv1 runtime -sh\`
+		eval `scramv1 runtime -sh`
 		'''
 		
 		fileNameBase = "/tmp/bbggTree_" + sample
@@ -72,11 +85,13 @@ def main(argv):
 			extraCommand += ' doDoubleCountingMitigation=1 nPromptPhotons=2 '
 		
 		
-		doSelection = True
 		if(doSelection):
 			fileNameBase = "/tmp/bbggSelectionTree_" + sample
 			extraCommand += ' doSelection=1'
 		
+		if "sig" in Type:
+			fileNameBase += sName.split("/")[1]
+
 		for files in dataFiles:
 			if int(files['nevents']) == 0: continue
 			print files['name'], files['nevents']

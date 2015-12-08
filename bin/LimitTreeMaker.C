@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int Process(string file, string outFile, string mtotMin, string mtotMax,string cat = "-1"){
+int Process(string file, string outFile, string mtotMin, string mtotMax,string scale){
     TFile* iFile = new TFile(TString(file), "READ");
     TTree* iTree = (TTree*) iFile->Get("bbggSelectionTree");
     cout << "[LimitTreeMaker:Process] Processing tree with " << iTree->GetEntries() << " entries." << endl;
@@ -18,7 +18,7 @@ int Process(string file, string outFile, string mtotMin, string mtotMax,string c
     option.append(";");
     option.append(mtotMax);
     option.append(";");
-    option.append(cat);
+    option.append(scale);
     cout << "[LimitTreeMaker:Process] Option parsing: " << option << endl;
     iTree->Process("flashgg/bbggTools/src/bbggLTMaker.cc+", TString(option)); 
     delete iFile;
@@ -31,9 +31,9 @@ int main(int argc, char *argv[]) {
     string outputLocation = "";
     string mtotMax = "";
     string mtotMin = "";
+    string scale = "1";
     if(argc < 5) {
         cout << "[LimitTreeMaker] Usage: LimitTreeMaker <inputtextfile> <outputLocation> <mtotMax> <mtotMin>" << endl;
-
         return 0;
     } else {
         inputFile = argv[1];
@@ -44,6 +44,10 @@ int main(int argc, char *argv[]) {
         cout << "Output location: " << argv[2] << endl;
 	cout << "Minimum 4-body mass: " << argv[3] << endl;
 	cout << "Maximum 4-body mass: " << argv[4] << endl;
+	if(argc > 5) {
+		scale = argv[5];
+		cout << "Scale factor: " << argv[5] << endl;
+	}
     }
     ifstream infile(inputFile);
     string line;
@@ -66,7 +70,7 @@ int main(int argc, char *argv[]) {
         outF.append("/LT_");
         outF.append(rootFileName);
         cout << "Output file: " << outF << endl;
-        Process(line, outF, mtotMin, mtotMax);
+        Process(line, outF, mtotMin, mtotMax, scale);
     }
     
     return 0;

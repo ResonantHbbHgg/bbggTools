@@ -95,7 +95,8 @@ int main(int argc, const char* argv[])
   string signalDir = "a";
   string energy = "13TeV";
   string cardName = "";
-
+  string sigFile = "";
+  string dataFile = "";
 
   //Read config file
 //  using boost::property_tree::ptree;
@@ -116,6 +117,7 @@ int main(int argc, const char* argv[])
                 signalDir = rowPair.second.get<std::string>("dir");
                 sigMass = rowPair.second.get<int>("mass");
 		cardName = rowPair.second.get<std::string>("signalModelCard");
+		sigFile = rowPair.second.get<std::string>("signalFile");
                 cout << "\t Signal type: " << signalType << endl;
                 cout << "\t Signal samples location: " << signalDir << endl;
 		cout << "\t Signal model card: " << cardName << endl;
@@ -127,6 +129,7 @@ int main(int argc, const char* argv[])
                 }
         }
         if (rowPair.first == "other") {
+		dataFile = rowPair.second.get<std::string>("dataFile");
                 lumi = rowPair.second.get<float>("integratedLumi");
                 energy = rowPair.second.get<std::string>("energy");
                 mass = rowPair.second.get<float>("higgsMass");
@@ -147,117 +150,8 @@ int main(int argc, const char* argv[])
                 cout << "\t Analysis type: " << analysisType << endl;
                 cout << "\t Add an uncertainty to the datacard for the SM diHiggs theory uncertainty: " << useSigTheoryUnc << endl;
         }
+}
 
-/*
-	std::cout << rowPair.first << ": " << std::endl;
-	cout << "brababa " << rowPair.second.get<string>("type") << endl;
-	BOOST_FOREACH( boost::property_tree::ptree::value_type const& itemPair, rowPair.second ) 
-        {
-            std::cout << "\t" << itemPair.first << " " << itemPair.second.data() << endl;
- 
-            BOOST_FOREACH( boost::property_tree::ptree::value_type const& node, itemPair.second ) 
-            {
-                std::cout << node.first << " ";
-            }
- 
-            std::cout << std::endl;
- 
-        }
- 
-        std::cout << std::endl;
-
-
-	const ptree & attributes = v.second.get_child("<xmlattr>", empty_ptree());
-	cout << "v first " <<  v.first << endl;
-	BOOST_FOREACH( boost::property_tree::ptree::value_type const& f, attributes ) {
-		cout << f.first.data() << " " << f.second.data() << endl;
-	}
-*/	
-/*
-	cout << "Reading " << v.first << " options..." << endl;
-	if (v.first == "signal") {
-		signalType = v.second.get<std::string>("type");
-		signalDir = v.second.get<std::string>("dir");
-		sigMass = v.second.get<int>("mass");
-		cout << "\t Signal type: " << signalType << endl;
-		cout << "\t Signal samples location: " << signalDir << endl;
-		cout << "\t Signal mass: " << mass << endl;
-		if (mass == 0 ) {
-			cout << "Mass == 0 means non-resonant analysis, therefore:" << endl;
-			nonresFile = v.second.get<std::string>("nonresFile");
-			cout << "\t Non resonant file: " << nonresFile << endl;
-		}
-	}
-	if (v.first == "other") {
-		lumi = v.second.get<float>("integratedLumi");
-		energy = v.second.get<std::string>("energy");
-		mass = v.second.get<float>("higgsMass");
-		addHiggs = v.second.get<bool>("addHiggs");
-		doblinding = v.second.get<bool>("doBlinding");
-		doBands = v.second.get<bool>("doBands");
-		NCAT = v.second.get<int>("ncat");
-		useSigTheoryUnc = v.second.get<bool>("useSigTheoryUnc");
-		analysisType = v.second.get<string>("analysisType");
-		cout << "Running options: " << endl;
-		cout << "\t Integrated luminosity: " << lumi << endl;
-		cout << "\t Center of mass energy: " << energy << endl;
-		cout << "\t Higgs mass: " << mass << endl;
-		cout << "\t Add Higgs: " << addHiggs << endl;
-		cout << "\t Do blinded analysis: " << doblinding << endl;
-		cout << "\t Calculate and show 1 and 2 sigma bands on background fit: " << doBands << endl;
-		cout << "\t Number of categories to fit: " << NCAT << endl;
-		cout << "\t Analysis type: " << analysisType << endl;
-		cout << "\t Add an uncertainty to the datacard for the SM diHiggs theory uncertainty: " << useSigTheoryUnc << endl;
-	}*/
-  }
-//  return 0;
-
-/*
-  Float_t mass = 1;
-  Float_t lumi = 1;
-  Bool_t doBands = 1;
-  int version = 1;
-  string analysisType = "a";
-  string nonresFile = "b";
-  Bool_t useSigTheoryUnc = 1;
-  int sigMass = 1;
-  Bool_t doblinding = 1;
-  Int_t NCAT = 1;
-  bool addHiggs =1;
- */
-/*
-  try
-    {
-      boost::program_options::options_description desc("Allowed options");
-      desc.add_options()
-	("help,h", "produce help message")
-    ("lumi,l", po::value<float>(&lumi)->default_value(1900.0), "Integrated luminosity analyzed.")
-    ("blind,b", po::value<bool>(&doblinding)->default_value(0), "Do blinded analysis.")
-    ("addHiggs", po::value<bool>(&addHiggs)->default_value(true), "addHiggs?")
-	("Hmass", po::value<float>(&mass)->default_value(125.02), "Mass of SM Higgs. Default is 125.02.")
-	("doBands", po::value<bool>(&doBands)->default_value(true), "Option to calculate and show 1,2 sigma bands on bkg fit.")
-	("version,v", po::value<int>(&version)->default_value(42), "Version for limit trees.")
-	("ncat,n", po::value<int>(&NCAT)->default_value(2), "Number of categories to fit")
-	("sigMass", po::value<int>(&sigMass)->default_value(0), "Mass of signal. 0 is for nonresonant.")
-	("analysisType", po::value<string>(&analysisType)->default_value("fitTo2D_nonresSearch_withKinFit"), "Can choose among fitTo{2D,FTR14001}_{nonres,res}Search_with{RegKin,Kin}Fit")
-	("nonresFile", po::value<string>(&nonresFile)->default_value("Lam_1d0_Yt_1d0_c2_0d0"), "nonres signal to run in the case sigMass is 0. default is the SM value.")
-	("useSigTheoryUnc", po::value<bool>(&useSigTheoryUnc)->default_value(false), "option to add an uncertainty to the datacard for the SM diHiggs theory uncertainty. Default is off.")
-        ;
-      boost::program_options::variables_map vm;
-      boost::program_options::store(po::parse_command_line(argc, argv, desc), vm);
-      boost::program_options::notify(vm);
-      if (vm.count("help")) {
-	cout << desc << "\n";
-	return 1;
-      }
-    } catch(exception& e) {
-    cerr << "error: " << e.what() << "\n";
-    return 1;
-  } catch(...) {
-    cerr << "Exception of unknown type!\n";
-  }
-  // end of argument parsing
-  */
 
   TString fileBaseName = TString::Format("hgg.mH%.1f_8TeV", mass);
   TString fileHiggsNameggh = TString::Format("hgg.hig.mH%.1f_8TeV.ggh", mass);
@@ -296,7 +190,8 @@ int main(int argc, const char* argv[])
   cout<<"Signal: "<<ssignal<<endl;
   cout<<"Data: "<<ddata<<endl;
   //
-
+//  ssignal = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/S15V7_v0/LimitTrees/600_900/LT_GluGluToRadionToHHTo2B2G_M-800_narrow_13TeV-madgraph.root";
+  ssignal = sigFile;
   TheFitter.AddSigData( mass,ssignal);
   cout<<"SIGNAL ADDED"<<endl;
   TheFitter.SigModelFit( mass); // constructing signal pdf
@@ -335,6 +230,8 @@ int main(int argc, const char* argv[])
   //
 
 
+//  ddata = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/S15V7_v0/LimitTrees/600_900/LT_data.root";
+  ddata = dataFile;
   TheFitter.AddBkgData(ddata);
   //w->Print("v");
   TheFitter.PrintWorkspace();

@@ -91,9 +91,6 @@ private:
     vector<int> leadingPhotonISO;
     vector<int> subleadingPhotonID;
     vector<int> subleadingPhotonISO;
-    vector<LorentzVector> jets;
-    vector<float> jets_bDiscriminant;
-    vector<int> jets_PUid;
     LorentzVector leadingJet;
     float leadingJet_bDis;
     LorentzVector subleadingJet;
@@ -105,6 +102,23 @@ private:
     unsigned int nPromptInDiPhoton;
     int leadingPhotonEVeto;
     int subleadingPhotonEVeto;
+    int leadingJet_flavour;
+    int subleadingJet_flavour;
+
+    vector<LorentzVector> leadingjets;
+    vector<LorentzVector> subleadingjets;
+    vector<LorentzVector> dijets;
+    vector<double> leadingjets_bDiscriminant;
+    vector<double> subleadingjets_bDiscriminant;
+    vector<int> leadingjets_partonID;
+    vector<int> subleadingjets_partonID;
+    vector<double> leadingJets_DRleadingPho;
+    vector<double> leadingJets_DRsubleadingPho;
+    vector<double> subleadingJets_DRleadingPho;
+    vector<double> subleadingJets_DRsubleadingPho;
+    vector<double> Jets_minDRPho;
+    vector<double> Jets_DR;
+    vector<double> DiJets_DRDiPho;
 
     //Thresholds
     std::vector<double> phoIDlooseEB;
@@ -425,9 +439,21 @@ void
     leadingPhotonISO.clear();
     subleadingPhotonID.clear();
     subleadingPhotonISO.clear();
-    jets.clear();
-    jets_bDiscriminant.clear();
-    jets_PUid.clear();
+
+    leadingjets.clear();
+    subleadingjets.clear();
+    dijets.clear();
+    leadingjets_bDiscriminant.clear();
+    subleadingjets_bDiscriminant.clear();
+    leadingjets_partonID.clear();
+    subleadingjets_partonID.clear();
+    leadingJets_DRleadingPho.clear();
+    leadingJets_DRsubleadingPho.clear();
+    leadingJets_DRleadingPho.clear();
+    subleadingJets_DRsubleadingPho.clear();
+    Jets_minDRPho.clear();
+    Jets_DR.clear();
+    DiJets_DRDiPho.clear();
 
     //Get Jets collections!
     JetCollectionVector theJetsCols( inputTagJets_.size() );
@@ -474,7 +500,7 @@ void
             if (nPromptPhotons > 0 && nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
             if (nPromptPhotons == 0) {
                 if (nPrompt == 0) diphoVec.push_back(dipho);
-                else if (nPrompt == 1) diphoVec.push_back(dipho);
+//                else if (nPrompt == 1) diphoVec.push_back(dipho);
             }
         } else {
             diphoVec.push_back(dipho);
@@ -517,8 +543,10 @@ void
         subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
         leadingJet = LeadingJet->p4();
         leadingJet_bDis = LeadingJet->bDiscriminator(bTagType);
+	leadingJet_flavour = LeadingJet->partonFlavour();
         subleadingJet = SubLeadingJet->p4();
         subleadingJet_bDis = SubLeadingJet->bDiscriminator(bTagType);
+	subleadingJet_flavour = SubLeadingJet->partonFlavour();
         dijetCandidate = leadingJet + subleadingJet;
         diHiggsCandidate = diphotonCandidate + dijetCandidate;
 		
@@ -597,17 +625,11 @@ void
         if(DEBUG) std::cout << "Histograms filled!" << std::endl;
 		
     } else {
-        double dipho_pt_ref = 0;
-        edm::Ptr<flashgg::DiPhotonCandidate> diphoCand;
-        for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
-        {
-            edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
-            if(dipho->pt() > dipho_pt_ref){
-                diphoCand = dipho;
-                dipho_pt_ref = dipho->pt();
-            }
-        }
-        if(dipho_pt_ref < 1) return;
+
+        bool passedSelection = tools_.DiPhotonSelection(diphoVec);
+        if(!passedSelection) return;
+	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
+
         LorentzVector lPho = diphoCand->leadingPhoton()->p4();
         leadingPhoton = lPho;//LorentzVector(lPho.px(), lPho.py(), lPho.pz(), lPho.energy() );	
         LorentzVector sPho = diphoCand->subLeadingPhoton()->p4();
@@ -685,11 +707,57 @@ void
         {
             edm::Ptr<flashgg::Jet> jet = theJetsCols[jetCollectionIndex]->ptrAt( jetIndex );
             LorentzVector tjet = jet->p4(); //LorentzVector(jet->px(), jet->py(), jet->pz(), jet->energy());
-            jets.push_back(tjet);
-            int jetpuid = jet->passesPuJetId(diphoCand->vtx());
-            jets_PUid.push_back(jetpuid);
-            float jetbdis = jet->bDiscriminator(bTagType);
-            jets_bDiscriminant.push_back(jetbdis);
+//	    if(tjet.pt() < 25 || fabs(tjet.eta()) > 2.4)
+//		continue;
+	    for( unsigned int jet2Index = jetIndex+1; jetIndex < theJetsCols[jetCollectionIndex]->size(); jetIndex++ )
+	    {
+            	edm::Ptr<flashgg::Jet> jet2 = theJetsCols[jetCollectionIndex]->ptrAt( jetIndex );
+            	LorentzVector tjet2 = jet2->p4(); //LorentzVector(jet->px(), jet->py(), jet->pz(), jet->energy());
+//	    	if(tjet2.pt() < 25 || fabs(tjet2.eta()) > 2.4)
+//			continue;
+
+		unsigned int n_lJet = ( tjet.pt() > tjet2.pt() ) ? jetIndex : jet2Index;
+		LorentzVector lJet = theJetsCols[jetCollectionIndex]->ptrAt( n_lJet )->p4();
+		double bdis_lJet = theJetsCols[jetCollectionIndex]->ptrAt( n_lJet )->bDiscriminator(bTagType);
+		int flavour_lJet = theJetsCols[jetCollectionIndex]->ptrAt( n_lJet )->partonFlavour();
+		double DR_lpho_lJet = tools_.DeltaR(lJet, diphoCand->leadingPhoton()->p4());
+		double DR_spho_lJet = tools_.DeltaR(lJet, diphoCand->subLeadingPhoton()->p4());
+
+		unsigned int n_sJet = ( tjet.pt() > tjet2.pt() ) ? jet2Index : jetIndex;
+		LorentzVector sJet = theJetsCols[jetCollectionIndex]->ptrAt( n_sJet )->p4();
+		double bdis_sJet = theJetsCols[jetCollectionIndex]->ptrAt( n_sJet )->bDiscriminator(bTagType);
+		int flavour_sJet = theJetsCols[jetCollectionIndex]->ptrAt( n_sJet )->partonFlavour();
+		double DR_lpho_sJet = tools_.DeltaR(sJet, diphoCand->leadingPhoton()->p4());
+		double DR_spho_sJet = tools_.DeltaR(sJet, diphoCand->subLeadingPhoton()->p4());
+
+		double minDRpho_ljet = min(DR_lpho_lJet, DR_spho_lJet);
+		double minDRpho_sjet = min(DR_lpho_sJet, DR_spho_sJet);
+		double minDRpho_jet = min(minDRpho_ljet, minDRpho_sjet);
+
+		LorentzVector dijet = tjet+tjet2;
+		double DR_jets = tools_.DeltaR(sJet, lJet);
+		double DR_dipho_dijet = tools_.DeltaR(dijet, diphoCand->p4());
+
+		leadingjets.push_back(lJet);
+		subleadingjets.push_back(sJet);
+		dijets.push_back(dijet);
+
+		leadingjets_bDiscriminant.push_back(bdis_lJet);
+		subleadingjets_bDiscriminant.push_back(bdis_sJet);
+
+		leadingjets_partonID.push_back(flavour_lJet);
+		subleadingjets_partonID.push_back(flavour_sJet);
+
+		leadingJets_DRleadingPho.push_back(DR_lpho_lJet);
+		leadingJets_DRsubleadingPho.push_back(DR_spho_lJet);
+		subleadingJets_DRleadingPho.push_back(DR_lpho_sJet);
+		subleadingJets_DRsubleadingPho.push_back(DR_spho_sJet);
+
+		Jets_minDRPho.push_back(minDRpho_jet);
+
+		Jets_DR.push_back(DR_jets);
+		DiJets_DRDiPho.push_back(DR_dipho_dijet);
+	    }
         }
 
         if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
@@ -720,9 +788,21 @@ void
         tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
         tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
         tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
-        tree->Branch("Jets", &jets);
-        tree->Branch("Jets_bDiscriminant", &jets_bDiscriminant);
-        tree->Branch("Jets_PUid", &jets_PUid);
+	tree->Branch("diphotonCandidate", &diphotonCandidate);
+        tree->Branch("leadingJets", &leadingjets);
+        tree->Branch("subleadingJets", &subleadingjets);
+        tree->Branch("diJets", &dijets);
+        tree->Branch("leadingJets_bDiscriminant", &leadingjets_bDiscriminant);
+        tree->Branch("subleadingJets_bDiscriminant", &subleadingjets_bDiscriminant);
+	tree->Branch("leadingJets_partonID", &leadingjets_partonID);
+	tree->Branch("subleadingJets_partonID", &subleadingjets_partonID);
+	tree->Branch("leadingJets_DRleadingPho", &leadingJets_DRleadingPho);
+	tree->Branch("leadingJets_DRsubleadingPho", &leadingJets_DRsubleadingPho);
+	tree->Branch("subleadingJets_DRleadingPho", &subleadingJets_DRleadingPho);
+	tree->Branch("subleadingJets_DRsubleadingPho", &subleadingJets_DRsubleadingPho);
+	tree->Branch("Jets_minDRPho", &Jets_minDRPho);
+	tree->Branch("Jets_DR", &Jets_DR);
+	tree->Branch("DiJets_DRDiPho", &DiJets_DRDiPho);
     }
     if(doSelection) {
         tree = new TTree("bbggSelectionTree", "Flat tree for HH->bbgg analyses (after pre selection)");
@@ -740,8 +820,10 @@ void
         tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
         tree->Branch("leadingJet", &leadingJet);
         tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
+	tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
         tree->Branch("subleadingJet", &subleadingJet);
         tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/F");
+	tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
         tree->Branch("dijetCandidate", &dijetCandidate);
         tree->Branch("diHiggsCandidate", &diHiggsCandidate);
 		
@@ -756,7 +838,8 @@ void
     bbggTree::endJob() 
 {
     outFile->cd();
-    tree->Write();
+//    tree->Write();
+    outFile->Write();
     outFile->Close();
 }
 

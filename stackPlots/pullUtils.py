@@ -115,7 +115,12 @@ def doPull(bkg, data, stack):
 			sigma = (float(n_data))/float((n_bkg))
 #			erro = sigma*sqrt(1./float(n_data) + 1./float(n_bkg))
 #			erro = sqrt( float(n_bkg) )
+#			erro = (bkg.GetBinContent(x+1)+bkg.GetBinError(x+1))/bkg.GetBinContent(x+1)
 			erro = bkg.GetBinError(x+1)
+			err = stack.GetStack().Last().GetBinError(x+1)
+			cont = stack.GetStack().Last().GetBinContent(x+1)
+			erro = (cont+err)/cont - 1
+#			erro = stack.GetStack().Last().GetBinError(x+1)
 			py.append(sigma)
 			pe.append(erro)
 			print "bin center:", bin_center, "bin width",bWidth, "n data:",n_data, "nbkg:",n_bkg, "sigma:",sigma, "erro:",erro
@@ -136,15 +141,19 @@ def doPull(bkg, data, stack):
 	pullData = getRatio(data, bkg) #TGraphAsymmErrors(len(pX), pX, pY, pXL, pXH, pYL, pYH) #points
 	pullError = TGraphErrors(len(pX), pX, pEY, pEX, pE) #bars
 	Largest = ceil(largest*1.2)
-	pullError.SetMaximum(Largest + 1)
-	pullError.SetMinimum(Largest*(-1.) + 1)
-	pullData.SetMaximum(Largest + 1)
-	pullData.SetMinimum(Largest*(-1.) +1)
-	if largest == 1.00001:
-		pullError.SetMaximum(2.)
-		pullError.SetMinimum(0.)	
-		pullData.SetMaximum(2.)
-		pullData.SetMinimum(0.)
+#	pullError.SetMaximum(Largest + 1)
+#	pullError.SetMinimum(Largest*(-1.) + 1)
+#	pullData.SetMaximum(Largest + 1)
+#	pullData.SetMinimum(Largest*(-1.) +1)
+#	if largest == 1.00001:
+#		pullError.SetMaximum(2.)
+#		pullError.SetMinimum(0.)	
+#		pullData.SetMaximum(2.)
+#		pullData.SetMinimum(0.)
+	pullError.SetMaximum(2.49)
+	pullError.SetMinimum(-0.49)	
+	pullData.SetMaximum(2.49)
+	pullData.SetMinimum(-0.49)
 	pullError.SetTitle("")
 	pullData.SetTitle("")
 	pullError.SetFillColor(kGray)
@@ -164,7 +173,7 @@ def SaveNoPull(data, bkg, fileName):
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".pdf")
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".png")
 
-def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName):
+def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM):
 	data.SetStats(0)
 	Font = 43
 	labelSize = 20
@@ -195,13 +204,13 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName):
 	pullE.GetXaxis().SetTitleOffset(5)
 	pullE.GetXaxis().SetLabelOffset(0.05)
 
-	pullE.GetYaxis().SetTitle("Data/Background")
+	pullE.GetYaxis().SetTitle("Data/MC")
 	pullE.GetYaxis().SetTitleFont(Font)
-	pullE.GetYaxis().SetTitleSize(10)
+	pullE.GetYaxis().SetTitleSize(15)
 	pullE.GetYaxis().SetTitleOffset(1.8)
 	pullE.GetYaxis().CenterTitle()
 	pullE.GetYaxis().SetLabelFont(Font)
-	pullE.GetYaxis().SetLabelSize(9)
+	pullE.GetYaxis().SetLabelSize(13)
 
 	pullE.GetYaxis().SetNdivisions(6)
 
@@ -217,11 +226,15 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName):
 	SetOwnership(p2,False)
 	p2.SetFillColor(0)
 	p2.SetFillStyle(0)
-	p2.SetTopMargin(0.075)
+	p2.SetTopMargin(0.0)
 	p2.SetBottomMargin(0.35)
 	p2.SetGridy()
 	p1.cd()
 	bkg.Draw('hist')
+	bkg.SetMinimum(0.001)
+	p1.Update()
+	gStyle.SetHatchesLineWidth(2)
+	SUM.Draw("E2same")
 	data.Draw('Esame')
 	tlatex = TLatex()
 	baseSize = 25
@@ -231,19 +244,30 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName):
 	tlatex.SetTextFont(63)
 	tlatex.SetTextAlign(31)
 	tlatex.SetTextSize(baseSize)
-	tlatex.DrawLatex(0.215, 0.91, "CMS")
+	tlatex.DrawLatex(0.2, 0.86, "CMS")
 	tlatex.SetTextFont(53)
 	tlatex.SetTextSize(baseSize - 5)
-	tlatex.DrawLatex(0.325, 0.91, "Preliminary")
+	tlatex.DrawLatex(0.25, 0.82, "Preliminary")
 	tlatex.SetTextFont(43)
 	tlatex.SetTextSize(baseSize - 5)
-	tlatex.DrawLatex(0.88, 0.91, "L = 150 pb^{-1} (13 TeV, 25 ns)")
+	Lumi = "L = " + str(lumi) + " pb^{-1} (13 TeV, 25 ns)"
+	if lumi > 1000:
+		llumi = float(lumi)/1000.
+		Lumi = "L = " + str(llumi) + " fb^{-1} (13 TeV, 25 ns)"
+	tlatex.DrawLatex(0.88, 0.91, Lumi)
 
 	for leg in legend:
 		leg.Draw('same')
+
+	for h in signals:
+		h[0].Draw("same")
+
 	p2.cd()
-	pullE.GetYaxis().SetNdivisions(4, False)
+#	pullE.GetYaxis().SetNdivisions(4, False)
 	pullE.Draw("A5")
+	Line = TLine(pullE.GetXaxis().GetXmin(), 1., pullE.GetXaxis().GetXmax(), 1.)
+	Line.SetLineColor(kRed)
+	Line.Draw()
 	pullH.Draw("Psame")
 	c1.cd()
 	p2.Draw()
@@ -254,6 +278,12 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName):
 
 	p1.cd()
 	p1.SetLogy()
+	GenMax = pow(10, log10(bkg.GetMaximum()/1.5)*2.)
+	bkg.SetMaximum(GenMax)
+	GenMin = bkg.GetMinimum()
+	if GenMin == 0:
+		GenMin = 1
+	bkg.SetMinimum(GenMin*0.1)
 	p1.Update()
 	c1.cd()
 	c1.Update()
@@ -275,10 +305,33 @@ def SavePull(pullH, pullE, LowEdge, UpEdge, dirName):
 #	ca.SaveAs(dirName + "/pull.png")
 	
 
-def MakeLegend(HistList, DataHist):
+def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
+	legends = []
+
+	'''
+	legend = TLegend(0.08, 0.65, 0.81, 0.89)
+	legend.SetNColumns(3)
+	legend.SetColumnSeparation(0.4)
+
+        data_lumi = " Data (" + str(lumi) + " pb^{-1})"
+        if lumi > 1000:
+                llumi = float(lumi)/1000.
+                data_lumi = " Data (" + str(llumi) + " fb^{-1})"
+        legend.AddEntry(DataHist, data_lumi, "lep")
+
+	for i,hist in enumerate(HistList):
+		legend.AddEntry(hist[0], " " +hist[1], "f")
+	
+	for hist in Signals:
+		legend.AddEntry(hist[0], " " +hist[1], "l")
+
+	legends.append(legend)
+
+	if 1==1:
+		return legends
+	'''
 	nBoxes = 3
 	nLegPerBoxMin = 4
-	legends = []
 	y0 = 0.65
 	y1 = 0.89
 	ystep = (y1 - y0)/4
@@ -319,7 +372,12 @@ def MakeLegend(HistList, DataHist):
 #	leg3.SetTextFont(textFont)
 #	leg3.SetTextSize(textSize)
 
-	leg3.AddEntry(DataHist, " Data (150/pb)", "lep")
+	data_lumi = " Data (" + str(lumi) + " pb^{-1})"
+	if lumi > 1000:
+		llumi = float(lumi)/1000.
+		data_lumi = " Data (" + str(llumi) + " fb^{-1})"
+	leg3.AddEntry(DataHist, data_lumi, "lep")
+	leg3.AddEntry(SUM, "Stat. Uncertainty", "lf")
 	
 	for i,hist in enumerate(HistList):
 		if i+1 < nPerGroup:

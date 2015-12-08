@@ -29,7 +29,7 @@ options.register('nPromptPhotons',
 
 options.parseArguments()
 
-maxEvents = 50
+maxEvents = 5
 if options.maxEvents:
         maxEvents = int(options.maxEvents)
 

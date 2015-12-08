@@ -31,6 +31,7 @@
 #include <RooGenericPdf.h>
 #include <RooPlot.h>
 #include <RooAbsPdf.h>
+#include <RooAbsMoment.h>
 #include <RooBernstein.h>
 #include <RooExtendPdf.h>
 #include <RooMinimizer.h>
@@ -242,10 +243,10 @@ void bbgg2DFitter::SigModelFit(float mass)
 
     // IMPORTANT: fix all pdf parameters to constant, why?
     RooArgSet sigParams( *_w->var(TString::Format("mgg_sig_m0_cat%d",c)),
-			 *_w->var(TString::Format("mgg_sig_sigma_cat%d",c)),
+			 *_w->var(TString::Format("mgg_sig_sigma_cat%d",c)), // CB sigma
 			 *_w->var(TString::Format("mgg_sig_alpha_cat%d",c)),
 			 *_w->var(TString::Format("mgg_sig_n_cat%d",c)),
-			 *_w->var(TString::Format("mgg_sig_gsigma_cat%d",c)),
+			 *_w->var(TString::Format("mgg_sig_gsigma_cat%d",c)), //gaussian sigma
 			 *_w->var(TString::Format("mgg_sig_frac_cat%d",c)));
     sigParams.add(RooArgSet(
 			       *_w->var(TString::Format("mjj_sig_m0_cat%d",c)),
@@ -367,6 +368,10 @@ void bbgg2DFitter::MakePlots(float mass)
   //
   RooAbsPdf* mggBkg[_NCAT];
   RooAbsPdf* mjjBkg[_NCAT];
+  vector<double> mean_mjj;
+  vector<double> sigma_mjj;
+  vector<double> mean_mgg;
+  vector<double> sigma_mgg;
   for (int c = 0; c < _NCAT; ++c) {
     // data[c] = (RooDataSet*) w->data(TString::Format("Data_cat%d",c));
     sigToFit[c] = (RooDataSet*) _w->data(TString::Format("Sig_cat%d",c));
@@ -378,6 +383,19 @@ void bbgg2DFitter::MakePlots(float mass)
     mjjCBSig[c] = (RooAbsPdf*) _w->pdf(TString::Format("mjjCBSig_cat%d",c));
     mjjSig[c] = (RooAbsPdf*) _w->pdf(TString::Format("mjjSig_cat%d",c));
     mjjBkg[c] = (RooAbsPdf*) _w->pdf(TString::Format("mjjBkg_cat%d",c));
+
+    double mgg_sigma = (mggSig[c]->sigma(*_w->var("mgg")))->getVal();
+    sigma_mgg.push_back(mgg_sigma);
+
+    double mgg_mean = (mggSig[c]->mean(*_w->var("mgg")))->getVal();
+    mean_mgg.push_back(mgg_mean);
+
+    double mjj_sigma = (mjjSig[c]->sigma(*_w->var("mjj")))->getVal();
+    sigma_mjj.push_back(mjj_sigma);
+
+    double mjj_mean = (mjjSig[c]->mean(*_w->var("mjj")))->getVal();
+    mean_mjj.push_back(mjj_mean);
+
   } // close categories
   RooRealVar* mgg = _w->var("mgg");
   mgg->setUnit("GeV");
@@ -467,6 +485,14 @@ void bbgg2DFitter::MakePlots(float mass)
     TLatex *lat2 = new TLatex(
 			      minSigPlotMgg+0.5,0.70*plotmgg[c]->GetMaximum(),catdesc.at(c));
     lat2->Draw();
+    str_desc=TString::Format(" #mu = %.2f GeV",mean_mgg[c]);
+    TLatex *lat3 = new TLatex(
+			      minSigPlotMgg+12,0.6*plotmgg[c]->GetMaximum(),str_desc);
+    lat3->Draw();
+    str_desc=TString::Format(" #sigma = %.2f GeV",sigma_mgg[c]);
+    TLatex *lat4 = new TLatex(
+			      minSigPlotMgg+12.,0.5*plotmgg[c]->GetMaximum(),str_desc);
+    lat4->Draw();
     ///////
     char myChi2buffer[50];
     sprintf(myChi2buffer,"#chi^{2}/ndof = %f",chi2n);
@@ -542,6 +568,14 @@ void bbgg2DFitter::MakePlots(float mass)
     TLatex *lat2 = new TLatex(
 			      minSigPlotMjj+0.5,0.70*plotmjj[c]->GetMaximum(),catdesc.at(c));
     lat2->Draw();
+    str_desc=TString::Format(" #mu = %.2f GeV",mean_mjj[c]);
+    TLatex *lat3 = new TLatex(
+			      minSigPlotMjj+70.5,0.6*plotmjj[c]->GetMaximum(),str_desc);
+    lat3->Draw();
+    str_desc=TString::Format(" #sigma = %.2f GeV",sigma_mjj[c]);
+    TLatex *lat4 = new TLatex(
+			      minSigPlotMjj+70.5,0.5*plotmjj[c]->GetMaximum(),str_desc);
+    lat4->Draw();
     ///////
     char myChi2buffer[50];
     sprintf(myChi2buffer,"#chi^{2}/ndof = %f",chi2n);
@@ -1022,7 +1056,7 @@ void bbgg2DFitter::MakeBkgWS(const char* fileBaseName)
     cout<<"here"<<endl;
     if(_sigMass == 0 || (_sigMass != 0 && c==1)){
      wAll->factory(
-		  TString::Format("CMS_bkg_8TeV_cat%d_norm[%g,0.0,100000.0]",
+		  TString::Format("CMS_bkg_8TeV_cat%d_norm[%g,0.,100000.0]",
 				  c, _w->var(TString::Format("bkg_8TeV_norm_cat%d",c))->getVal()));
     cout<<"here: " << c << " " << _w->var(TString::Format("bkg_8TeV_norm_cat%d",c))->getVal() <<endl;
     wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope1_cat%d[%g,-100.,100.]",c, _w->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c))->getVal()));
@@ -1032,7 +1066,7 @@ void bbgg2DFitter::MakeBkgWS(const char* fileBaseName)
     }
     else if(_sigMass != 0 && c==0){
      wAll->factory(
-		  TString::Format("CMS_bkg_8TeV_cat%d_norm[%g,0.0,100000.0]",
+		  TString::Format("CMS_bkg_8TeV_cat%d_norm[%g 0.,100000.0]",
 				  c, _w->var(TString::Format("bkg_8TeV_norm_cat%d",c))->getVal()));
     wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope2_cat%d[%g,-100,100]",c, _w->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c))->getVal()));
     wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,-100,100]",c, _w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c))->getVal()));
@@ -1647,14 +1681,15 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
   text->SetNDC();
   text->SetTextSize(0.04);
   //
+  cout << "####\t Starting loop for each category" << endl;
   for (int c = 0; c < ncat; ++c) { // to each category
     data[c] = (RooDataSet*) _w->data(TString::Format("Data_cat%d",c));
-    cout << "!!!!!!!!!!!!!" << endl;
+    cout << "!!!!!!!!!!!!! CATEGORY: " << c <<  endl;
     ////////////////////////////////////
     // these are the parameters for the bkg polinomial
     // one slope by category - float from -10 > 10
     // we first wrap the normalization of mggBkgTmp0, mjjBkgTmp0
-    _w->factory(TString::Format("bkg_8TeV_norm_cat%d[1.0,0.0,100000]",c));
+    _w->factory(TString::Format("bkg_8TeV_norm_cat%d[1.0,0.,100000]",c));
     if(_sigMass == 0)
     {
        if(c == 0 || c == 2)
@@ -1762,6 +1797,7 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
     RooExtendPdf BkgPdfExt(TString::Format("BkgPdfExt_cat%d",c),"", *BkgPdf,*_w->var(TString::Format("bkg_8TeV_norm_cat%d",c)));
     fitresults = BkgPdfExt.fitTo(*data[c], Strategy(1),Minos(kFALSE), Range("BkgFitRange"),SumW2Error(kTRUE), Save(kTRUE));
     _w->import(BkgPdfExt);
+    cout << "#### FINISHED FIT!" << endl;
     //BkgPdf.fitTo(*data[c], Strategy(1),Minos(kFALSE), Range("BkgFitRange"),SumW2Error(kTRUE), Save(kTRUE));
     //w->import(BkgPdf);
 

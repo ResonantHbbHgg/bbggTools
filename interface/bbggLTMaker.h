@@ -29,12 +29,14 @@ public :
    TTree *outTree;
    TFile *outFile;
    Int_t           o_category;
+   Double_t        o_normalization;
    Double_t        o_weight;
    Double_t        o_bbMass;
    Double_t        o_ggMass;
    Double_t        o_bbggMass;
    double mtotMin;
    double mtotMax;
+   double normalization;
 
 //   Input tree
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain

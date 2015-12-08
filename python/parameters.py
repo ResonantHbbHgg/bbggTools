@@ -4,7 +4,8 @@ import flashgg.Taggers.flashggTags_cff as flashggTags
 
 
 
-_DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
+#_DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
+_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
 #_inputTagJets					=	flashggTags.UnpackedJetCollectionVInputTag,
 _rhoFixedGridCollection		=	cms.untracked.InputTag('fixedGridRhoAll')
@@ -18,24 +19,24 @@ _PhotonR9					=	cms.untracked.vdouble(0., 0.)
 #0: Pho1, 1: Pho2
 _PhotonElectronVeto			=	cms.untracked.vint32(1, 1)
 #0: Pho1, 1: Pho2
-_PhotonDoElectronVeto		=	cms.untracked.vint32(0 , 0)
+_PhotonDoElectronVeto		=	cms.untracked.vint32(1 , 1)
 #0: Pho1, 1: Pho2
-_PhotonDoID					=	cms.untracked.vint32(0 , 0)
+_PhotonDoID					=	cms.untracked.vint32(1 , 1)
 #0: Pho1, 1: Pho2
-_PhotonDoISO				=	cms.untracked.vint32(0 , 0)
+_PhotonDoISO				=	cms.untracked.vint32(1 , 1)
 #0: lower boundary for dipho pt
 _DiPhotonPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary
 _DiPhotonEta				=	cms.untracked.vdouble(2.5)
 #0: DiPhoton mass window lower boundary, 1: upper boundary
-_DiPhotonMassWindow			=	cms.untracked.vdouble(0., 300.)
+_DiPhotonMassWindow			=	cms.untracked.vdouble(100., 180.)
 #If you only want to look at first diphoton pair: 1; if all: 0
 _DiPhotonOnlyFirst			=	cms.untracked.uint32(1)
 #0: jet1, 1: jet2
 _JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 25.)
 #_JetPtOverDiJetMass			=	cms.untracked.vdouble(0.4, 0.3)
 #0: jet1, 1: jet2
-_JetEta						=	cms.untracked.vdouble(2.5, 2.5)
+_JetEta						=	cms.untracked.vdouble(2.4, 2.4)
 #0: lowest b-tag requirement for any jet (default 0), standard b-tag cut (loose, medium, tight) 
 _JetBDiscriminant			=	cms.untracked.vdouble(-50., 0.87)
 #0: jet1, 1: jet2
@@ -47,9 +48,9 @@ _DiJetPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary for dijet pt
 _DiJetEta					=	cms.untracked.vdouble(20.)
 #0: DiJet mass window lower boundary, 1: upper boundary
-_DiJetMassWindow			=	cms.untracked.vdouble(0., 1000.)
+_DiJetMassWindow			=	cms.untracked.vdouble(60., 180.)
 #0: 4-candidate mass window lower boundary, 1: upper boundary
-_CandidateMassWindow		=	cms.untracked.vdouble(0, 9000.)
+_CandidateMassWindow		=	cms.untracked.vdouble(0., 2500.)
 #0 4-candidate pt lower bound
 _CandidatePt				=	cms.untracked.vdouble(0.)
 #0 4-candidate eta upper bound
@@ -64,28 +65,28 @@ _CandidatesDeltaR			=	cms.untracked.vdouble(0.0)
 #_inputTagJets = flashggTags.UnpackedJetCollectionVInputTag
 
 #H/E, Sigma_iEtaiEta, R9, electron veto
-_phoIDlooseEB				=	cms.untracked.vdouble(0.05, 0.0103, 1.0)
-_phoIDmediumEB				=	cms.untracked.vdouble(0.05, 0.0100, 1.0)
+_phoIDlooseEB				=	cms.untracked.vdouble(0.05, 0.0102, 1.0)
+_phoIDmediumEB				=	cms.untracked.vdouble(0.05, 0.0102, 1.0)
 _phoIDtightEB				=	cms.untracked.vdouble(0.05, 0.0100, 1.0)
 
-_phoIDlooseEE				=	cms.untracked.vdouble(0.05, 0.0277, 1.0)
-_phoIDmediumEE				=	cms.untracked.vdouble(0.05, 0.0267, 1.0)
-_phoIDtightEE				=	cms.untracked.vdouble(0.05, 0.0267, 1.0)
+_phoIDlooseEE				=	cms.untracked.vdouble(0.05, 0.0274, 1.0)
+_phoIDmediumEE				=	cms.untracked.vdouble(0.05, 0.0268, 1.0)
+_phoIDtightEE				=	cms.untracked.vdouble(0.05, 0.0268, 1.0)
 
 #charged, neutral, photon
-_phoISOlooseEB				=	cms.untracked.vdouble(2.44, 2.57, 1.92)
-_phoISOmediumEB				=	cms.untracked.vdouble(1.31, 0.60, 1.33)
-_phoISOtightEB				=	cms.untracked.vdouble(0.91, 0.33, 0.61)
+_phoISOlooseEB				=	cms.untracked.vdouble(3.32, 1.92, 0.81)
+_phoISOmediumEB				=	cms.untracked.vdouble(1.37, 1.06, 0.28)
+_phoISOtightEB				=	cms.untracked.vdouble(0.76, 0.97, 0.08)
 
-_phoISOlooseEE				=	cms.untracked.vdouble(1.84, 4.00, 2.15)
-_phoISOmediumEE				=	cms.untracked.vdouble(1.25, 1.65, 1.02)
-_phoISOtightEE				=	cms.untracked.vdouble(0.65, 0.93, 0.54)
+_phoISOlooseEE				=	cms.untracked.vdouble(1.97, 11.86, 0.83)
+_phoISOmediumEE				=	cms.untracked.vdouble(1.10, 2.960, 0.39)
+_phoISOtightEE				=	cms.untracked.vdouble(0.56, 2.090, 0.16)
 
 #[0]*pho + [1]
-_nhCorrEB					=	cms.untracked.vdouble(0.0044, 0.5809)
-_phCorrEB					=	cms.untracked.vdouble(0.0043, 0.)
-_nhCorrEE					=	cms.untracked.vdouble(0.0040, 0.9402)
-_phCorrEE					=	cms.untracked.vdouble(0.0041, 0.)
+_nhCorrEB					=	cms.untracked.vdouble(0.014, 0.000019)
+_phCorrEB					=	cms.untracked.vdouble(0.0053, 0.)
+_nhCorrEE					=	cms.untracked.vdouble(0.0139, 0.000025)
+_phCorrEE					=	cms.untracked.vdouble(0.0034, 0.)
 
 #if true, make selection tree, if false, make tree before selection
 _doSelectionTree			= cms.untracked.uint32(1)

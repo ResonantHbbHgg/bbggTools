@@ -26,3 +26,6 @@ AutoDict_*
 *.log
 *.png
 *.pdf
+
+#Limit setting folder
+LimitSetting/*

@@ -2,11 +2,13 @@
         "signal" : {
                 "type" : "Radion",
                 "dir" : "/a/b/c/d",
-                "mass" : 270,
+                "mass" : 300,
                 "nonresFile" : "Lam_1d0_Yt_1d0_c2_0d0",
-		"signalModelCard" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/Spring15BetaV5/CMSSW_7_4_12/src/flashgg/bbggTools/LimitSetting/Models/models_2D.rs"
+		"signalModelCard" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/Spring15BetaV5/CMSSW_7_4_12/src/flashgg/bbggTools/LimitSetting/Models/models_2D.rs",
+		"signalFile" :  "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/S15V7_v1/LimitTrees/0_2000/LT_GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph.root"
         },
         "other" : {
+		"dataFile" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/Spring15BetaV7_M1/CMSSW_7_4_15/src/flashgg/bbggTools/LimitSetting/LT_data.root",
                 "integratedLumi" : 19.8,
                 "energy" : "8TeV",
                 "higgsMass" : 125.0,
