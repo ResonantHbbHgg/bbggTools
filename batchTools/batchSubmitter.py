@@ -10,8 +10,10 @@ def main(argv):
 	Type = '/bkg/'
 	version = ""
 	doSelection = 1
+	jsonFile = ""
+	prefix = ""
 	try:
-		opts, args = getopt.getopt(argv,"hc:s:o:div:n",["campaign=", "sample=", "outputDir=", "isData", "isSignal", "version=", "noSelection"])
+		opts, args = getopt.getopt(argv,"hc:s:o:div:nj:p:",["campaign=", "sample=", "outputDir=", "isData", "isSignal", "version=", "noSelection", "json=", "prefix="])
 	except getopt.GetoptError:
 		print 'batchSubmitter.py -c <campaign> -s <sample>'
 		sys.exit(2)
@@ -33,6 +35,10 @@ def main(argv):
 			version = arg
 		elif opt in ("-n", "--noSelection"):
 			doSelection = 0
+		elif opt in ("-j", "--json"):
+			jsonFile = arg
+		elif opt in ("-p", "--prefix"):
+			prefix = arg
 
 	if version == "":
 		print "Please, specify version to be created (-v <version>)"
@@ -55,6 +61,9 @@ def main(argv):
 		campaignFile = '../MetaData/Signal.json'
 
 	data_file_location = campaignFile #localDir + '/../MetaData/microAODdatasets/Spring15BetaV2_MetaV3/datasets.json'
+
+	if jsonFile not "":
+		data_file_location = jsonFile
 	
 	data_file = open(data_file_location)
 	data = json.load(data_file)
@@ -74,7 +83,7 @@ def main(argv):
 		eval `scramv1 runtime -sh`
 		'''
 		
-		fileNameBase = "/tmp/bbggTree_" + sample
+		fileNameBase = "/tmp/bbggTree_" + prefix + sample
 		
 		extraCommand = ''
 		if 'QCD' in sample:
@@ -86,7 +95,7 @@ def main(argv):
 		
 		
 		if(doSelection):
-			fileNameBase = "/tmp/bbggSelectionTree_" + sample
+			fileNameBase = "/tmp/bbggSelectionTree_" + prefix + sample
 			extraCommand += ' doSelection=1'
 		
 		if "sig" in Type:
