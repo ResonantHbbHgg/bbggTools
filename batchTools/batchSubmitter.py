@@ -62,13 +62,19 @@ def main(argv):
 
 	data_file_location = campaignFile #localDir + '/../MetaData/microAODdatasets/Spring15BetaV2_MetaV3/datasets.json'
 
-	if jsonFile not "":
+	if jsonFile != "":
 		data_file_location = jsonFile
 	
 	data_file = open(data_file_location)
 	data = json.load(data_file)
 	
 	gotIt = False
+
+	outJson = ''
+	if "data" in Type:
+		outJson = open(prefix+"data_lumi.json", "w")
+		outJson.write("{\n")
+	jRuns = {}
 	
 	for sName in data:
 		if sample not in sName.split('/')[1]:
@@ -76,6 +82,18 @@ def main(argv):
 
 		gotIt = True
 		dataFiles = data[sName]['files']
+
+		print sName
+		if "data" in Type:
+			for f,dd in enumerate(dataFiles):
+				runs = dd['lumis']
+				for o,rr in enumerate(runs):
+					lumis = runs[rr]
+					if rr not in jRuns:
+						jRuns[rr] = []
+					for i,ll in enumerate(lumis):
+						thisRun = '['+str(ll)+','+str(ll)+']'
+						jRuns[rr].append(thisRun)
 		
 		batchInit = '''#!/bin/bash
 		cd ''' + str(localDir) + '''
@@ -120,7 +138,7 @@ def main(argv):
 			batchFile.write(batchFinish)
 			batchFile.close()
 			os.system("chmod +x "+batchName)
-			os.system("bsub -q 1nh -J t"+str(sample) + '_' +fileNumber+" < "+batchName)
+#			os.system("bsub -q 1nh -J t"+str(sample) + '_' +fileNumber+" < "+batchName)
 			os.system("rm "+batchName)
 			print ''
 	
@@ -131,6 +149,18 @@ def main(argv):
 	print "########################################################"
 	print "Done submitting all jobs to batch! Now wait patiently :)"
 	print "########################################################"
+
+	if "data" in Type:
+		for i,run in enumerate(jRuns):
+			if i > 0:
+				outJson.write(',\n')
+			outJson.write('"'+run+'":[')
+			for j,r in enumerate(jRuns[run]):
+				if j > 0:
+					outJson.write(',')
+				outJson.write(r)
+			outJson.write(']')
+		outJson.write('}')
 	
 if __name__ == "__main__":
 	main(sys.argv[1:])

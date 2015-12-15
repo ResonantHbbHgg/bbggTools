@@ -3,13 +3,13 @@ from ROOT import *
 import json, os
 import shutil
 
-data_file = open("new_data.json")
+data_file = open("datasets_NoQCD.json")
 data = json.load(data_file)
 
-fLocation = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/S15V7_v1/Hadd/"
+fLocation = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/S15V7_All2015Data/Hadd/"
 
 prefix = "PhoIDloose_"
-dirSuffix = "25ns_1500pb_presel_newOrder"
+dirSuffix = "25ns_2600pb_presel"
 dirPrefix = "/afs/cern.ch/user/r/rateixei/www/HHBBGG/"
 dirName = dirPrefix + dirSuffix
 
@@ -21,7 +21,7 @@ if not os.path.exists(dirName):
 		print dirName, "now exists!"
 
 
-lumi = 1500.0 #in pb
+lumi = 800.0 #in pb
 
 datasets = []
 signals = []
@@ -29,13 +29,14 @@ signals = []
 for bkg in data['background']:
 	if "QCD" in bkg['name']:
 		continue
-	tempfile = TFile.Open(fLocation+bkg['file'])
+	tempfile = TFile(fLocation+bkg['file'], "READ")
 	temptree = tempfile.Get('bbggSelectionTree')
 	normalization = (lumi*bkg['xsec']*bkg['sfactor'])/(bkg['weight'])
 	arr = [bkg['name'], bkg['legend'], bkg['file'], normalization, bkg['color']]
 	dataset = [tempfile, temptree, arr]
 	datasets.append(dataset)
 
+'''
 for i,bkg in enumerate(data['signal']):
 	tempfile = TFile.Open(fLocation+bkg['file'])
 	temptree = tempfile.Get('bbggSelectionTree')
@@ -43,7 +44,7 @@ for i,bkg in enumerate(data['signal']):
 	arr = ["signal_"+str(i), bkg['legend'], bkg['file'], normalization, bkg['color']]
 	dataset = [tempfile, temptree, arr]
 	signals.append(dataset)
-
+'''
 
 print data['data']
 f = TFile.Open( fLocation+data['data'] )
