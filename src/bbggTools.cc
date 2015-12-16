@@ -44,7 +44,7 @@ bool bbggTools::isJetID(const flashgg::Jet* jet)
 
 bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet)
 {
-  return bbggTools::isJetID(jet);
+  return bbggTools::isJetID(&(*jet));
 }
 
 std::map<int, vector<double> > bbggTools::getWhichID (std::string wpoint)
@@ -241,7 +241,7 @@ bool bbggTools::isPhoID(const flashgg::Photon* pho, vector<double> cuts)
 
 bool bbggTools::isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts)
 {
-  return bbggTools::isPhoID(pho,cuts);
+  return bbggTools::isPhoID(&(*pho),cuts);
 }
 
 
