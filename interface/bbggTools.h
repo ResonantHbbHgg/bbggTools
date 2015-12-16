@@ -43,6 +43,7 @@ public:
 	bool isPhoID(const flashgg::Photon* pho, vector<double> cuts);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts);
+        bool isJetID(const flashgg::Jet* jet);
         bool isJetID(edm::Ptr<flashgg::Jet> jet);
 	void setRho(double rho) {rho_ = rho;}
 	

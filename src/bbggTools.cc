@@ -12,7 +12,7 @@ using namespace std;
 
 bool DEBUG = 0;
 
-bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet)
+bool bbggTools::isJetID(const flashgg::Jet* jet)
 {
     double NHF = jet->neutralHadronEnergyFraction();
     double NEMF = jet->neutralEmEnergyFraction();
@@ -40,6 +40,11 @@ bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet)
     }
     
     return 1;
+}
+
+bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet)
+{
+  return bbggTools::isJetID(jet);
 }
 
 std::map<int, vector<double> > bbggTools::getWhichID (std::string wpoint)
@@ -212,7 +217,7 @@ double bbggTools::DeltaR(bbggTools::LorentzVector vec1, bbggTools::LorentzVector
 	return sqrt(R2);
 }
 
-bool bbggTools::isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts)
+bool bbggTools::isPhoID(const flashgg::Photon* pho, vector<double> cuts)
 {
 	if(rho_ == -10 ){
 		cout << "[bbggTools::isPhoID] You have to do tools->setRho(rho)!" << endl;
@@ -234,25 +239,11 @@ bool bbggTools::isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts)
 	return isid;
 }
 
-bool bbggTools::isPhoID(const flashgg::Photon* pho, vector<double> cuts)
+bool bbggTools::isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts)
 {
-	if(rho_ == -10 ){
-		cout << "[bbggTools::isPhoID] You have to do tools->setRho(rho)!" << endl;
-		return -1;
-	}
-	if(cuts.size() != 3){
-		cout << "[bbggTools::isPhoID] ERROR: the input cuts vector must have size three (sieie/hoe/el-veto)" << endl;
-		return 0;
-	}
-	bool isid = true;
-	double hoe = pho->hadronicOverEm();
-	double sieie = pho->full5x5_sigmaIetaIeta();
-	
-	if( hoe > cuts[0] ) 	isid = false;
-  	if( sieie > cuts[1] ) isid = false;
-	
-	return isid;
+  return bbggTools::isPhoID(pho,cuts);
 }
+
 
 bool bbggTools::isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho, vector<double> cuts)
 {
