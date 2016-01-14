@@ -37,6 +37,7 @@ public :
    double mtotMin;
    double mtotMax;
    double normalization;
+   int photonCR;
 
 //   Input tree
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -62,7 +63,9 @@ public :
    LorentzVector *subleadingJet;
    Float_t         subleadingJet_bDis;
    LorentzVector *dijetCandidate;
-   LorentzVector *diHiggsCandidate;   
+   LorentzVector *diHiggsCandidate;
+   Int_t	isSignal;
+   Int_t	isPhotonCR;
 
    // List of branches
    TBranch        *b_genWeights;   //!
@@ -83,6 +86,8 @@ public :
    TBranch        *b_subleadingJet_bDis;   //!
    TBranch        *b_dijetCandidate;   //!
    TBranch        *b_diHiggsCandidate;   //!
+   TBranch	  *b_isSignal;	//!
+   TBranch	  *b_isPhotonCR;  //!
 
 
    bbggLTMaker(TTree * /*tree*/ =0) : fChain(0) { }
@@ -153,6 +158,8 @@ void bbggLTMaker::Init(TTree *tree)
    fChain->SetBranchAddress("subleadingJet_bDis", &subleadingJet_bDis, &b_subleadingJet_bDis);
    fChain->SetBranchAddress("dijetCandidate", &dijetCandidate, &b_dijetCandidate);
    fChain->SetBranchAddress("diHiggsCandidate", &diHiggsCandidate, &b_diHiggsCandidate);
+   fChain->SetBranchAddress("isSignal", &isSignal, &b_isSignal);
+   fChain->SetBranchAddress("isPhotonCR", &isPhotonCR, &b_isPhotonCR);
 }
 
 Bool_t bbggLTMaker::Notify()

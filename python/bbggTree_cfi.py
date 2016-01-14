@@ -52,6 +52,7 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	phCorrEE=param._phCorrEE,
 	PhotonWhichID=param._PhotonWhichID,
 	PhotonWhichISO=param._PhotonWhichISO,
-	JetDoID=param._JetDoID
+	JetDoID=param._JetDoID,
+	doPhotonCR=param._doPhotonCR
 #	doSelectionTree=param._doSelectionTree
 )

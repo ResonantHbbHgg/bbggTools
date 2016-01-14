@@ -45,19 +45,18 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
        TSelector::Abort("Option input doesn't contain ;");
    } else {
        TObjArray *options = option.Tokenize(";");
-       std::cout << "[bbggLTMaker::Begin] Number of options passed: " << options->GetEntries() << std::endl;
-       if (options->GetEntries() < 2) {
-           std::cout << "[bbggLTMaker::Begin] Please, make sure your input is in the form \"<fileName>;<Category>\", where <Category> : 0 (no b-tag), 1 (loose b-tag), 2 (tight b-tag)." << endl;
-           TSelector::Abort("Array of options divided by ; contains less than 2 options");
+//       std::cout << "[bbggLTMaker::Begin] Number of options passed: " << options->GetEntries() << std::endl;
+       if (options->GetEntries() < 5) {
+	   std::cout << "[bbggLTMaker::Begin] Error in options parsing from LimitTreeMaker!" << std::endl;
+           TSelector::Abort("Array of options divided by ; contains less than 5 options");
        } else {
            fileName = ((TObjString *)(options->At(0)))->String();
 	   mtotMin = (((TObjString *)(options->At(1)))->String()).Atof();
 	   mtotMax = (((TObjString *)(options->At(2)))->String()).Atof();
-	   normalization = 1;
-       }
-       if (options->GetEntries() > 2) {
 	   normalization = (((TObjString *)(options->At(3)))->String()).Atof();
+	   photonCR = (((TObjString *)(options->At(4)))->String()).Atoi();
 	   std::cout << "[bbggLTMaker::Begin] Using normalization factor = " << normalization << std::endl;
+	   std::cout << "[bbggLTMaker::Begin] Doing photon control region? " << photonCR << std::endl;
        }
    }
    if(!fileName.Contains(".root")) {
@@ -132,8 +131,15 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    o_bbggMass = diHiggsCandidate->M();
    double sumbtag = leadingJet_bDis + subleadingJet_bDis;
   
+   if( dijetCandidate->Pt() < 50 )
+	return kTRUE;
+
    //mtot cut
    if(o_bbggMass < mtotMin || o_bbggMass > mtotMax)
+	return kTRUE;
+   if(photonCR == 1 && isPhotonCR == 0)
+	return kTRUE;
+   if(photonCR == 0 && isPhotonCR == 1)
 	return kTRUE;
    
    if ( sumbtag > 1.64 ) o_category = 0;

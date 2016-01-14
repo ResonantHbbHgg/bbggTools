@@ -29,3 +29,8 @@ AutoDict_*
 
 #Limit setting folder
 LimitSetting/*
+
+#test
+test/*json
+*lumi.json
+*fggRunJob*

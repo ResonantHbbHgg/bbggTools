@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int Process(string file, string outFile, string mtotMin, string mtotMax,string scale){
+int Process(string file, string outFile, string mtotMin, string mtotMax,string scale, string photonCR){
     TFile* iFile = new TFile(TString(file), "READ");
     TTree* iTree = (TTree*) iFile->Get("bbggSelectionTree");
     cout << "[LimitTreeMaker:Process] Processing tree with " << iTree->GetEntries() << " entries." << endl;
@@ -19,6 +19,8 @@ int Process(string file, string outFile, string mtotMin, string mtotMax,string s
     option.append(mtotMax);
     option.append(";");
     option.append(scale);
+    option.append(";");
+    option.append(photonCR);
     cout << "[LimitTreeMaker:Process] Option parsing: " << option << endl;
     iTree->Process("flashgg/bbggTools/src/bbggLTMaker.cc+", TString(option)); 
     delete iFile;
@@ -29,11 +31,68 @@ int main(int argc, char *argv[]) {
     string outputFile = "";
     string inputFile = "";
     string outputLocation = "";
-    string mtotMax = "";
-    string mtotMin = "";
+    string mtotMax = "10000";
+    string mtotMin = "0";
     string scale = "1";
-    if(argc < 5) {
-        cout << "[LimitTreeMaker] Usage: LimitTreeMaker <inputtextfile> <outputLocation> <mtotMax> <mtotMin>" << endl;
+    string photonCR = "0";
+
+    for( int i = 1; i < argc; i++){
+	if ( std::string(argv[i]) == "-i"){
+		if ( (i+1) == argc) {
+			std::cout << "Invalid number of arguments!" << std::endl;
+			break;
+		}
+		inputFile = string(std::string(argv[i+1]));
+		i++;
+	}
+	else if ( std::string(argv[i]) =="-o"){
+		if ( (i+1) == argc) {
+			std::cout << "Invalid number of arguments!" << std::endl;
+			break;
+		}
+		outputLocation = string(std::string(argv[i+1]));
+		i++;
+	}
+	else if ( std::string(argv[i]) =="-max"){
+		if ( (i+1) == argc) {
+			std::cout << "Invalid number of arguments!" << std::endl;
+			break;
+		}
+		mtotMax = string(std::string(argv[i+1]));
+		i++;
+	}
+	else if ( std::string(argv[i]) =="-min"){
+		if ( (i+1) == argc) {
+			std::cout << "Invalid number of arguments!" << std::endl;
+			break;
+		}
+		mtotMin = string(std::string(argv[i+1]));
+		i++;
+	}
+	else if ( std::string(argv[i]) =="-scale"){
+		if ( (i+1) == argc) {
+			std::cout << "Invalid number of arguments!" << std::endl;
+			break;
+		}
+		scale = string(std::string(argv[i+1]));
+		i++;
+	}
+	else if ( std::string(argv[i]) =="-photonCR"){
+		photonCR = "1";
+	}
+	else {
+		cout << "Usage: LimitTreeMaker -i <input list of files> -o <output location> [optional: -min <min mtot> -max <max mtot> -scale <scale factor> -photonCR (do photon control region" << endl;
+		return -1;
+	}	
+    }
+
+    if(inputFile == "" || outputLocation == "") {
+	cout << "Usage: LimitTreeMaker -i <input list of files> -o <output location> [optional: -min <min mtot> -max <max mtot> -scale <scale factor> -photonCR (do photon control region" << endl;
+	return 0;
+    }
+/*
+    if(argc < 6) {
+        cout << "[LimitTreeMaker] Usage: LimitTreeMaker <inputtextfile> <outputLocation> <mtotMax> <mtotMin> <scale> <isPhotonCR>" << endl;
         return 0;
     } else {
         inputFile = argv[1];
@@ -49,6 +108,7 @@ int main(int argc, char *argv[]) {
 		cout << "Scale factor: " << argv[5] << endl;
 	}
     }
+*/
     ifstream infile(inputFile);
     string line;
     while(getline(infile,line)){
@@ -70,7 +130,7 @@ int main(int argc, char *argv[]) {
         outF.append("/LT_");
         outF.append(rootFileName);
         cout << "Output file: " << outF << endl;
-        Process(line, outF, mtotMin, mtotMax, scale);
+        Process(line, outF, mtotMin, mtotMax, scale, photonCR);
     }
     
     return 0;

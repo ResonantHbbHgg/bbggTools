@@ -5,15 +5,15 @@ import shutil
 
 doBlind = False
 
-data_file = open("datasets_NoQCD_weights.json")
+data_file = open("datasets_NoQCD_weights_Martina.json")
 data = json.load(data_file)
 
-version = "S15V7_All2015Data"
+version = "S15V7_PhotonCR"
 
 fLocation = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/" + version + "/Hadd/"
 
 prefix = "PhoIDloose_"
-dirSuffix = "25ns_2600pb_photonCR_pureweight"
+dirSuffix = "25ns_2600pb_photonCR_pureweight_PU_Martina"
 dirPrefix = "/afs/cern.ch/user/r/rateixei/www/HHBBGG/"
 dirName = dirPrefix + dirSuffix
 isPhoCR = 0
@@ -26,7 +26,7 @@ if not os.path.exists(dirName):
 		print dirName, "now exists!"
 
 
-lumi = 1580.0 #in pb
+lumi = 2580 #in pb
 
 datasets = []
 signals = []
@@ -37,6 +37,8 @@ for bkg in data['background']:
 #		continue
 	if "DiPho" in bkg['name']:
 		fLocation = ''
+	if "DiPho" not in bkg['name']:
+		continue
 	tempfile = TFile(fLocation+bkg['file'], "READ")
 	temptree = tempfile.Get('bbggSelectionTree')
 	normalization = (lumi*bkg['xsec']*bkg['sfactor'])/(bkg['weight'])
@@ -55,15 +57,17 @@ for i,bkg in enumerate(data['signal']):
 '''
 
 print data['data']
-f = TFile.Open( fLocation+data['data'] )
+f = TFile.Open( data['data'] )
 t = f.Get('bbggSelectionTree')
 
 bhists = {}
 
 
 Cut = " diphotonCandidate.M() > 100 && diphotonCandidate.M() < 180"
-Cut += " && dijetCandidate.M() > 60 && dijetCandidate.M() < 180"
-#Cut += " && diHiggsCandidate.M() > 225 && diHiggsCandidate.M() < 350"
+Cut += " && dijetCandidate.M() > 60 && dijetCandidate.M() < 200"
+Cut += " && diHiggsCandidate.M() > 225 && diHiggsCandidate.M() < 350"
+#Cut += " && (leadingJet.pt()/dijetCandidate.M()) > 0.3333"
+#Cut += " && (subleadingJet.pt()/dijetCandidate.M()) > 0.25"
 #Cut += " && leadingPhoton.pt() > 35 && subleadingPhoton.pt() > 35 "
 #Cut += " && leadingJet.pt() > 35 && subleadingJet.pt() > 35 "
 #Cut += " && leadingJet.Eta() < 2. && leadingJet.Eta() > -2"
@@ -81,6 +85,8 @@ if doBlind == True:
 	Cut += " && !((diphotonCandidate.M() > 120 && diphotonCandidate.M() < 130))"
 if isPhoCR == 1:
 	Cut += " && (isPhotonCR == 1)"
+if isPhoCR == 0:
+	Cut += " && (isSignal == 1)"
 weight = ""
 weight += "( genTotalWeight )*"
 #weight += "( genTotalWeight/fabs(genTotalWeight) )*"
@@ -97,23 +103,9 @@ nbin = 50
 
 dr = "sqrt( (leadingPhoton.Eta() - subleadingPhoton.Eta())*(leadingPhoton.Eta() - subleadingPhoton.Eta()) + (leadingPhoton.Phi() - subleadingPhoton.Phi())*(leadingPhoton.Phi() - subleadingPhoton.Phi()) )"
 
-plots.append(["diPho_Mass", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 100, 180])
-plots.append(["diPho_Mass_HM", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 80, 2000])
-plots.append(["diJet_Mass", "dijetCandidate.M()", "DiJet Candidate Mass (GeV)", nbin, 60, 500])
-plots.append(["diJet_Mass_Limit", "dijetCandidate.M()", "DiJet Candidate Mass (GeV)", nbin, 60, 180])
-plots.append(["diJet_Mass_HM", "dijetCandidate.M()", "DiJet Candidate Mass (GeV)", nbin, 80, 2000])
-plots.append(["leadingJet_pt", "leadingJet.pt()", "Leading Jet Pt (GeV)", nbin, 15, 300] )
-plots.append(["subleadingJet_pt", "subleadingJet.pt()", "Subleading Jet Pt (GeV)", nbin, 15, 120] )
-plots.append(["leadingJet_eta", "leadingJet.Eta()", "Leading Jet Eta", nbin, -3, 3] )
-plots.append(["leadingPhoton_eta", "leadingPhoton.Eta()", "Leading Photon Eta", nbin, -3, 3] )
-plots.append(["dicandidate_Mass", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 250, 1000])
-plots.append(["dicandidate_Mass_Limit", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 225, 350])
-plots.append(["dicandidate_Mass_HM", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 250, 5000])
-plots.append(["leadingPhoton_pt", "leadingPhoton.pt()", "Leading Photon Pt (GeV)", nbin, 30, 300])
-plots.append(["btagSum", "leadingJet_bDis+subleadingJet_bDis", "Sum of b-tag of jet pair", nbin, 0, 2])
-plots.append(["subleadingPhoton_pt", "subleadingPhoton.pt()", "Subleading Photon Pt (GeV)", nbin, 30, 150])
-plots.append(["subleadingPhoton_eta", "subleadingPhoton.eta()", "Subleading Photon Eta)", nbin, -3, 3])
-plots.append(["dr_photons", dr, "#DeltaR between photons", nbin, 0, 10])
+plots.append(["nvtx", "nvtx", "Number of vertices", 52, 0, 52])
+plots.append(["mgg", "diphotonCandidate.M()", "diphomass", 50, 100, 180])
+plots.append(["mjj", "dijetCandidate.M()", "M(jj) (GeV)", 40, 100, 200])
 
 #variable = "diphotonCandidate.M()"
 #varName = "DiPhoton Candidate Mass (GeV)"

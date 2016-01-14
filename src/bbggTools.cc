@@ -472,6 +472,11 @@ bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> 
 		std::cout << "You haven't filled all the cuts correctly!" << std::endl;
 		return 0;
 	}
+
+    _isSignal = 0;
+    _isPhotonCR = 0;
+    hasLeadJet = 0;
+    hasSubJet = 0;
 	
     bool isValidDiPhotonCandidate = false;
     if(DEBUG) std::cout << "Being Analysis Selection..." << std::endl;
@@ -554,13 +559,33 @@ bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> 
      }
      if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] After Photon loop..." << std::endl;
 
- 	if(pho_ids[0] == true && pho_ids[1] == true){
+     if(pho_ids[0] == true && pho_ids[1] == true){
  	  isValidDiPhotonCandidate = true;
    	  CandVtx = dipho->vtx();
  	  diphoCandidate = dipho;
 	  hasDiPho = true;
- 	  break;
- 	}
+ 	  _isSignal = 1;
+	  _isPhotonCR = 0;
+	  break;
+     }
+     if(_isPhotonCR) continue;
+     if(pho_ids[0] == true && pho_ids[1] == false){
+ 	  isValidDiPhotonCandidate = true;
+   	  CandVtx = dipho->vtx();
+ 	  diphoCandidate = dipho;
+	  hasDiPho = true;
+ 	  _isSignal = 0;
+	  _isPhotonCR = 1;
+     }
+     if(pho_ids[0] == false && pho_ids[1] == true){
+ 	  isValidDiPhotonCandidate = true;
+   	  CandVtx = dipho->vtx();
+ 	  diphoCandidate = dipho;
+	  hasDiPho = true;
+ 	  _isSignal = 0;
+	  _isPhotonCR = 1;
+     }
+     
 
     }
     if( isValidDiPhotonCandidate == false ) return 0;

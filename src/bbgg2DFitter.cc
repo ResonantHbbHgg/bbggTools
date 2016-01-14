@@ -19,6 +19,7 @@
 #include <TCanvas.h>
 #include <TStyle.h>
 #include <TLegend.h>
+#include <TString.h>
 // RooFit headers
 #include <RooWorkspace.h>
 #include <RooFitResult.h>
@@ -46,11 +47,39 @@ using namespace RooFit;
 using namespace RooStats;
 namespace po = boost::program_options;
 
+std::string bbgg2DFitter::MakeModelCard( std::string file )
+{
+	std::ifstream ifile(file, std::ios::in);
+	if(!ifile.is_open()) {
+		cout << "[MakeModelCard] Input model card not found!" << endl;
+		return "";
+	}
+	cout << "[MakeModelCard] Input model card: " << file << endl;
+	size_t position = file.rfind("/");
+	if(position == string::npos) {
+		cout << "[MakeModelCard] Please, specify full path for model card!" << endl;
+		return "";
+	}
+	char* newPath = new char[position+2];
+	file.copy(newPath, position+1, 0);
+	std::string NewPath(newPath);
+	NewPath += "ModelInUse.rs";
+	cout << "[MakeModelCard] Model card to be used is at: " << NewPath << endl;
+	std::ofstream ofile(NewPath, std::ios::out | std::ios::app);
+	TString mggStr = TString::Format("mgg[%f,%f];\n", _minMgg, _maxMgg);
+	TString mjjStr = TString::Format("mjj[%f,%f];\n", _minMjj, _maxMjj);
+	ofile << mggStr.Data();
+	ofile << mjjStr.Data();
+	ofile << ifile.rdbuf();
+	delete [] newPath;
+	return NewPath;
+}
+
 RooArgSet* bbgg2DFitter::defineVariables()
 {
-  RooRealVar* mgg = new RooRealVar("mgg","M(#gamma#gamma)",100,180,"GeV");
+  RooRealVar* mgg = new RooRealVar("mgg","M(#gamma#gamma)",_minMgg,_maxMgg,"GeV");
   RooRealVar* mtot = new RooRealVar("mtot","M(#gamma#gammajj)",200,1600,"GeV");
-  RooRealVar* mjj = new RooRealVar("mjj","M(jj)",60,180,"GeV");
+  RooRealVar* mjj = new RooRealVar("mjj","M(jj)",_minMjj,_maxMjj,"GeV");
   RooRealVar* evWeight = new RooRealVar("evWeight","HqT x PUwei",0,100,"");
   RooCategory* cut_based_ct = new RooCategory("cut_based_ct","event category 4") ;
   //
@@ -213,8 +242,8 @@ void bbgg2DFitter::SigModelFit(float mass)
   RooAbsPdf* mjjSig[_NCAT];
   RooProdPdf* SigPdf[_NCAT];
   // fit range
-  Float_t minSigFitMgg(115),maxSigFitMgg(135); //This should be an option
-  Float_t minSigFitMjj(60),maxSigFitMjj(180); //This should be an option
+  Float_t minSigFitMgg(_minMggHig),maxSigFitMgg(_maxMggHig); //This should be an option
+  Float_t minSigFitMjj(_minMjjHig),maxSigFitMjj(_maxMjjHig); //This should be an option
   RooRealVar* mgg = _w->var("mgg");
   RooRealVar* mjj = _w->var("mjj");
   mgg->setRange("SigFitRange",minSigFitMgg,maxSigFitMgg);
@@ -276,8 +305,8 @@ void bbgg2DFitter::HigModelFit(float mass, int higgschannel)
   RooAbsPdf* mjjHig[_NCAT];
   RooProdPdf* HigPdf[_NCAT];
   // fit range
-  Float_t minHigMggFit(115),maxHigMggFit(135);//This should be an option
-  Float_t minHigMjjFit(60),maxHigMjjFit(180);//This should be an option
+  Float_t minHigMggFit(_minMggHig),maxHigMggFit(_maxMggHig);//This should be an option
+  Float_t minHigMjjFit(_minMjjHig),maxHigMjjFit(_maxMjjHig);//This should be an option
   RooRealVar* mgg = _w->var("mgg");
   RooRealVar* mjj = _w->var("mjj");
   mgg->setRange("HigFitRange",minHigMggFit,maxHigMggFit);
@@ -415,8 +444,8 @@ void bbgg2DFitter::MakePlots(float mass)
   // Set P.D.F. parameter names
   // WARNING: Do not use it if Workspaces are created
   // SetParamNames(w);
-  Float_t minSigPlotMgg(115),maxSigPlotMgg(135);
-  Float_t minSigPlotMjj(60),maxSigPlotMjj(180);
+  Float_t minSigPlotMgg(_minMgg),maxSigPlotMgg(_maxMgg);
+  Float_t minSigPlotMjj(_minMjj),maxSigPlotMjj(_maxMjj);
   mgg->setRange("SigPlotRange",minSigPlotMgg,maxSigPlotMgg);
   mjj->setRange("SigPlotRange",minSigPlotMjj,maxSigPlotMjj);
   Int_t nBinsMass(20); // just need to plot
@@ -657,8 +686,8 @@ void bbgg2DFitter::MakePlotsHiggs(float mass)
     // Set P.D.F. parameter names
     // WARNING: Do not use it if Workspaces are created
     // SetParamNames(w);
-    Float_t minHigPlotMgg(115),maxHigPlotMgg(135);
-    Float_t minHigPlotMjj(60),maxHigPlotMjj(180);
+    Float_t minHigPlotMgg(_minMggHig),maxHigPlotMgg(_maxMggHig);
+    Float_t minHigPlotMjj(_minMjjHig),maxHigPlotMjj(_minMjjHig);
     Int_t nBinsMass(20); // just need to plot
     //RooPlot* plotmggAll = mgg->frame(Range(minSigFit,maxSigFit),Bins(nBinsMass));
     //higgsAll->plotOn(plotmggAll);
@@ -1663,8 +1692,8 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
   RooExponential* mggBkgTmpExp1 = 0;
   RooBernstein* mjjBkgTmpBer1 = 0;
   RooBernstein* mggBkgTmpBer1 = 0;
-  Float_t minMggMassFit(100),maxMggMassFit(180);
-  Float_t minMjjMassFit(60),maxMjjMassFit(180);
+  Float_t minMggMassFit(_minMgg),maxMggMassFit(_maxMgg);
+  Float_t minMjjMassFit(_minMjj),maxMjjMassFit(_maxMjj);
   if(_sigMass == 260) maxMggMassFit = 145;
   if(_sigMass == 270) maxMggMassFit = 155;
   // Fit data with background pdf for data limit
@@ -1843,7 +1872,8 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
     pt->SetBorderSize(0);
     pt->SetFillColor(0);
     pt->SetTextSize(0.035);
-    pt->AddText("            CMS Preliminary                     L = 19.7 fb^{-1}    #sqrt{s} = 8 TeV   ");
+    TString TextToAdd = TString::Format("            CMS Preliminary                     L = %c fb^{-1}    #sqrt{s} = %c TeV   ", _lumiStr, _energyStr); 
+    pt->AddText(TextToAdd);
     pt->Draw();
     TGraphAsymmErrors *onesigma = new TGraphAsymmErrors();
     TGraphAsymmErrors *twosigma = new TGraphAsymmErrors();
@@ -1975,8 +2005,8 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
     plotmggBkg[c]->Draw("SAME");
     if(c==0||c==2)plotmggBkg[c]->SetMinimum(0.005); // no error bar in bins with zero events
     if(c==1||c==3)plotmggBkg[c]->SetMinimum(0.01); // no error bar in bins with zero events
-    if(c==0||c==2)plotmggBkg[c]->SetMaximum(5.3); // no error bar in bins with zero events
-    if(c==1||c==3)plotmggBkg[c]->SetMaximum(20); // no error bar in bins with zero events
+    if(c==0||c==2)plotmggBkg[c]->SetMaximum(6.); // no error bar in bins with zero events
+    if(c==1||c==3)plotmggBkg[c]->SetMaximum(120.); // no error bar in bins with zero events
     // plotmggBkg[c]->SetMinimum(0.005); // no error bar in bins with zero events
     //plotmggBkg[c]->SetLogy(0);
     cout << "!!!!!!!!!!!!!!!!!" << endl;
@@ -2057,7 +2087,8 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
     pt->SetBorderSize(0);
     pt->SetFillColor(0);
     pt->SetTextSize(0.035);
-    pt->AddText("            CMS Preliminary                     L = 19.7 fb^{-1}    #sqrt{s} = 8 TeV   ");
+    TString TextToAdd = TString::Format("            CMS Preliminary                     L = %c fb^{-1}    #sqrt{s} = %c TeV   ", _lumiStr, _energyStr); 
+    pt->AddText(TextToAdd);
     pt->Draw();
     if (dobands) {
       RooAbsPdf *cpdf;
@@ -2186,8 +2217,8 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
     plotmjjBkg[c]->Draw("SAME");
     if(c==0||c==2)plotmjjBkg[c]->SetMinimum(0.005); // no error bar in bins with zero events
     if(c==1||c==3)plotmjjBkg[c]->SetMinimum(0.01); // no error bar in bins with zero events
-    if(c==0||c==2)plotmjjBkg[c]->SetMaximum(5.3); // no error bar in bins with zero events
-    if(c==1||c==3)plotmjjBkg[c]->SetMaximum(20); // no error bar in bins with zero events
+    if(c==0||c==2)plotmjjBkg[c]->SetMaximum(6.); // no error bar in bins with zero events
+    if(c==1||c==3)plotmjjBkg[c]->SetMaximum(120.); // no error bar in bins with zero events
     // plotmjjBkg[c]->SetMinimum(0.005); // no error bar in bins with zero events
     //plotmjjBkg[c]->SetLogy(0);
     cout << "!!!!!!!!!!!!!!!!!" << endl;

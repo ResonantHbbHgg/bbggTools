@@ -47,30 +47,6 @@ using namespace std;
 using namespace RooFit;
 using namespace RooStats;
 namespace po = boost::program_options;
-
-//Important options first
-//Bool_t doblinding = false; //True if you want to blind
-
-// this one is for 2D fit
-/*       Example of xml config file
-         <signal>
-                <type>          Radion          </type>
-                <dir>           /a/b/c/d        </dir>
-                <mass>          270             </mass>
-                <nonresFile>    Lam_1d0_Yt_1d0_c2_0d0 </nonresFile> <!-- nonres signal to run in the case sigMass is 0. default is the SM value. -->
-        </signal>
-        <other>
-                <integratedLumi> 0.15   </integratedLumi>
-                <energy>        13TeV   </energy>
-                <higgsMass>     125.0   </higgsMass>
-                <addHiggs>      1       </addHiggs>
-                <doBlinding>    0       </doBlinding> <!-- do blinded analysis? -->
-                <doBands>       1       </doBands> <!-- Option to calculate and show 1,2 sigma bands on bkg fit -->
-                <ncat>          2       </ncat> <!-- Number of categories to fit -->
-                <analysisType>  fitTo2D_nonresSearch_withKinFit </analysisType> <!-- Can choose among fitTo{2D,FTR14001}_{nonres,res}Search_with{RegKin,Kin}Fit -->
-                <useSigTheoryUnc> 0     </useSigTheoryUnc> <!-- option to add an uncertainty to the datacard for the SM diHiggs theory uncertainty. Default is off -->
-        </other>
-*/
  
 int main(int argc, const char* argv[])
 {
@@ -82,6 +58,14 @@ int main(int argc, const char* argv[])
 //Parameters to set
   Float_t mass = 1;
   Float_t lumi = 1;
+  Float_t minMgg = 100.;
+  Float_t maxMgg = 180.;
+  Float_t minMjj = 60.;
+  Float_t maxMjj = 180;
+  Float_t minMggHig = 115.;
+  Float_t maxMggHig = 135.;
+  Float_t minMjjHig = 60.;
+  Float_t maxMjjHig = 180.;
   Bool_t doBands = 1;
   int version = 44;
   string analysisType = "a";
@@ -93,7 +77,7 @@ int main(int argc, const char* argv[])
   bool addHiggs =1;
   string signalType = "a";
   string signalDir = "a";
-  string energy = "13TeV";
+  string energy = "13";
   string cardName = "";
   string sigFile = "";
   string dataFile = "";
@@ -105,9 +89,6 @@ int main(int argc, const char* argv[])
   boost::property_tree::read_json( argv[1], pt );
 
   cout << "Reading input configuration file..." << endl;
-//  read_xml(argv[1], configs);
- // const ptree & formats = configs.get_child("configs", empty_ptree());
-//  BOOST_FOREACH( boost::property_tree::ptree::value_type const& v, formats )
   BOOST_FOREACH( boost::property_tree::ptree::value_type const& rowPair, pt.get_child( "" ) )
   {
 
@@ -139,6 +120,14 @@ int main(int argc, const char* argv[])
                 NCAT = rowPair.second.get<int>("ncat");
                 useSigTheoryUnc = rowPair.second.get<bool>("useSigTheoryUnc");
                 analysisType = rowPair.second.get<string>("analysisType");
+		minMgg = rowPair.second.get<float>("minMgg");
+		maxMgg = rowPair.second.get<float>("maxMgg");
+		minMjj = rowPair.second.get<float>("minMjj");
+		maxMjj = rowPair.second.get<float>("maxMjj");
+		minMggHig = rowPair.second.get<float>("minMggHig");
+		maxMggHig = rowPair.second.get<float>("maxMggHig");
+		minMjjHig = rowPair.second.get<float>("minMjjHig");
+		maxMjjHig = rowPair.second.get<float>("maxMjjHig");
                 cout << "Running options: " << endl;
                 cout << "\t Integrated luminosity: " << lumi << endl;
                 cout << "\t Center of mass energy: " << energy << endl;
@@ -160,15 +149,23 @@ int main(int argc, const char* argv[])
   TString fileHiggsNamevh = TString::Format("hgg.hig.mH%.1f_8TeV.vh", mass);
   TString fileHiggsNamebbh = TString::Format("hgg.hig.mH%.1f_8TeV.bbh", mass);
   TString fileBkgName = "hgg.inputbkg_8TeV";
-//  TString card_name = "LimitModels/models_2D.rs"; // put the model parameters here!
+
   TString card_name(cardName); // put the model parameters here!
-  HLFactory hlf("HLFactory", card_name, false);
+  bbgg2DFitter TheFitter = bbgg2DFitter( sigMass, lumi, doblinding, NCAT, addHiggs );
+  TheFitter.SetMinMaxMggMjj(minMgg, maxMgg, minMjj, maxMjj);
+  TheFitter.SetMinMaxMggMjjHig(minMggHig, maxMggHig, minMjjHig, maxMjjHig);
+  std::string CardName = TheFitter.MakeModelCard(card_name.Data());
+  
+  if(CardName == "")
+	return 0;
+
+  HLFactory hlf("HLFactory", CardName, false);
   RooWorkspace* w = hlf.GetWs();
   
   //Object
-  bbgg2DFitter TheFitter = bbgg2DFitter( w, sigMass, lumi, doblinding, NCAT, addHiggs );
+  TheFitter.SetWorkspace(w);
   TheFitter.style();
-  
+
   RooFitResult* fitresults;
 
   // the limit trees to be addeed
@@ -189,8 +186,7 @@ int main(int argc, const char* argv[])
 
   cout<<"Signal: "<<ssignal<<endl;
   cout<<"Data: "<<ddata<<endl;
-  //
-//  ssignal = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/S15V7_v0/LimitTrees/600_900/LT_GluGluToRadionToHHTo2B2G_M-800_narrow_13TeV-madgraph.root";
+
   ssignal = sigFile;
   TheFitter.AddSigData( mass,ssignal);
   cout<<"SIGNAL ADDED"<<endl;

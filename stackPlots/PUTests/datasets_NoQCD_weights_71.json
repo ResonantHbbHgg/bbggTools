@@ -1,5 +1,5 @@
 {
-    "data" : "/data/bbggSelectionTree_All_PhotonCR_DoubleEG.root",
+    "data" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/Dec27_PUTest/CMSSW_7_4_15/src/flashgg/bbggTools/test/data_fggRunJobDir/DoubleEG_all.root",
     "signal" : [
         {
             "type" : "Radion",
@@ -50,7 +50,7 @@
         {
             "name" : "DiPhoJets",
             "legend" : "#gamma#gamma+Jets",
-            "file" : "/bkg/bbggSelectionTree_DiPhotonJetsBox.root",
+            "file" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/Dec27_PUTest/CMSSW_7_4_15/src/flashgg/bbggTools/test/pu71_fggRunJobDir/output_DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa.root",
             "color" : 417,
             "xsec" : 84.0,
 	    "nevents" : 14346942,

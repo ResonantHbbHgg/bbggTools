@@ -25,7 +25,7 @@ using namespace std;
 
 class bbggTools{
 public:
-	bbggTools() : hasDiPho( 0 ), hasLeadJet( 0 ), hasSubJet( 0 ) { rho_ = -10;}
+	bbggTools() : hasDiPho( 0 ), hasLeadJet( 0 ), hasSubJet( 0 ), _isSignal( 0 ), _isPhotonCR( 0 ) { rho_ = -10;}
 	~bbggTools() {}
 	typedef math::XYZTLorentzVector LorentzVector;
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
@@ -45,6 +45,10 @@ public:
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts);
         bool isJetID(edm::Ptr<flashgg::Jet> jet);
 	void setRho(double rho) {rho_ = rho;}
+	bool IsSignal() { return _isSignal; }
+	bool IsPhotonCR() { return _isPhotonCR; }
+	bool HasLeadJet(){ return hasLeadJet; }
+	bool HasSubJet(){ return hasSubJet; }
 	
 	//Set cuts for selection
 	void SetCut_PhotonPtOverDiPhotonMass( vector<double> cuts) { _PhotonPtOverDiPhotonMass = cuts; }
@@ -89,6 +93,8 @@ public:
        void SetCut_phCorr( std::map<int, vector<double> > cuts ) { _phCorr = cuts; }
        void SetCut_phoWhichID( vector<std::string> cuts) { _phoWhichID = cuts; }
        void SetCut_phoWhichISO( vector<std::string> cuts) { _phoWhichISO = cuts; }
+	
+	void SetPhotonCR( unsigned int cuts ) { _doPhotonCR = cuts; } 
 		
 	//Perform event selection
 	bool AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
@@ -114,8 +120,11 @@ private:
 	bool hasLeadJet;
 	edm::Ptr<flashgg::Jet> subleadingJetCandidate;
 	bool hasSubJet;
+	bool _isSignal;
+	bool _isPhotonCR;
 	
 	//Cut values
+	unsigned int _doPhotonCR;
 	vector<double> _PhotonPtOverDiPhotonMass;
 	vector<double> _PhotonEta;
 	vector<double> _PhotonR9;

@@ -43,6 +43,7 @@ Implementation:
 #include "flashgg/DataFormats/interface/SinglePhotonView.h"
 #include "flashgg/DataFormats/interface/Photon.h"
 #include "flashgg/DataFormats/interface/Jet.h"
+#include "flashgg/Taggers/interface/GlobalVariablesDumper.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -74,6 +75,7 @@ private:
 
     // ----------member data ---------------------------
     bbggTools tools_;
+    flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
     std::vector<edm::InputTag> inputTagJets_;
@@ -84,89 +86,46 @@ private:
     unsigned int doSelection; 
 	  
     //Tree objects
-    LorentzVector leadingPhoton;
-    LorentzVector subleadingPhoton;
-    LorentzVector diphotonCandidate;
-    vector<int> leadingPhotonID; 
-    vector<int> leadingPhotonISO;
-    vector<int> subleadingPhotonID;
-    vector<int> subleadingPhotonISO;
-    LorentzVector leadingJet;
-    float leadingJet_bDis;
-    LorentzVector subleadingJet;
-    float subleadingJet_bDis;
-    LorentzVector dijetCandidate;
+    LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
+    LorentzVector leadingJet, subleadingJet, dijetCandidate;
     LorentzVector diHiggsCandidate;
+    vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
+    float leadingJet_bDis, subleadingJet_bDis;
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
-    int leadingPhotonEVeto;
-    int subleadingPhotonEVeto;
-    int leadingJet_flavour;
-    int subleadingJet_flavour;
+    int leadingPhotonEVeto, subleadingPhotonEVeto;
+    int leadingJet_flavour, subleadingJet_flavour;
+    int isSignal, isPhotonCR;
+//    int nvtx;
 
-    vector<LorentzVector> leadingjets;
-    vector<LorentzVector> subleadingjets;
-    vector<LorentzVector> dijets;
-    vector<double> leadingjets_bDiscriminant;
-    vector<double> subleadingjets_bDiscriminant;
-    vector<int> leadingjets_partonID;
-    vector<int> subleadingjets_partonID;
-    vector<double> leadingJets_DRleadingPho;
-    vector<double> leadingJets_DRsubleadingPho;
-    vector<double> subleadingJets_DRleadingPho;
-    vector<double> subleadingJets_DRsubleadingPho;
-    vector<double> Jets_minDRPho;
-    vector<double> Jets_DR;
-    vector<double> DiJets_DRDiPho;
+    vector<LorentzVector> leadingjets, subleadingjets, dijets;
+    vector<double> leadingjets_bDiscriminant, subleadingjets_bDiscriminant;
+    vector<int> leadingjets_partonID, subleadingjets_partonID;
+    vector<double> leadingJets_DRleadingPho, leadingJets_DRsubleadingPho;
+    vector<double> subleadingJets_DRleadingPho, subleadingJets_DRsubleadingPho;
+    vector<double> Jets_minDRPho, Jets_DR, DiJets_DRDiPho;
 
-    //Thresholds
-    std::vector<double> phoIDlooseEB;
-    std::vector<double> phoIDlooseEE;
-    std::vector<double> phoIDmediumEB;
-    std::vector<double> phoIDmediumEE;
-    std::vector<double> phoIDtightEB;
-    std::vector<double> phoIDtightEE;
-    std::vector<double> phoISOlooseEB;
-    std::vector<double> phoISOlooseEE;
-    std::vector<double> phoISOmediumEB;
-    std::vector<double> phoISOmediumEE;
-    std::vector<double> phoISOtightEB;
-    std::vector<double> phoISOtightEE;
-    std::vector<double> nhCorrEB;
-    std::vector<double> nhCorrEE;
-    std::vector<double> phCorrEB;	  
-    std::vector<double> phCorrEE;
-	  
-    std::vector<double> ph_pt;
-    std::vector<double> ph_eta;
-    std::vector<double> ph_r9;
-    std::vector<int> ph_elVeto;
-    std::vector<int> ph_doelVeto;
-    std::vector<int> ph_doID;
-    std::vector<std::string> ph_whichID;
-    std::vector<int> ph_doISO;
-    std::vector<std::string> ph_whichISO;
-    std::vector<double> diph_pt;
-    std::vector<double> diph_eta;
-    std::vector<double> diph_mass;
+    //Parameters
+    std::vector<double> phoIDlooseEB, phoIDlooseEE;
+    std::vector<double> phoIDmediumEB, phoIDmediumEE;
+    std::vector<double> phoIDtightEB, phoIDtightEE;
+    std::vector<double> phoISOlooseEB, phoISOlooseEE;
+    std::vector<double> phoISOmediumEB, phoISOmediumEE;
+    std::vector<double> phoISOtightEB,phoISOtightEE;
+    std::vector<double> nhCorrEB, nhCorrEE;
+    std::vector<double> phCorrEB, phCorrEE;
+    std::vector<double> ph_pt, ph_eta, ph_r9;
+    std::vector<double> diph_pt, diph_eta, diph_mass;
+    std::vector<int> ph_elVeto, ph_doelVeto, ph_doID, ph_doISO;
+    std::vector<std::string> ph_whichID, ph_whichISO;
     unsigned int diph_onlyfirst;
-    std::vector<double> jt_pt;
-    std::vector<double> jt_eta;
-    std::vector<double> jt_drPho;
-    std::vector<double> jt_bDis;
-    std::vector<int> jt_doPU;
-    std::vector<int> jt_doID;
+    std::vector<double> jt_pt, jt_eta, jt_drPho, jt_bDis;
+    std::vector<int> jt_doPU, jt_doID;
     unsigned int n_bJets;
-    std::vector<double> dijt_pt;
-    std::vector<double> dijt_eta;
-    std::vector<double> dijt_mass; 
-    std::vector<double> cand_pt;
-    std::vector<double> cand_eta;
-    std::vector<double> cand_mass;
-    std::vector<double> dr_cands;
-    unsigned int nPromptPhotons;
-    unsigned int doDoubleCountingMitigation;
+    std::vector<double> dijt_pt, dijt_eta, dijt_mass;
+    std::vector<double> cand_pt, cand_eta, cand_mass, dr_cands;
+    unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR;
 
     //OutFile & Hists
     TFile* outFile;
@@ -187,37 +146,25 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
 {
     //now do what ever initialization is needed
     tools_ = bbggTools();
+    globVar_ = new flashgg::GlobalVariablesDumper(iConfig);
+    //Lumi weight
+    double lumiWeight_ = ( iConfig.getParameter<double>( "lumiWeight" ) );
+    globVar_->dumpLumiFactor(lumiWeight_);
     EvtCount = 0;
     //Default values for thresholds
     std::string def_bTagType;
     unsigned int def_doSelection = 0;
-    std::vector<double> def_ph_pt;
-    std::vector<double> def_ph_eta;
-    std::vector<double> def_ph_r9;
-    std::vector<int> def_ph_elVeto;
-    std::vector<int> def_ph_doelVeto;
-    std::vector<int> def_ph_doID;
-    std::vector<std::string> def_ph_whichID;
+    std::vector<double> def_ph_pt, def_ph_eta, def_ph_r9;
+    std::vector<double> def_diph_pt, def_diph_eta, def_diph_mass;
+    std::vector<double> def_jt_pt, def_jt_eta, def_jt_drPho, def_jt_bDis;
+    std::vector<double> def_dijt_pt, def_dijt_eta, def_dijt_mass, def_cand_pt, def_cand_eta, def_cand_mass, def_dr_cands;
+    std::vector<int> def_ph_elVeto, def_ph_doelVeto, def_ph_doID;
     std::vector<int> def_ph_doISO;
-    std::vector<std::string> def_ph_whichISO;
-    std::vector<double> def_diph_pt;
-    std::vector<double> def_diph_eta;
-    std::vector<double> def_diph_mass;
+    std::vector<int> def_jt_doPU, def_jt_doID;
+    std::vector<std::string> def_ph_whichID, def_ph_whichISO;
     unsigned int def_diph_onlyfirst;
-    std::vector<double> def_jt_pt;
-    std::vector<double> def_jt_eta;
-    std::vector<double> def_jt_drPho;
-    std::vector<double> def_jt_bDis;
-    std::vector<int> def_jt_doPU;
-    std::vector<int> def_jt_doID;
     unsigned int def_n_bJets;
-    std::vector<double> def_dijt_pt;
-    std::vector<double> def_dijt_eta;
-    std::vector<double> def_dijt_mass;
-    std::vector<double> def_cand_pt;
-    std::vector<double> def_cand_eta;
-    std::vector<double> def_cand_mass;
-    std::vector<double> def_dr_cands;
+
     def_ph_pt.push_back(10.);           def_ph_pt.push_back(10.);
     def_ph_eta.push_back(20.);          def_ph_eta.push_back(20.);
     def_ph_r9.push_back(-1.);           def_ph_r9.push_back(-1.);
@@ -249,6 +196,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
 	  
     unsigned int def_nPromptPhotons = 0;
     unsigned int def_doDoubleCountingMitigation = 0;
+    unsigned int def_doPhotonCR = 0;
 	  
 
     std::string def_fileName;
@@ -302,16 +250,14 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     cand_eta 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidateEta", def_cand_mass);
     cand_mass = iConfig.getUntrackedParameter<std::vector<double > >("CandidateMassWindow", def_cand_mass);
     dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
-	  
     nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
     doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
-
+    doPhotonCR = iConfig.getUntrackedParameter<unsigned int>("doPhotonCR", def_doPhotonCR);
     rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
-
     bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
-
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
 	
+    tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
     tools_.SetCut_PhotonEta( ph_eta );
     tools_.SetCut_PhotonDoID( ph_doID );
@@ -430,6 +376,9 @@ bbggTree::~bbggTree()
 void
     bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+
+    globVar_->fill(iEvent);
+
     if( EvtCount%100 == 0 && !DEBUG) std::cout << "[bbggTree::analyze] Analyzing event number: " << EvtCount << std::endl;
     if (DEBUG) std::cout << "[bbggTree::analyze] Analyzing event number: " << EvtCount << std::endl;
 	
@@ -454,6 +403,21 @@ void
     Jets_minDRPho.clear();
     Jets_DR.clear();
     DiJets_DRDiPho.clear();
+    isSignal = 0;
+    isPhotonCR = 0;
+//    nvtx = 0;
+
+    diphotonCandidate.SetPxPyPzE(0,0,0,0);// = diphoCand->p4();
+    leadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
+    subleadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->subLeadingPhoton()->p4();
+    leadingJet.SetPxPyPzE(0,0,0,0);// = LeadingJet->p4();
+    leadingJet_bDis = 0;// = LeadingJet->bDiscriminator(bTagType);
+    leadingJet_flavour = 0;// = LeadingJet->partonFlavour();
+    subleadingJet.SetPxPyPzE(0,0,0,0);// = SubLeadingJet->p4();
+    subleadingJet_bDis = 0;//SubLeadingJet->bDiscriminator(bTagType);
+    subleadingJet_flavour = 0;//SubLeadingJet->partonFlavour();
+    dijetCandidate.SetPxPyPzE(0,0,0,0);// = leadingJet + subleadingJet;
+    diHiggsCandidate.SetPxPyPzE(0,0,0,0);// = diphotonCandidate + dijetCandidate;
 
     //Get Jets collections!
     JetCollectionVector theJetsCols( inputTagJets_.size() );
@@ -522,7 +486,15 @@ void
         if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
 
         bool passedSelection = tools_.AnalysisSelection(diphoVec, theJetsCols);
-        if(!passedSelection) return;
+	isSignal = tools_.IsSignal();
+	isPhotonCR = tools_.IsPhotonCR();
+	bool hasLJet = tools_.HasLeadJet();
+	bool hasSJet = tools_.HasSubJet();
+
+        if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
+	if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
+	//if(!passedSelection) return;
+	if(!hasLJet || !hasSJet) return;
 		
         if(DEBUG) std::cout << "[bbggTree::analyze] tools_.AnalysisSelection returned " << passedSelection << std::endl;
 		
@@ -618,7 +590,7 @@ void
 		
         leadingPhotonEVeto = diphoCand->leadingPhoton()->passElectronVeto();
         subleadingPhotonEVeto = diphoCand->subLeadingPhoton()->passElectronVeto();
-				
+		
         if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
         tree->Fill();
 
@@ -803,6 +775,7 @@ void
 	tree->Branch("Jets_minDRPho", &Jets_minDRPho);
 	tree->Branch("Jets_DR", &Jets_DR);
 	tree->Branch("DiJets_DRDiPho", &DiJets_DRDiPho);
+//	tree->Branch("nvtx", &nvtx);
     }
     if(doSelection) {
         tree = new TTree("bbggSelectionTree", "Flat tree for HH->bbgg analyses (after pre selection)");
@@ -826,8 +799,13 @@ void
 	tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
         tree->Branch("dijetCandidate", &dijetCandidate);
         tree->Branch("diHiggsCandidate", &diHiggsCandidate);
+	tree->Branch("isSignal", &isSignal, "isSignal/I");
+	tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
+//	tree->Branch("nvtx", &nvtx);
 		
     }
+    std::map<std::string, std::string> replacements;
+    globVar_->bookTreeVariables(tree, replacements);
 
     if(DEBUG) std::cout << "[bbggTree::beginJob] Output tree set!" << std::endl;
 
