@@ -59,7 +59,7 @@ The FLASHgg guys have been kind enough to restore that functionality for us. Onc
 ```
 ./prepareCrabJobs.py -C <Campaign> -U 5 -L 25 -s <signal json> -V <flashggVersion> -p ${CMSSW_BASE}/src/flashgg/MicroAOD/test/microAODstd.py --outputPath /store/group/phys_higgs/resonant_HH/RunII/MicroAOD
 ```   
-For more information on these commands, see flashgg/MetaData.   
+Try to use a Campaign name that is different from the standard FLASHgg campaigns, so that a different catalog is created (below). For more information on these commands, see flashgg/MetaData.   
 
 To submit everything, do:   
 ```
@@ -75,14 +75,39 @@ sed -i 's/narrow_13TeV-madgraph_RunIISpring/13TeV-madgraph_RunIISpring/' *
 Where "1_1_1" is the FLASHgg version. This has no impact on the crab jobs themselves, only on the name of the job.   
 
 #### Update Catalog With Produced Samples
+(These instructions are explained more here: https://github.com/cms-analysis/flashgg/tree/master/MetaData)   
 
-In order to run the analyzer in the newly created MicroAODs, you need to create a catalog with these files after your crab jobs are done. To do that, you need to run:
+In order to run the analyzer in the newly created MicroAODs, you need to create a catalog with these files after your crab jobs are done. To do that, you need to run:   
+```
+fggManageSamples.py -C <Campaign> -V <flashggVersion> import
+```  
+This will create a datasets.json file under flashgg/MetaData/data/Campaign/. If you think there might be duplicated samples on your catalog, do:   
+```
+fggManageSamples.py -C <Campaign> review
+```   
+Finally, in order to have the weights on the samples catalog, do:
+```
+fggManageSamples.py -C <Campaign> check
+```   
+The datasets catalog file created will then be used to produce selection trees.   
+
+**It is also good to include the newly created samples in the cross-section database under flashgg/MetaData/data/cross_sections.json. A file like that one, with the available samples today (Jan 14) can be found under bbggTools/MetaData/cross_sections.json. Just copy the file from our repo on flashgg!**
 
 ### Produce Selection Trees
 
 #### Produce Selection Trees Using FLASHgg Functionalities
-
-
+```
+cd bbggTools/test/RunJobs/
+```   
+Create a json file for the datasets you want to process <ToProcess.json>. Those already exist for our available signal samples, background samples and data under bbggTools/test/RunJobs/. Create a directory output for your jobs <ToProcessDir>. Then do:   
+```
+fggRunJobs.py --load ToProcess.json -H -D -P -n 500 -d ToProcessDir -x cmsRun MakeTrees_FLASHgg.py  maxEvents=-1 -q 1nh --no-use-tarball
+```   
+This will submit the jobs to LSF batch. You can quit the job watcher if you want, and reload or get a summary of the jobs it with:
+```
+fggRunJobs.py --load ToProcessDir/config.json --cont
+fggRunJobs.py --load ToProcessDir/config.json --summary
+```
 
 #### Old way (not maintained)
 
