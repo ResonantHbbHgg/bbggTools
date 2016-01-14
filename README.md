@@ -52,9 +52,31 @@ You need to change the input pdfset from "PDF_variation" to "NNPDF30_lo_as_0130_
 B) For the new versions (**1_1_X**):  
 The functionality to pass the PDF set name was removed, so running our signal samples with the signal customization proved painful. Unfortunately, in this tag, we need to run without the PDF weights. So, list the signal samples under the "bkg" section of the json file.  
 
-C) For upcoming versions:
-The FLASHgg guys have been kind enough to restore that functionality for us. Once the pull request with the needed modifications is merged, I'll update the instructions.
+C) For upcoming versions:   
+The FLASHgg guys have been kind enough to restore that functionality for us. Once the pull request with the needed modifications is merged, I'll update the instructions.   
 
+3) After these modifications, you need to prepare the crab jobs:   
+```
+./prepareCrabJobs.py -C <Campaign> -U 5 -L 25 -s <signal json> -V <flashggVersion> -p ${CMSSW_BASE}/src/flashgg/MicroAOD/test/microAODstd.py --outputPath /store/group/phys_higgs/resonant_HH/RunII/MicroAOD
+```   
+For more information on these commands, see flashgg/MetaData.   
+
+To submit everything, do:   
+```
+cd <microAODCampaignName>
+echo crabConfig_*.py | xargs -n 1 crab sub
+```   
+There is the possibility that Crab won't like the configuration files because the request name is too long. In case that happens, do something similar to:   
+```
+sed -i 's/1_1_1_GluGluToBulkGraviton/1_1_1_Grav/' *
+sed -i 's/1_1_1_GluGluToRadion/1_1_1_Rad/' *
+sed -i 's/narrow_13TeV-madgraph_RunIISpring/13TeV-madgraph_RunIISpring/' *
+```   
+Where "1_1_1" is the FLASHgg version. This has no impact on the crab jobs themselves, only on the name of the job.   
+
+#### Update Catalog With Produced Samples
+
+In order to run the analyzer in the newly created MicroAODs, you need to create a catalog with these files after your crab jobs are done. To do that, you need to run:
 
 ### Produce Selection Trees
 
