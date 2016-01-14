@@ -8,7 +8,7 @@ It should be used under the FLASHgg framework and not as a standalone package.
 
 Before cloning this package, get the FLASHgg framework: https://github.com/cms-analysis/flashgg  
 Also check their Twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/FLASHggFramework#Instructions_for_users  
-Current CMSSW version to be used (as of 12October2015): CMSSW_7_4_12
+ALWAYS FOLLOW THE INSTRUCTIONS LISTED ON "INSTRUCTIONS FOR USERS".  
 
 Follow their instructions (including compilation).
 
@@ -23,9 +23,46 @@ cd bbggTools
 Due to some problems with unused variables in limit codes (memory handling in RooFit), we need to set the propert compilation variables to ignore unused variables. That is done in Compile.sh. For cleaning the area, you can still do simply scramv1 b clean.
 
 
-## Important scripts
+## Important steps
+
+### Produce MicroAOD
+
+1) Go to flashgg/MetaData/work
+
+2) Create a json file that lists the datasets you want to process, for example:  
+```
+{
+    "data" : ["/DoubleElectron/CMSSW_7_0_6_patch1-GR_70_V2_AN1_RelVal_zEl2012D-v1/MINIAOD"
+              ],
+    "sig"  : ["/GluGluToHToGG_M-125_13TeV-powheg-pythia6/Spring14miniaod-PU20bx25_POSTLS170_V5-v2/MINIAODSIM",
+              ],
+    "bkg"  : ["/GJet_Pt20to40_doubleEMEnriched_TuneZ2star_13TeV-pythia6/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM",
+              ]
+}
+```  
+You can find such a json file, with all of our signal samples, under bbggTools/MetaData/SignalForMicroAOD.json. All needed background is processed centrally, so no need to worry about that.  
+
+It is important to list the signal samples under "sig". This will trigger the signal customizations from FLASHgg, which includes the calculation of the PDF weights.  
+
+Because of some differences regarding the storage of PDF weights in the LHE headers created by different generators, running on our signal samples **is not out of the box**. There are available unstructions for two different versions of the code:  
+
+A) For **Spring15BetaV7**:  
+You need to change the input pdfset from "PDF_variation" to "NNPDF30_lo_as_0130_nf_4.LHgrid" (the PDF set of our signal samples) in https://github.com/cms-analysis/flashgg/blob/Spring15BetaV7/MicroAOD/python/flashggPDFWeightObject_cfi.py#L5   
+
+B) For the new versions (**1_1_X**):  
+The functionality to pass the PDF set name was removed, so running our signal samples with the signal customization proved painful. Unfortunately, in this tag, we need to run without the PDF weights. So, list the signal samples under the "bkg" section of the json file.  
+
+C) For upcoming versions:
+The FLASHgg guys have been kind enough to restore that functionality for us. Once the pull request with the needed modifications is merged, I'll update the instructions.
+
 
 ### Produce Selection Trees
+
+#### Produce Selection Trees Using FLASHgg Functionalities
+
+
+
+#### Old way (not maintained)
 
 Selection trees are flat trees containing the selected diphoton and the selected dijet objects (along with the photons and the jets). It also contains the event weight, some simple ID information on each object and the b-tagging for the jets. It's used to make stack plots and to generate limit trees.
 
