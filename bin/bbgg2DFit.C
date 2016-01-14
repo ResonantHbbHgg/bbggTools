@@ -159,7 +159,7 @@ int main(int argc, const char* argv[])
   if(CardName == "")
 	return 0;
 
-  HLFactory hlf("HLFactory", CardName, false);
+  HLFactory hlf("HLFactory", CardName.c_str(), false);
   RooWorkspace* w = hlf.GetWs();
   
   //Object

@@ -1872,7 +1872,7 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
     pt->SetBorderSize(0);
     pt->SetFillColor(0);
     pt->SetTextSize(0.035);
-    TString TextToAdd = TString::Format("            CMS Preliminary                     L = %c fb^{-1}    #sqrt{s} = %c TeV   ", _lumiStr, _energyStr); 
+    TString TextToAdd = TString::Format("            CMS Preliminary                     L = %c fb^{-1}    #sqrt{s} = %c TeV   ", *_lumiStr.c_str(), *_energyStr.c_str()); 
     pt->AddText(TextToAdd);
     pt->Draw();
     TGraphAsymmErrors *onesigma = new TGraphAsymmErrors();
@@ -2087,7 +2087,7 @@ RooFitResult* bbgg2DFitter::BkgModelFit(Bool_t dobands)
     pt->SetBorderSize(0);
     pt->SetFillColor(0);
     pt->SetTextSize(0.035);
-    TString TextToAdd = TString::Format("            CMS Preliminary                     L = %c fb^{-1}    #sqrt{s} = %c TeV   ", _lumiStr, _energyStr); 
+    TextToAdd = TString::Format("            CMS Preliminary                     L = %c fb^{-1}    #sqrt{s} = %c TeV   ", *_lumiStr.c_str(), *_energyStr.c_str()); 
     pt->AddText(TextToAdd);
     pt->Draw();
     if (dobands) {
