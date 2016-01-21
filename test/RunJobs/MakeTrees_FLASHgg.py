@@ -55,7 +55,7 @@ process.bbggtree.mcPu=cms.vdouble()
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
-    fileNames = cms.untracked.vstring("test.root")
+    fileNames = cms.untracked.vstring("/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/RunIISpring15-ReMiniAOD-BetaV7-25ns/Spring15BetaV7/GluGluToHHTo2B2G_node_2_13TeV-madgraph/RunIISpring15-ReMiniAOD-BetaV7-25ns-Spring15BetaV7-v0-RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/151208_155321/0000/myMicroAODOutputFile_1.root")
 )
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )

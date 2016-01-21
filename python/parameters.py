@@ -4,8 +4,8 @@ import flashgg.Taggers.flashggTags_cff as flashggTags
 
 
 _doPhotonCR				=	cms.untracked.uint32(1)
-#_DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
-_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
+_DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
+#_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
 #_inputTagJets					=	flashggTags.UnpackedJetCollectionVInputTag,
 _rhoFixedGridCollection		=	cms.untracked.InputTag('fixedGridRhoAll')
@@ -48,7 +48,7 @@ _DiJetPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary for dijet pt
 _DiJetEta					=	cms.untracked.vdouble(20.)
 #0: DiJet mass window lower boundary, 1: upper boundary
-_DiJetMassWindow			=	cms.untracked.vdouble(100., 200.)
+_DiJetMassWindow			=	cms.untracked.vdouble(60., 180.)
 #0: 4-candidate mass window lower boundary, 1: upper boundary
 _CandidateMassWindow		=	cms.untracked.vdouble(0., 2500.)
 #0 4-candidate pt lower bound

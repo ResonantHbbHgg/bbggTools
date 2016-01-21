@@ -149,7 +149,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig);
     //Lumi weight
     double lumiWeight_ = ( iConfig.getParameter<double>( "lumiWeight" ) );
-    globVar_->dumpLumiFactor(lumiWeight_);
+//    globVar_->dumpLumiFactor(lumiWeight_);
     EvtCount = 0;
     //Default values for thresholds
     std::string def_bTagType;
@@ -598,8 +598,8 @@ void
 		
     } else {
 
-        bool passedSelection = tools_.DiPhotonSelection(diphoVec);
-        if(!passedSelection) return;
+        std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> passedSelection = tools_.DiPhotonKinematicSelection(diphoVec);
+        if(passedSelection.size() == 0) return;
 	edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
 
         LorentzVector lPho = diphoCand->leadingPhoton()->p4();

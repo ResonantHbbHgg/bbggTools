@@ -30,6 +30,12 @@ public:
 	typedef math::XYZTLorentzVector LorentzVector;
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
+	std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotonKinematicSelection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
+	std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotonIDSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
+	std::vector<edm::Ptr<flashgg::Jet>> DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets);
+	std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
+
+
         std::map<int, vector<double> > getWhichID (std::string wpoint);
         std::map<int, vector<double> > getWhichISO (std::string wpoint);
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
@@ -100,7 +106,6 @@ public:
 	bool AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
 							JetCollectionVector jetsCol );
 
-        bool DiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
 
 	//Get selected objects
 	edm::Ptr<flashgg::DiPhotonCandidate> GetSelected_diphoCandidate();
