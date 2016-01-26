@@ -33,6 +33,7 @@ public:
         std::map<int, vector<double> > getWhichID (std::string wpoint);
         std::map<int, vector<double> > getWhichISO (std::string wpoint);
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
+	double getCHisoToCutValue(const flashgg::DiPhotonCandidate *dipho, int whichPho);
         double getNHisoToCutValue(const flashgg::Photon* pho);
 	double getPHisoToCutValue(const flashgg::Photon* pho);
         double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
@@ -42,7 +43,9 @@ public:
 	bool isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts);
 	bool isPhoID(const flashgg::Photon* pho, vector<double> cuts);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
+	bool isPhoISO(const flashgg::DiPhotonCandidate *pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts);
+	bool isPhoISO(const flashgg::DiPhotonCandidate *pho, int whichPho, vector<double> cuts);
         bool isJetID(const flashgg::Jet* jet);
         bool isJetID(edm::Ptr<flashgg::Jet> jet);
 	void setRho(double rho) {rho_ = rho;}
@@ -94,9 +97,10 @@ public:
 	//Perform event selection
 	bool AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
 							JetCollectionVector jetsCol );
-
-        bool DiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
-
+	bool HggHLTpreselection(const flashgg::Photon* p1, const flashgg::Photon* p2);
+	bool HggHLTpreselection(const flashgg::DiPhotonCandidate* di);
+	bool DiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
+	
 	//Get selected objects
 	edm::Ptr<flashgg::DiPhotonCandidate> GetSelected_diphoCandidate();
 	edm::Ptr<flashgg::Jet> GetSelected_leadingJetCandidate();
