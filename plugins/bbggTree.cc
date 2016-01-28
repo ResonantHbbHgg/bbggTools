@@ -29,6 +29,7 @@ Implementation:
 //root include files
 #include "TTree.h"
 #include "TFile.h"
+#include "TLorentzVector.h"
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -95,6 +96,7 @@ private:
     vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
+    float CosThetaStar;
     
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -390,6 +392,7 @@ void
     DiJets_DRDiPho.clear();
     isSignal = 0;
     isPhotonCR = 0;
+    CosThetaStar = -999;
 //    nvtx = 0;
 
     diphotonCandidate.SetPxPyPzE(0,0,0,0);// = diphoCand->p4();
@@ -449,7 +452,7 @@ void
             if (nPromptPhotons > 0 && nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
             if (nPromptPhotons == 0) {
                 if (nPrompt == 0) diphoVec.push_back(dipho);
-//                else if (nPrompt == 1) diphoVec.push_back(dipho);
+                else if (nPrompt == 1) diphoVec.push_back(dipho);
             }
         } else {
             diphoVec.push_back(dipho);
@@ -471,15 +474,15 @@ void
         if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
 
         bool passedSelection = tools_.AnalysisSelection(diphoVec, theJetsCols);
-	    isSignal = tools_.IsSignal();
-	    isPhotonCR = tools_.IsPhotonCR();
-	    bool hasLJet = tools_.HasLeadJet();
-	    bool hasSJet = tools_.HasSubJet();
+	isSignal = tools_.IsSignal();
+	isPhotonCR = tools_.IsPhotonCR();
+	bool hasLJet = tools_.HasLeadJet();
+	bool hasSJet = tools_.HasSubJet();
 
         if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
-	    if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
-	    //if(!passedSelection) return;
-	    if(!hasLJet || !hasSJet) return;
+	if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
+	//if(!passedSelection) return;
+	if(!hasLJet || !hasSJet) return;
 		
         if(DEBUG) std::cout << "[bbggTree::analyze] tools_.AnalysisSelection returned " << passedSelection << std::endl;
 		
@@ -500,10 +503,10 @@ void
         subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
         leadingJet = LeadingJet->p4();
         leadingJet_bDis = LeadingJet->bDiscriminator(bTagType);
-	    leadingJet_flavour = LeadingJet->partonFlavour();
+	leadingJet_flavour = LeadingJet->partonFlavour();
         subleadingJet = SubLeadingJet->p4();
         subleadingJet_bDis = SubLeadingJet->bDiscriminator(bTagType);
-	    subleadingJet_flavour = SubLeadingJet->partonFlavour();
+	subleadingJet_flavour = SubLeadingJet->partonFlavour();
         dijetCandidate = leadingJet + subleadingJet;
         diHiggsCandidate = diphotonCandidate + dijetCandidate;
         
@@ -517,6 +520,15 @@ void
         jet1PtRes = kinFit_.GetPtResolution(leadingJet);
         jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
         jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
+
+        //Calculating costheta star
+        TLorentzVector BoostedHgg(0,0,0,0);
+        BoostedHgg.SetPtEtaPhiE( diphoCand->pt(), diphoCand->eta(), diphoCand->phi(), diphoCand->energy());
+        TLorentzVector HHforBoost(0,0,0,0);
+        HHforBoost.SetPtEtaPhiE( diHiggsCandidate.pt(), diHiggsCandidate.eta(), diHiggsCandidate.phi(), diHiggsCandidate.energy());
+        TVector3 HHBoostVector = HHforBoost.BoostVector();
+        BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
+        CosThetaStar = BoostedHgg.CosTheta();
         
         		
         if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
@@ -757,21 +769,21 @@ void
         tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
         tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
         tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
-	    tree->Branch("diphotonCandidate", &diphotonCandidate);
+	tree->Branch("diphotonCandidate", &diphotonCandidate);
         tree->Branch("leadingJets", &leadingjets);
         tree->Branch("subleadingJets", &subleadingjets);
         tree->Branch("diJets", &dijets);
         tree->Branch("leadingJets_bDiscriminant", &leadingjets_bDiscriminant);
         tree->Branch("subleadingJets_bDiscriminant", &subleadingjets_bDiscriminant);
-	    tree->Branch("leadingJets_partonID", &leadingjets_partonID);
-	    tree->Branch("subleadingJets_partonID", &subleadingjets_partonID);
-	    tree->Branch("leadingJets_DRleadingPho", &leadingJets_DRleadingPho);
-	    tree->Branch("leadingJets_DRsubleadingPho", &leadingJets_DRsubleadingPho);
-	    tree->Branch("subleadingJets_DRleadingPho", &subleadingJets_DRleadingPho);
-	    tree->Branch("subleadingJets_DRsubleadingPho", &subleadingJets_DRsubleadingPho);
-	    tree->Branch("Jets_minDRPho", &Jets_minDRPho);
-	    tree->Branch("Jets_DR", &Jets_DR);
-	    tree->Branch("DiJets_DRDiPho", &DiJets_DRDiPho);
+	tree->Branch("leadingJets_partonID", &leadingjets_partonID);
+	tree->Branch("subleadingJets_partonID", &subleadingjets_partonID);
+	tree->Branch("leadingJets_DRleadingPho", &leadingJets_DRleadingPho);
+	tree->Branch("leadingJets_DRsubleadingPho", &leadingJets_DRsubleadingPho);
+	tree->Branch("subleadingJets_DRleadingPho", &subleadingJets_DRleadingPho);
+	tree->Branch("subleadingJets_DRsubleadingPho", &subleadingJets_DRsubleadingPho);
+	tree->Branch("Jets_minDRPho", &Jets_minDRPho);
+	tree->Branch("Jets_DR", &Jets_DR);
+	tree->Branch("DiJets_DRDiPho", &DiJets_DRDiPho);
 //	tree->Branch("nvtx", &nvtx);
     }
     if(doSelection) {
@@ -791,24 +803,24 @@ void
         tree->Branch("leadingJet", &leadingJet);
         tree->Branch("leadingJet_KF", &leadingJet_KF);
         tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
-	    tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
+	tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
         tree->Branch("subleadingJet", &subleadingJet);
         tree->Branch("subleadingJet_KF", &subleadingJet_KF);
         tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/F");
-	    tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
+	tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
         tree->Branch("dijetCandidate", &dijetCandidate);
         tree->Branch("dijetCandidate_KF", &dijetCandidate_KF);
         tree->Branch("diHiggsCandidate", &diHiggsCandidate);
         tree->Branch("diHiggsCandidate_KF", &diHiggsCandidate_KF);
-	    tree->Branch("isSignal", &isSignal, "isSignal/I");
-	    tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
+	tree->Branch("isSignal", &isSignal, "isSignal/I");
+	tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
         tree->Branch("jet1PtRes", &jet1PtRes, "jet1PtRes/F");
         tree->Branch("jet1EtaRes", &jet1EtaRes, "jet1EtaRes/F");
         tree->Branch("jet1PhiRes", &jet1PhiRes, "jet1PhiRes/F");
         tree->Branch("jet2PtRes", &jet2PtRes, "jet2PtRes/F");
         tree->Branch("jet2EtaRes", &jet2EtaRes, "jet2EtaRes/F");
         tree->Branch("jet2PhiRes", &jet2PhiRes, "jet2PhiRes/F");
-//	tree->Branch("nvtx", &nvtx);
+	tree->Branch("CosThetaStar", &CosThetaStar, "CosThetaStar/D");
 		
     }
     std::map<std::string, std::string> replacements;
