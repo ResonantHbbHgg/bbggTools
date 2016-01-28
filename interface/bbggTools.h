@@ -36,12 +36,12 @@ public:
 	std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
 
 
-        std::map<int, vector<double> > getWhichID (std::string wpoint);
-        std::map<int, vector<double> > getWhichISO (std::string wpoint);
+    std::map<int, vector<double> > getWhichID (std::string wpoint);
+    std::map<int, vector<double> > getWhichISO (std::string wpoint);
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
-        double getNHisoToCutValue(const flashgg::Photon* pho);
+    double getNHisoToCutValue(const flashgg::Photon* pho);
 	double getPHisoToCutValue(const flashgg::Photon* pho);
-        double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
+    double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
 	double getPHisoToCutValue(const flashgg::Photon* pho, vector<double> phCorr);
 	double getEA( float eta, int whichEA);
 	double DeltaR( bbggTools::LorentzVector vec1, bbggTools::LorentzVector vec2);
@@ -49,7 +49,7 @@ public:
 	bool isPhoID(const flashgg::Photon* pho, vector<double> cuts);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts);
-        bool isJetID(edm::Ptr<flashgg::Jet> jet);
+    bool isJetID(edm::Ptr<flashgg::Jet> jet);
 	void setRho(double rho) {rho_ = rho;}
 	bool IsSignal() { return _isSignal; }
 	bool IsPhotonCR() { return _isPhotonCR; }

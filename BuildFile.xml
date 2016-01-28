@@ -50,8 +50,10 @@
 <use name="DataFormats/HepMCCandidate"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="FWCore/TFWLiteSelector"/>
+<use name="PhysicsTools/KinFitter"/>
 <!--<flags EDM_PLUGIN="1"/>-->
 <export>
+
     <lib name="1"/>
 <!--    <lib name="bbggTools"/>
     <lib name="bbggMC"/>

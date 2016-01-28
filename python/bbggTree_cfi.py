@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import flashgg.bbggTools.parameters as param
 import flashgg.Taggers.flashggTags_cff as flashggTags
-
+import flashgg.bbggTools.KinFitParams as KinFit
 ### For more information on each parameter, see parameters.py
 
 bbggtree = cms.EDAnalyzer('bbggTree',
@@ -53,6 +53,10 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	PhotonWhichID=param._PhotonWhichID,
 	PhotonWhichISO=param._PhotonWhichISO,
 	JetDoID=param._JetDoID,
-	doPhotonCR=param._doPhotonCR
+	doPhotonCR=param._doPhotonCR,
+	ptRes=KinFit._ptRes,
+	etaRes=KinFit._etaRes,
+	phiRes=KinFit._phiRes,
+	etaBins=KinFit._etaBins
 #	doSelectionTree=param._doSelectionTree
 )

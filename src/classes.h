@@ -28,6 +28,7 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 //Local
+#include "flashgg/bbggTools/interface/bbggKinFit.h"
 #include "flashgg/bbggTools/interface/bbggTools.h"
 #include "flashgg/bbggTools/interface/bbggMC.h"
 #include "flashgg/bbggTools/interface/bbggLTMaker.h"

@@ -52,6 +52,7 @@ Implementation:
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
 #include "flashgg/bbggTools/interface/bbggMC.h"
+#include "flashgg/bbggTools/interface/bbggKinFit.h"
 
 //
 // class declaration
@@ -75,6 +76,7 @@ private:
 
     // ----------member data ---------------------------
     bbggTools tools_;
+    bbggKinFit kinFit_;
     flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
@@ -88,10 +90,12 @@ private:
     //Tree objects
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
-    LorentzVector diHiggsCandidate;
+    LorentzVector leadingJet_KF, subleadingJet_KF, dijetCandidate_KF;
+    LorentzVector diHiggsCandidate, diHiggsCandidate_KF;
     vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
-    float leadingJet_bDis, subleadingJet_bDis;
+    float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
+    
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
     int leadingPhotonEVeto, subleadingPhotonEVeto;
@@ -314,25 +318,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     phoISOtight[0] = phoISOtightEB;
     phoISOtight[1] = phoISOtightEE;
     tools_.SetCut_phoISOtight(phoISOtight);
-        
-    /*
-    tools_.SetCut_phoIDlooseEB(phoIDlooseEB);
-    tools_.SetCut_phoIDlooseEE(phoIDlooseEE);
-    tools_.SetCut_phoIDmediumEB(phoIDmediumEB);
-    tools_.SetCut_phoIDmediumEE(phoIDmediumEE);
-    tools_.SetCut_phoIDtightEB(phoIDtightEB);
-    tools_.SetCut_phoIDtightEE(phoIDtightEE);
-    */
-    
-    /*        
-    tools_.SetCut_phoISOlooseEB(phoISOlooseEB);
-    tools_.SetCut_phoISOlooseEE(phoISOlooseEE);
-    tools_.SetCut_phoISOmediumEB(phoISOmediumEB);
-    tools_.SetCut_phoISOmediumEE(phoISOmediumEE);
-    tools_.SetCut_phoISOtightEB(phoISOtightEB);
-    tools_.SetCut_phoISOtightEE(phoISOtightEE);
-    */
-    
+            
     std::map<int, vector<double> > nhCorr;
     nhCorr[0] = nhCorrEB;
     nhCorr[1] = nhCorrEE;
@@ -343,17 +329,16 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     phCorr[1] = phCorrEE;
     tools_.SetCut_phCorr(phCorr);
     
-    /*
-    tools_.SetCut_nhCorrEB(nhCorrEB);
-    tools_.SetCut_nhCorrEE(nhCorrEE);
-    tools_.SetCut_phCorrEB(phCorrEB);
-    tools_.SetCut_phCorrEE(phCorrEE);
-    */
-    
     tools_.SetCut_phoWhichID(ph_whichID);
     tools_.SetCut_phoWhichISO(ph_whichISO);
     
-	  
+    std::vector<double> ptRes = iConfig.getUntrackedParameter<std::vector<double>>( "ptRes");
+    std::vector<double> etaRes = iConfig.getUntrackedParameter<std::vector<double>>( "etaRes");
+    std::vector<double> phiRes = iConfig.getUntrackedParameter<std::vector<double>>( "phiRes");   
+    std::vector<double> etaBins = iConfig.getUntrackedParameter<std::vector<double>>("etaBins");
+ 
+	kinFit_ = bbggKinFit();
+    kinFit_.SetJetResolutionParameters(etaBins, ptRes, etaRes, phiRes);
     std::cout << "Parameters initialized... \n ############ Doing selection tree or before selection tree? : " << (doSelection ? "Selection!":"Before selection!") <<  std::endl;
 
 }
@@ -486,15 +471,15 @@ void
         if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
 
         bool passedSelection = tools_.AnalysisSelection(diphoVec, theJetsCols);
-	isSignal = tools_.IsSignal();
-	isPhotonCR = tools_.IsPhotonCR();
-	bool hasLJet = tools_.HasLeadJet();
-	bool hasSJet = tools_.HasSubJet();
+	    isSignal = tools_.IsSignal();
+	    isPhotonCR = tools_.IsPhotonCR();
+	    bool hasLJet = tools_.HasLeadJet();
+	    bool hasSJet = tools_.HasSubJet();
 
         if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
-	if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
-	//if(!passedSelection) return;
-	if(!hasLJet || !hasSJet) return;
+	    if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
+	    //if(!passedSelection) return;
+	    if(!hasLJet || !hasSJet) return;
 		
         if(DEBUG) std::cout << "[bbggTree::analyze] tools_.AnalysisSelection returned " << passedSelection << std::endl;
 		
@@ -515,13 +500,25 @@ void
         subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
         leadingJet = LeadingJet->p4();
         leadingJet_bDis = LeadingJet->bDiscriminator(bTagType);
-	leadingJet_flavour = LeadingJet->partonFlavour();
+	    leadingJet_flavour = LeadingJet->partonFlavour();
         subleadingJet = SubLeadingJet->p4();
         subleadingJet_bDis = SubLeadingJet->bDiscriminator(bTagType);
-	subleadingJet_flavour = SubLeadingJet->partonFlavour();
+	    subleadingJet_flavour = SubLeadingJet->partonFlavour();
         dijetCandidate = leadingJet + subleadingJet;
         diHiggsCandidate = diphotonCandidate + dijetCandidate;
-		
+        
+        //Kinematic fit:
+        if(DEBUG) std::cout << "[bbggTree::analyze] Doing kinematic fit!" << std::endl;
+        kinFit_.KinematicFit(leadingJet, subleadingJet);
+        leadingJet_KF = kinFit_.GetJet1();
+        subleadingJet_KF = kinFit_.GetJet2();
+        dijetCandidate_KF = leadingJet_KF + subleadingJet_KF;
+        diHiggsCandidate_KF = dijetCandidate_KF + diphotonCandidate;
+        jet1PtRes = kinFit_.GetPtResolution(leadingJet);
+        jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
+        jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
+        
+        		
         if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
 				
         int lphoIDloose = 0;
@@ -760,21 +757,21 @@ void
         tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
         tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
         tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
-	tree->Branch("diphotonCandidate", &diphotonCandidate);
+	    tree->Branch("diphotonCandidate", &diphotonCandidate);
         tree->Branch("leadingJets", &leadingjets);
         tree->Branch("subleadingJets", &subleadingjets);
         tree->Branch("diJets", &dijets);
         tree->Branch("leadingJets_bDiscriminant", &leadingjets_bDiscriminant);
         tree->Branch("subleadingJets_bDiscriminant", &subleadingjets_bDiscriminant);
-	tree->Branch("leadingJets_partonID", &leadingjets_partonID);
-	tree->Branch("subleadingJets_partonID", &subleadingjets_partonID);
-	tree->Branch("leadingJets_DRleadingPho", &leadingJets_DRleadingPho);
-	tree->Branch("leadingJets_DRsubleadingPho", &leadingJets_DRsubleadingPho);
-	tree->Branch("subleadingJets_DRleadingPho", &subleadingJets_DRleadingPho);
-	tree->Branch("subleadingJets_DRsubleadingPho", &subleadingJets_DRsubleadingPho);
-	tree->Branch("Jets_minDRPho", &Jets_minDRPho);
-	tree->Branch("Jets_DR", &Jets_DR);
-	tree->Branch("DiJets_DRDiPho", &DiJets_DRDiPho);
+	    tree->Branch("leadingJets_partonID", &leadingjets_partonID);
+	    tree->Branch("subleadingJets_partonID", &subleadingjets_partonID);
+	    tree->Branch("leadingJets_DRleadingPho", &leadingJets_DRleadingPho);
+	    tree->Branch("leadingJets_DRsubleadingPho", &leadingJets_DRsubleadingPho);
+	    tree->Branch("subleadingJets_DRleadingPho", &subleadingJets_DRleadingPho);
+	    tree->Branch("subleadingJets_DRsubleadingPho", &subleadingJets_DRsubleadingPho);
+	    tree->Branch("Jets_minDRPho", &Jets_minDRPho);
+	    tree->Branch("Jets_DR", &Jets_DR);
+	    tree->Branch("DiJets_DRDiPho", &DiJets_DRDiPho);
 //	tree->Branch("nvtx", &nvtx);
     }
     if(doSelection) {
@@ -792,15 +789,25 @@ void
         tree->Branch("diphotonCandidate", &diphotonCandidate);
         tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
         tree->Branch("leadingJet", &leadingJet);
+        tree->Branch("leadingJet_KF", &leadingJet_KF);
         tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
-	tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
+	    tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
         tree->Branch("subleadingJet", &subleadingJet);
+        tree->Branch("subleadingJet_KF", &subleadingJet_KF);
         tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/F");
-	tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
+	    tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
         tree->Branch("dijetCandidate", &dijetCandidate);
+        tree->Branch("dijetCandidate_KF", &dijetCandidate_KF);
         tree->Branch("diHiggsCandidate", &diHiggsCandidate);
-	tree->Branch("isSignal", &isSignal, "isSignal/I");
-	tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
+        tree->Branch("diHiggsCandidate_KF", &diHiggsCandidate_KF);
+	    tree->Branch("isSignal", &isSignal, "isSignal/I");
+	    tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
+        tree->Branch("jet1PtRes", &jet1PtRes, "jet1PtRes/F");
+        tree->Branch("jet1EtaRes", &jet1EtaRes, "jet1EtaRes/F");
+        tree->Branch("jet1PhiRes", &jet1PhiRes, "jet1PhiRes/F");
+        tree->Branch("jet2PtRes", &jet2PtRes, "jet2PtRes/F");
+        tree->Branch("jet2EtaRes", &jet2EtaRes, "jet2EtaRes/F");
+        tree->Branch("jet2PhiRes", &jet2PhiRes, "jet2PhiRes/F");
 //	tree->Branch("nvtx", &nvtx);
 		
     }

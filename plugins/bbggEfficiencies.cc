@@ -511,7 +511,6 @@ passed4 = 1;
 
 //Check jet presel:
 edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = SelDiPhos[0];
-unsigned int jetCollectionIndex = diphoCand->jetCollectionIndex();
 std::vector<edm::Ptr<flashgg::Jet>> PreSelJets = tools_.JetPreSelection(theJetsCols, diphoCand);
 if(PreSelJets.size() < 2) {tree->Fill(); return;}
 Efficiencies->Fill(5);
@@ -570,7 +569,7 @@ void
     tree->Branch("passed11", &passed11);
     tree->Branch("passed12", &passed12);
     tree->Branch("passed13", &passed13);
-    tree->Branch("passed14", &passed014);
+    tree->Branch("passed14", &passed14);
     Efficiencies = new TH1F("Efficiencies", "Efficiencies", 10, 0, 10);
     Mjj = new TH1F("Mjj", "Mjj", 100, 60, 200);
     Mgg = new TH1F("Mgg", "Mgg", 100, 100, 150);

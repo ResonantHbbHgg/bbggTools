@@ -14,5 +14,7 @@
 <use   name="DataFormats/JetReco"/>
 <use name="flashgg/bbggTools"/>
 <use name="SimDataFormats/GeneratorProducts"/>
+<use name="PhysicsTools/KinFitter"/>
+
 
 <flags EDM_PLUGIN="1"/>
