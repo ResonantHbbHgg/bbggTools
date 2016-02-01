@@ -38,42 +38,19 @@ bbggJetRegression::LorentzVector bbggJetRegression::GetRegression(edm::Ptr<flash
     
     //Assigning regression variables:
     Jet_pt = jt->pt();
-    Jet_rawPt = jt->correctedJet("raw").pt();
+    Jet_rawPt = jt->correctedJet("Uncorrected").pt();
     rho = Rho;
     Jet_eta = jt->eta();
     Jet_mt = jt->mt();
     
     Jet_leadTrackPt = bbggJetRegression::GetLeadingTrackPt(jt);
         
-    std::vector<LorentzVector> ClosestLeptonVec;
+    float softLeptonPt = jt->softLeptonPt();
+    float softLeptonDR = jt->softLeptonDeltaR();
     
-    if(Electrons.size() > 0){
-        edm::Ptr<flashgg::Electron> closestEl = bbggJetRegression::GetClosestElectron(jt, Electrons);
-        ClosestLeptonVec.push_back(closestEl->p4());
-    }
-    
-    if(Muons.size() > 0){
-        edm::Ptr<flashgg::Muon> closestMu = bbggJetRegression::GetClosestMuon(jt, Muons);
-        ClosestLeptonVec.push_back(closestMu->p4());
-    }
-
-    LorentzVector ClosestLepton;
-    if(ClosestLeptonVec.size() == 0){
-        Jet_leptonPtRel = -99;
-        Jet_leptonPt = -99;
-        Jet_leptonDeltaR = -99;
-    }
-    if(ClosestLeptonVec.size() == 1)
-        ClosestLepton = ClosestLeptonVec[0];
-    if(ClosestLeptonVec.size() == 2){
-        float DR0 = bbggJetRegression::DeltaR(ClosestLeptonVec[0], jt->p4());
-        float DR1 = bbggJetRegression::DeltaR(ClosestLeptonVec[1], jt->p4());
-        ClosestLepton = (DR0 < DR1) ? (ClosestLeptonVec[0]) : (ClosestLeptonVec[1]);
-    }
-    
-    Jet_leptonPtRel = bbggJetRegression::PtRel(ClosestLepton, jt->p4());
-    Jet_leptonPt = ClosestLepton.pt();
-    Jet_leptonDeltaR = bbggJetRegression::DeltaR(ClosestLepton, jt->p4());
+    Jet_leptonPtRel = softLeptonPt/Jet_pt; //bbggJetRegression::PtRel(ClosestLepton, jt->p4());
+    Jet_leptonPt = softLeptonPt; //ClosestLepton.pt();
+    Jet_leptonDeltaR = softLeptonDR; //bbggJetRegression::DeltaR(ClosestLepton, jt->p4());
         
     Jet_chEmEF = jt->chargedEmEnergyFraction();
     Jet_chHEF = jt->chargedHadronEnergyFraction();
@@ -82,9 +59,9 @@ bbggJetRegression::LorentzVector bbggJetRegression::GetRegression(edm::Ptr<flash
     Jet_chMult = jt->chargedHadronMultiplicity();
     Jet_vtxPt = sqrt( jt->userFloat("vtxPx")*jt->userFloat("vtxPx") + jt->userFloat("vtxPy")*jt->userFloat("vtxPy"));
     Jet_vtxMass = jt->userFloat("vtxMass");
-    Jet_vtx3dL = jt->userFloat("vtx3dL");
-    Jet_vtxNtrk = jt->userFloat("vtxNtrk");
-    Jet_vtx3deL = jt->userFloat("vtx3deL");
+    Jet_vtx3dL = jt->userFloat("vtx3DVal");
+    Jet_vtxNtrk = jt->userFloat("vtxNtracks");
+    Jet_vtx3deL = jt->userFloat("vtx3DSig");
     
     const std::vector< Float_t > & RegressedValues = RegressionReader.EvaluateRegression("pt_reg");
     float newPt = RegressedValues[0];
@@ -100,36 +77,6 @@ float bbggJetRegression::PtRel(LorentzVector ClosestLep, LorentzVector Jet){
     TVector3 A(Jet.Vect().X(), Jet.Vect().Y(), Jet.Vect().Z());
     TLorentzVector O(ClosestLep.Px(),ClosestLep.Py(),ClosestLep.Pz(),ClosestLep.E());
     return O.Perp(A);
-}
-
-edm::Ptr<flashgg::Electron> bbggJetRegression::GetClosestElectron(edm::Ptr<flashgg::Jet> jt, std::vector<edm::Ptr<flashgg::Electron>> Electrons)
-{
-    std::vector<edm::Ptr<flashgg::Electron>> closestEl;
-    float MinDr = 100;
-    for(unsigned int el = 0; el < Electrons.size(); el++){
-        edm::Ptr<flashgg::Electron> thisEl = Electrons[el];
-        if(bbggJetRegression::DeltaR(thisEl->p4(), jt->p4()) < MinDr ){
-            MinDr = bbggJetRegression::DeltaR(thisEl->p4(), jt->p4());
-            closestEl.clear();
-            closestEl.push_back(thisEl);
-        }
-    }
-    return closestEl[0]; 
-}
-
-edm::Ptr<flashgg::Muon> bbggJetRegression::GetClosestMuon(edm::Ptr<flashgg::Jet> jt, std::vector<edm::Ptr<flashgg::Muon>> Muons)
-{
-    std::vector<edm::Ptr<flashgg::Muon>> closestMu;
-    float MinDr = 100;
-    for(unsigned int mu = 0; mu < Muons.size(); mu++){
-        edm::Ptr<flashgg::Muon> thisMu = Muons[mu];
-        if(bbggJetRegression::DeltaR(thisMu->p4(), jt->p4()) < MinDr ){
-            MinDr = bbggJetRegression::DeltaR(thisMu->p4(), jt->p4());
-            closestMu.clear();
-            closestMu.push_back(thisMu);
-        }
-    }
-    return closestMu[0]; 
 }
 
 float bbggJetRegression::GetLeadingTrackPt(edm::Ptr<flashgg::Jet> jt)

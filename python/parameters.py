@@ -8,7 +8,7 @@ _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 #_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
 #_inputTagJets					=	flashggTags.UnpackedJetCollectionVInputTag,
-_rhoFixedGridCollection		=	cms.untracked.InputTag('fixedGridRhoAll')
+_rhoFixedGridCollection		=	cms.InputTag('fixedGridRhoAll')
 _GenTag						=	cms.untracked.InputTag('flashggGenPhotons')
 #0: Pho1, 1: Pho2
 _PhotonPtOverDiPhotonMass	=	cms.untracked.vdouble( 0.333, 0.25 )

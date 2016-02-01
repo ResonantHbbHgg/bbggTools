@@ -38,6 +38,10 @@ Implementation:
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "DataFormats/Common/interface/Handle.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+
 
 //FLASHgg files
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
@@ -63,6 +67,7 @@ const int DEBUG = 0;
 
 class bbggTree : public edm::EDAnalyzer {
 public:
+//    explicit bbggTree(const edm::ParameterSet&, edm::ConsumesCollector && cc);
     explicit bbggTree(const edm::ParameterSet&);
     ~bbggTree();
 
@@ -81,10 +86,10 @@ private:
     flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
-    std::vector<edm::InputTag> inputTagJets_;
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > genToken_;
-
-    edm::InputTag rhoFixedGrid_;
+//    edm::EDGetTokenT<double> rhoFixedGrid_;
+    std::vector<edm::InputTag> inputTagJets_;
+    
     std::string bTagType;
     unsigned int doSelection; 
 	  
@@ -147,15 +152,17 @@ private:
 //
 bbggTree::bbggTree(const edm::ParameterSet& iConfig) :
 diPhotonToken_( consumes<edm::View<flashgg::DiPhotonCandidate> >( iConfig.getUntrackedParameter<edm::InputTag> ( "DiPhotonTag", edm::InputTag( "flashggDiPhotons" ) ) ) ),
-inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) ),
-genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) )
+genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) ),
+//rhoFixedGrid_(consumes<double>(iConfig.getParameter<edm::InputTag>( "rhoFixedGridCollection" ) ) ),
+inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) )
 {
     //now do what ever initialization is needed
     tools_ = bbggTools();
-    globVar_ = new flashgg::GlobalVariablesDumper(iConfig);
+//    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
+    globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
     double lumiWeight_ = ( iConfig.getParameter<double>( "lumiWeight" ) );
-//    globVar_->dumpLumiFactor(lumiWeight_);
+    globVar_->dumpLumiFactor(lumiWeight_);
     EvtCount = 0;
     //Default values for thresholds
     std::string def_bTagType;
@@ -259,7 +266,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
     doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
     doPhotonCR = iConfig.getUntrackedParameter<unsigned int>("doPhotonCR", def_doPhotonCR);
-    rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
+//    rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
     bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
 	
@@ -418,9 +425,11 @@ void
     Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
     iEvent.getByToken( diPhotonToken_, diPhotons );
 
-    Handle<double> rhoHandle;        // the old way for now...move to getbytoken?
-    iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
-    const double rhoFixedGrd = *( rhoHandle.product() );
+    // Handle<double> rhoHandle;        // the old way for now...move to getbytoken?
+    // iEvent.getByToken( rhoFixedGrid_, rhoHandle );
+    //
+    // const double rhoFixedGrd = *( rhoHandle.product() );
+    const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
     tools_.setRho(rhoFixedGrd);
 
     Handle<View<pat::PackedGenParticle> > genParticles;
@@ -479,7 +488,7 @@ void
 	bool hasLJet = tools_.HasLeadJet();
 	bool hasSJet = tools_.HasSubJet();
 
-        if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
+    if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
 	if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
 	//if(!passedSelection) return;
 	if(!hasLJet || !hasSJet) return;
