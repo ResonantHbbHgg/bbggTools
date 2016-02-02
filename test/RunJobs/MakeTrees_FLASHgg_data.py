@@ -48,7 +48,7 @@ process.bbggtree.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
 process.bbggtree.puInfo=cms.InputTag("slimmedAddPileupInfo")
 process.bbggtree.lumiWeight = cms.double(1.0)
 process.bbggtree.intLumi = cms.double(1.0)
-process.bbggtree.puReWeight=cms.bool(True)
+process.bbggtree.puReWeight=cms.bool(False)
 process.bbggtree.puBins=cms.vdouble()
 process.bbggtree.dataPu=cms.vdouble()
 process.bbggtree.mcPu=cms.vdouble()
@@ -134,7 +134,7 @@ process.eeBadScFilter.EERecHitSource = cms.InputTag("reducedEgamma","reducedEERe
 process.dataRequirements = cms.Sequence()
 if customize.processId == "Data":
         process.dataRequirements += process.hltHighLevel
-        process.dataRequirements += process.eeBadScFilter
+#        process.dataRequirements += process.eeBadScFilter
 
 
 print bcolors.OKBLUE + "########################################################################" + bcolors.ENDC
