@@ -58,6 +58,7 @@ Implementation:
 #include "flashgg/bbggTools/interface/bbggTools.h"
 #include "flashgg/bbggTools/interface/bbggMC.h"
 #include "flashgg/bbggTools/interface/bbggKinFit.h"
+#include "flashgg/bbggTools/interface/bbggJetRegression.h"
 
 //
 // class declaration
@@ -83,6 +84,7 @@ private:
     // ----------member data ---------------------------
     bbggTools tools_;
     bbggKinFit kinFit_;
+    bbggJetRegression jetReg_;
     flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
@@ -97,7 +99,9 @@ private:
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
     LorentzVector leadingJet_KF, subleadingJet_KF, dijetCandidate_KF;
-    LorentzVector diHiggsCandidate, diHiggsCandidate_KF;
+    LorentzVector leadingJet_Reg, subleadingJet_Reg, dijetCandidate_Reg;
+    LorentzVector leadingJet_RegKF, subleadingJet_RegKF, dijetCandidate_RegKF;
+    LorentzVector diHiggsCandidate, diHiggsCandidate_KF, diHiggsCandidate_Reg,diHiggsCandidate_RegKF;
     vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
@@ -158,6 +162,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 {
     //now do what ever initialization is needed
     tools_ = bbggTools();
+    jetReg_ = bbggJetRegression();
+    jetReg_.SetupRegression("BDTG method", "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml");
 //    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
@@ -346,7 +352,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     std::vector<double> phiRes = iConfig.getUntrackedParameter<std::vector<double>>( "phiRes");   
     std::vector<double> etaBins = iConfig.getUntrackedParameter<std::vector<double>>("etaBins");
  
-	kinFit_ = bbggKinFit();
+    kinFit_ = bbggKinFit();
     kinFit_.SetJetResolutionParameters(etaBins, ptRes, etaRes, phiRes);
     std::cout << "Parameters initialized... \n ############ Doing selection tree or before selection tree? : " << (doSelection ? "Selection!":"Before selection!") <<  std::endl;
 
@@ -529,6 +535,20 @@ void
         jet1PtRes = kinFit_.GetPtResolution(leadingJet);
         jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
         jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
+
+	//Regression:
+        if(DEBUG) std::cout << "[bbggTree::analyze] Doing regression!" << std::endl;
+	leadingJet_Reg = jetReg_.GetRegression(LeadingJet, rhoFixedGrd);
+	subleadingJet_Reg = jetReg_.GetRegression(SubLeadingJet, rhoFixedGrd);
+	dijetCandidate_Reg = leadingJet_Reg + subleadingJet_Reg;
+	diHiggsCandidate_Reg = dijetCandidate_Reg + diphotonCandidate;
+
+	//Regression + Kinematic Fit:
+        kinFit_.KinematicFit(leadingJet_Reg, subleadingJet_Reg);
+        leadingJet_RegKF = kinFit_.GetJet1();
+        subleadingJet_RegKF = kinFit_.GetJet2();
+        dijetCandidate_RegKF = leadingJet_RegKF + subleadingJet_RegKF;
+        diHiggsCandidate_RegKF = dijetCandidate_RegKF + diphotonCandidate;
 
         //Calculating costheta star
         TLorentzVector BoostedHgg(0,0,0,0);
@@ -811,16 +831,24 @@ void
         tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
         tree->Branch("leadingJet", &leadingJet);
         tree->Branch("leadingJet_KF", &leadingJet_KF);
+        tree->Branch("leadingJet_Reg", &leadingJet_Reg);
+        tree->Branch("leadingJet_RegKF", &leadingJet_RegKF);
         tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
 	tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
         tree->Branch("subleadingJet", &subleadingJet);
         tree->Branch("subleadingJet_KF", &subleadingJet_KF);
+        tree->Branch("subleadingJet_Reg", &subleadingJet_Reg);
+        tree->Branch("subleadingJet_RegKF", &subleadingJet_RegKF);
         tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/F");
 	tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
         tree->Branch("dijetCandidate", &dijetCandidate);
         tree->Branch("dijetCandidate_KF", &dijetCandidate_KF);
+        tree->Branch("dijetCandidate_Reg", &dijetCandidate_Reg);
+        tree->Branch("dijetCandidate_RegKF", &dijetCandidate_RegKF);
         tree->Branch("diHiggsCandidate", &diHiggsCandidate);
         tree->Branch("diHiggsCandidate_KF", &diHiggsCandidate_KF);
+        tree->Branch("diHiggsCandidate_Reg", &diHiggsCandidate_Reg);
+        tree->Branch("diHiggsCandidate_RegKF", &diHiggsCandidate_RegKF);
 	tree->Branch("isSignal", &isSignal, "isSignal/I");
 	tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
         tree->Branch("jet1PtRes", &jet1PtRes, "jet1PtRes/F");

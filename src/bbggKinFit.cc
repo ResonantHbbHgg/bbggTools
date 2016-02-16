@@ -79,6 +79,7 @@ float bbggKinFit::GetPtResolution(bbggKinFit::LorentzVector j)
     float eta = fabs(j.eta());
     float a=-1, b=-1, c=-1, d=-1;
     for(unsigned int i = 1; i < etaInts.size(); i++){
+	if(DEBUG) std::cout << "eta: " << eta << " between: " << etaInts[i-1] << " and " << etaInts[i] << endl;
         if(eta > etaInts[i-1] && eta < etaInts[i]){
             unsigned int I = (i-1)*3;
             a = ptRes[I];//0, 3, 6

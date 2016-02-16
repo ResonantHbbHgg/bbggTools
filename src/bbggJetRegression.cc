@@ -21,13 +21,39 @@ const int DEBUG = 0;
 
 //bool DEBUG = false;
 
+
+void bbggJetRegression::SetupRegression(std::string RegType, std::string RegFile){
+    TMVAReady = 1;
+    RegressionReader = new TMVA::Reader();
+    RegressionReader->AddVariable("Jet_pt", &Jet_pt);
+    RegressionReader->AddVariable("Jet_corr", &Jet_corr);
+    RegressionReader->AddVariable("rho", &rho);
+    RegressionReader->AddVariable("Jet_eta", &Jet_eta);
+    RegressionReader->AddVariable("Jet_mt", &Jet_mt);
+    RegressionReader->AddVariable("Jet_leadTrackPt", &Jet_leadTrackPt);
+    RegressionReader->AddVariable("Jet_leptonPtRel", &Jet_leptonPtRel);
+    RegressionReader->AddVariable("Jet_leptonPt", &Jet_leptonPt);
+    RegressionReader->AddVariable("Jet_leptonDeltaR", &Jet_leptonDeltaR);
+    RegressionReader->AddVariable("Jet_neHEF", &Jet_neHEF);
+    RegressionReader->AddVariable("Jet_neEmEF", &Jet_neEmEF);
+    RegressionReader->AddVariable("Jet_chMult", &Jet_chMult);
+//    RegressionReader->AddVariable("Jet_chEmEF", &Jet_chEmEF);
+//    RegressionReader->AddVariable("Jet_chHEF", &Jet_chHEF);
+    RegressionReader->AddVariable("Jet_vtxPt", &Jet_vtxPt);
+    RegressionReader->AddVariable("Jet_vtxMass", &Jet_vtxMass);
+    RegressionReader->AddVariable("Jet_vtx3dL", &Jet_vtx3dL);
+    RegressionReader->AddVariable("Jet_vtxNtrk", &Jet_vtxNtrk);
+    RegressionReader->AddVariable("Jet_vtx3deL", &Jet_vtx3deL);
+    RegressionReader->BookMVA(RegType, RegFile);
+}
+
 double bbggJetRegression::DeltaR(bbggJetRegression::LorentzVector vec1, bbggJetRegression::LorentzVector vec2)
 {
 	double R2 = (vec1.phi() - vec2.phi())*(vec1.phi() - vec2.phi()) + (vec1.eta() - vec2.eta())*(vec1.eta() - vec2.eta());
 	return sqrt(R2);
 }
 
-bbggJetRegression::LorentzVector bbggJetRegression::GetRegression(edm::Ptr<flashgg::Jet> jt, std::vector<edm::Ptr<flashgg::Electron>> Electrons, std::vector<edm::Ptr<flashgg::Muon>> Muons, float Rho)
+bbggJetRegression::LorentzVector bbggJetRegression::GetRegression(edm::Ptr<flashgg::Jet> jt, float Rho)
 {
     bbggJetRegression::LorentzVector NewJet(-1,-1,-1,-1);
     
@@ -38,22 +64,22 @@ bbggJetRegression::LorentzVector bbggJetRegression::GetRegression(edm::Ptr<flash
     
     //Assigning regression variables:
     Jet_pt = jt->pt();
-    Jet_rawPt = jt->correctedJet("Uncorrected").pt();
+    Jet_corr = jt->jecFactor("Uncorrected");//jt->correctedJet("Uncorrected").pt();
     rho = Rho;
     Jet_eta = jt->eta();
     Jet_mt = jt->mt();
     
-    Jet_leadTrackPt = bbggJetRegression::GetLeadingTrackPt(jt);
+    Jet_leadTrackPt = jt->userFloat("leadTrackPt");//bbggJetRegression::GetLeadingTrackPt(jt);
         
-    float softLeptonPt = jt->softLeptonPt();
-    float softLeptonDR = jt->softLeptonDeltaR();
+//    float softLeptonPt = jt->softLeptonPt();
+//    float softLeptonDR = jt->softLeptonDeltaR();
     
-    Jet_leptonPtRel = softLeptonPt/Jet_pt; //bbggJetRegression::PtRel(ClosestLepton, jt->p4());
-    Jet_leptonPt = softLeptonPt; //ClosestLepton.pt();
-    Jet_leptonDeltaR = softLeptonDR; //bbggJetRegression::DeltaR(ClosestLepton, jt->p4());
+    Jet_leptonPtRel = jt->userFloat("softLepRatio");//softLeptonPt/Jet_pt; //bbggJetRegression::PtRel(ClosestLepton, jt->p4());
+    Jet_leptonPt = jt->userFloat("softLepPt");//softLeptonPt; //ClosestLepton.pt();
+    Jet_leptonDeltaR = jt->userFloat("softLepDr");//softLeptonDR; //bbggJetRegression::DeltaR(ClosestLepton, jt->p4());
         
-    Jet_chEmEF = jt->chargedEmEnergyFraction();
-    Jet_chHEF = jt->chargedHadronEnergyFraction();
+//    Jet_chEmEF = jt->chargedEmEnergyFraction();
+//    Jet_chHEF = jt->chargedHadronEnergyFraction();
     Jet_neHEF = jt->neutralEmEnergyFraction();
     Jet_neEmEF = jt->neutralHadronEnergyFraction();
     Jet_chMult = jt->chargedHadronMultiplicity();
@@ -63,12 +89,12 @@ bbggJetRegression::LorentzVector bbggJetRegression::GetRegression(edm::Ptr<flash
     Jet_vtxNtrk = jt->userFloat("vtxNtracks");
     Jet_vtx3deL = jt->userFloat("vtx3DSig");
     
-    const std::vector< Float_t > & RegressedValues = RegressionReader.EvaluateRegression("pt_reg");
+    const std::vector< Float_t > & RegressedValues = RegressionReader->EvaluateRegression("BDTG method");
     float newPt = RegressedValues[0];
-    float newEta = RegressedValues[3];
+//    float newEta = RegressedValues[3];
     
     TLorentzVector TempJet;
-    TempJet.SetPtEtaPhiM(newPt, newEta, jt->phi(), jt->mass());
+    TempJet.SetPtEtaPhiM(newPt, jt->eta(), jt->phi(), jt->mass());
     NewJet = bbggJetRegression::LorentzVector(TempJet.Px(), TempJet.Py(), TempJet.Pz(), TempJet.E());
     return NewJet;
 }
