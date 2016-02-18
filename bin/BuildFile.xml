@@ -50,5 +50,11 @@
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="FWCore/TFWLiteSelector"/>
 <use name="flashgg/bbggTools"/>
-<bin name="LimitTreeMaker" file="LimitTreeMaker.C"/>
-<bin name="bbgg2DFit" file="bbgg2DFit.C"/>
+<bin name="LimitTreeMaker" file="LimitTreeMaker.C">
+	<use name="boost"/>
+	<use name="root"/>
+</bin>
+<bin name="bbgg2DFit" file="bbgg2DFit.C">
+	<use name="boost"/>
+	<use name="root"/>
+</bin>
