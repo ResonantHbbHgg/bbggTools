@@ -91,6 +91,7 @@ private:
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > genToken_;
 //    edm::EDGetTokenT<double> rhoFixedGrid_;
     std::vector<edm::InputTag> inputTagJets_;
+    std::vector<edm::EDGetTokenT<edm::View<flashgg::Jet> > > tokenJets_;
     
     std::string bTagType;
     unsigned int doSelection; 
@@ -354,6 +355,12 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
  
     kinFit_ = bbggKinFit();
     kinFit_.SetJetResolutionParameters(etaBins, ptRes, etaRes, phiRes);
+
+    for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
+	auto token = consumes<edm::View<flashgg::Jet> >(inputTagJets_[i]);
+	tokenJets_.push_back(token);
+    }
+
     std::cout << "Parameters initialized... \n ############ Doing selection tree or before selection tree? : " << (doSelection ? "Selection!":"Before selection!") <<  std::endl;
 
 }
@@ -423,7 +430,7 @@ void
     //Get Jets collections!
     JetCollectionVector theJetsCols( inputTagJets_.size() );
     for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
-        iEvent.getByLabel( inputTagJets_[j], theJetsCols[j] );
+        iEvent.getByToken( tokenJets_[j], theJetsCols[j] );
     }
 
     if (DEBUG) std::cout << "Number of jet collections!!!! " << theJetsCols.size() << std::endl;

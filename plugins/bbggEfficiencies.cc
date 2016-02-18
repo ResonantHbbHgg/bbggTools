@@ -80,9 +80,10 @@ private:
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > BeforeSelectionDiPhotonToken_;
     std::vector<edm::InputTag> inputTagJets_;
+    std::vector<edm::EDGetTokenT<edm::View<flashgg::Jet> > > tokenJets_;
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > genToken_;
 
-    edm::InputTag rhoFixedGrid_;
+//    edm::InputTag rhoFixedGrid_;
     std::string bTagType;
     unsigned int doSelection; 
 	  
@@ -176,7 +177,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig);
     //Lumi weight
     double lumiWeight_ = ( iConfig.getParameter<double>( "lumiWeight" ) );
-//    globVar_->dumpLumiFactor(lumiWeight_);
+    globVar_->dumpLumiFactor(lumiWeight_);
     EvtCount = 0;
     //Default values for thresholds
     std::string def_bTagType;
@@ -280,7 +281,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
     doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
     doPhotonCR = iConfig.getUntrackedParameter<unsigned int>("doPhotonCR", def_doPhotonCR);
-    rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
+//    rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
     bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
 	
@@ -379,6 +380,11 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     
     tools_.SetCut_phoWhichID(ph_whichID);
     tools_.SetCut_phoWhichISO(ph_whichISO);
+
+    for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
+	auto token = consumes<edm::View<flashgg::Jet> >(inputTagJets_[i]);
+	tokenJets_.push_back(token);
+    }
     
 	  
     std::cout << "Parameters initialized... \n ############ Doing selection tree or before selection tree? : " << (doSelection ? "Selection!":"Before selection!") <<  std::endl;
@@ -410,7 +416,7 @@ void
     int totalNumberofJets = 0;
     JetCollectionVector theJetsCols( inputTagJets_.size() );
     for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
-        iEvent.getByLabel( inputTagJets_[j], theJetsCols[j] );
+        iEvent.getByToken( tokenJets_[j], theJetsCols[j] );
 	totalNumberofJets += theJetsCols[j]->size();
     }
 
@@ -424,9 +430,13 @@ void
 
     int totalNumberofPhotons = BeforeSeldiPhotons->size();
 
+/*
     Handle<double> rhoHandle;        // the old way for now...move to getbytoken?
     iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
     const double rhoFixedGrd = *( rhoHandle.product() );
+    tools_.setRho(rhoFixedGrd);
+*/
+    const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
     tools_.setRho(rhoFixedGrd);
 
     Handle<View<pat::PackedGenParticle> > genParticles;
