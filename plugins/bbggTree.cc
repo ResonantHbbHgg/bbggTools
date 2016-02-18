@@ -89,10 +89,11 @@ private:
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > genToken_;
-//    edm::EDGetTokenT<double> rhoFixedGrid_;
     std::vector<edm::InputTag> inputTagJets_;
     std::vector<edm::EDGetTokenT<edm::View<flashgg::Jet> > > tokenJets_;
-    
+    edm::InputTag genInfo_;
+    edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
+
     std::string bTagType;
     unsigned int doSelection; 
 	  
@@ -141,7 +142,7 @@ private:
     unsigned int n_bJets;
     std::vector<double> dijt_pt, dijt_eta, dijt_mass;
     std::vector<double> cand_pt, cand_eta, cand_mass, dr_cands;
-    unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR;
+    unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR, doJetRegression;
 
     //OutFile & Hists
     TFile* outFile;
@@ -217,6 +218,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     unsigned int def_nPromptPhotons = 0;
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
+    unsigned int def_doJetRegression = 0;
 	  
 
     std::string def_fileName;
@@ -273,9 +275,12 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
     doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
     doPhotonCR = iConfig.getUntrackedParameter<unsigned int>("doPhotonCR", def_doPhotonCR);
+    doJetRegression = iConfig.getUntrackedParameter<unsigned int>("doJetRegression", def_doJetRegression);
 //    rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
     bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
+    genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
+    genInfoToken_ = consumes<GenEventInfoProduct>( genInfo_ );
 	
     tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
@@ -449,10 +454,8 @@ void
 
     //MC Weights
     Handle<GenEventInfoProduct> genInfo;
-    try {
-        iEvent.getByLabel( "generator", genInfo );
-    } catch (...) {;}
-    if( genInfo.isValid() ) {
+    if( ! iEvent.isRealData() ) {
+	iEvent.getByToken(genInfoToken_, genInfo);
         genTotalWeight = genInfo->weight();
         iEvent.getByToken( genToken_, genParticles);
     } else {
@@ -543,19 +546,20 @@ void
         jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
         jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
 
-	//Regression:
-        if(DEBUG) std::cout << "[bbggTree::analyze] Doing regression!" << std::endl;
-	leadingJet_Reg = jetReg_.GetRegression(LeadingJet, rhoFixedGrd);
-	subleadingJet_Reg = jetReg_.GetRegression(SubLeadingJet, rhoFixedGrd);
-	dijetCandidate_Reg = leadingJet_Reg + subleadingJet_Reg;
-	diHiggsCandidate_Reg = dijetCandidate_Reg + diphotonCandidate;
-
-	//Regression + Kinematic Fit:
-        kinFit_.KinematicFit(leadingJet_Reg, subleadingJet_Reg);
-        leadingJet_RegKF = kinFit_.GetJet1();
-        subleadingJet_RegKF = kinFit_.GetJet2();
-        dijetCandidate_RegKF = leadingJet_RegKF + subleadingJet_RegKF;
-        diHiggsCandidate_RegKF = dijetCandidate_RegKF + diphotonCandidate;
+	if(doJetRegression){
+		//Regression:
+	        if(DEBUG) std::cout << "[bbggTree::analyze] Doing regression!" << std::endl;
+		leadingJet_Reg = jetReg_.GetRegression(LeadingJet, rhoFixedGrd);
+		subleadingJet_Reg = jetReg_.GetRegression(SubLeadingJet, rhoFixedGrd);
+		dijetCandidate_Reg = leadingJet_Reg + subleadingJet_Reg;
+		diHiggsCandidate_Reg = dijetCandidate_Reg + diphotonCandidate;
+		//Regression + Kinematic Fit:
+	        kinFit_.KinematicFit(leadingJet_Reg, subleadingJet_Reg);
+	        leadingJet_RegKF = kinFit_.GetJet1();
+	        subleadingJet_RegKF = kinFit_.GetJet2();
+	        dijetCandidate_RegKF = leadingJet_RegKF + subleadingJet_RegKF;
+	        diHiggsCandidate_RegKF = dijetCandidate_RegKF + diphotonCandidate;
+	}
 
         //Calculating costheta star
         TLorentzVector BoostedHgg(0,0,0,0);
