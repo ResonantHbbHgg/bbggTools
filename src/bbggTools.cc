@@ -6,11 +6,35 @@
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 
 
 using namespace std;
 
 bool DEBUG = 0;
+
+std::vector<int> bbggTools::TriggerSelection(std::vector<std::string> myTriggers, const edm::TriggerNames &names, edm::Handle<edm::TriggerResults> triggerBits)
+{
+    std::vector<int> triggerResults;
+    for(unsigned int j = 0; j < myTriggers.size(); j++)
+    {
+        int accepted = 0;
+        for ( unsigned int i = 0; i < triggerBits->size(); i++)
+        {
+            if(DEBUG) std::cout << "[bbggTools::TriggerSelection] Trigger name: " << names.triggerName(i) << std::endl;
+            if((names.triggerName(i)).find(myTriggers[j]) != std::string::npos )
+            {
+                if(triggerBits->accept(i) == 1){
+                    accepted = 1;
+                }
+            }
+        }
+        triggerResults.push_back(accepted);
+    }
+    return triggerResults;
+}
+
 
 bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet)
 {
@@ -422,72 +446,71 @@ vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonIDSelection( vec
    for( unsigned int diphoIndex = 0; diphoIndex < diphoCol.size(); diphoIndex++ )
    {
     //
-     if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Photon loop 2..." << std::endl;
-     edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[ diphoIndex ];
+         if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Photon loop 2..." << std::endl;
+         edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[ diphoIndex ];
 
          double dipho_pt = dipho->pt();
          double dipho_eta = dipho->eta();
          double dipho_mass = dipho->mass();
 
-     int pho_elv[2];
+         int pho_elv[2];
          pho_elv[0] = dipho->leadingPhoton()->passElectronVeto();
          pho_elv[1] = dipho->subLeadingPhoton()->passElectronVeto();
 
      //Cuts on photons
- 	 double pho1_pt = dipho->leadingPhoton()->pt();
-	 double pho2_pt = dipho->subLeadingPhoton()->pt();
- 	 double pho1_eta = dipho->leadingPhoton()->superCluster()->eta();
-	 double pho2_eta = dipho->subLeadingPhoton()->superCluster()->eta();
+ 	     double pho1_pt = dipho->leadingPhoton()->pt();
+	     double pho2_pt = dipho->subLeadingPhoton()->pt();
+ 	     double pho1_eta = dipho->leadingPhoton()->superCluster()->eta();
+	     double pho2_eta = dipho->subLeadingPhoton()->superCluster()->eta();
 
          int pho_ids[2];
-     pho_ids[0] = 1;
-     pho_ids[1] = 1;
-     if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Photon loop 3..." << std::endl; 
-     for( int whichPho = 0; whichPho < 2; whichPho++)
-     {
-	 if(DEBUG) cout << "WHICH PHO: " << whichPho << " _PhotonDoElectronVeto[whichPho] " << _PhotonDoElectronVeto[whichPho] << endl; 
-         if( _PhotonDoElectronVeto[whichPho] ) {
-		pho_ids[whichPho] = pho_elv[whichPho];
-		if(DEBUG) std::cout << "DOING VETO! pass: " << pho_elv[whichPho] << " " << whichPho << " "<< dipho->leadingPhoton()->passElectronVeto() << " "<< dipho->subLeadingPhoton()->passElectronVeto() << endl; 
-	 }
-         int pho1Index = 0; //Index 0 = barrel, 1 = endcap
-         double pho_eta = (whichPho) ? fabs(pho2_eta) : fabs(pho1_eta);
-         if( pho_eta > _PhotonEta[0] ) pho1Index = 1;	 
-         if( _PhotonDoID[whichPho] )
-         { 
-             std::map<int, vector<double> > theIDWP = bbggTools::getWhichID(_phoWhichID[whichPho]);
-             if(theIDWP.size() < 1) {
-                 std::cout << "[bbggTools::AnalysisSelection] _phoWhichID[ " << whichPho << "] = " << _phoWhichID[whichPho] << " has to be either loose, medium or tight!" << std::endl;
-                 break;
-             }
-             int pho1_id = (whichPho) ? bbggTools::isPhoID(dipho->subLeadingPhoton(), theIDWP[pho1Index]) : bbggTools::isPhoID(dipho->leadingPhoton(), theIDWP[pho1Index]) ;
-             if (!pho1_id) pho_ids[whichPho] = 0;
-             
-         }
-         if(_PhotonDoISO[whichPho])
+         pho_ids[0] = 1;
+         pho_ids[1] = 1;
+         if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Photon loop 3..." << std::endl; 
+         for( int whichPho = 0; whichPho < 2; whichPho++)
          {
-             std::map<int, vector<double> > theISOWP = bbggTools::getWhichISO(_phoWhichISO[whichPho]);
-             if(theISOWP.size() < 1) {
-                 std::cout << "[bbggTools::AnalysisSelection] _phoWhichISO[ " << whichPho << "] = " << _phoWhichISO[whichPho] << " has to be either loose, medium or tight!" << std::endl;
-                 break;
+             if(DEBUG) cout << "WHICH PHO: " << whichPho << " _PhotonDoElectronVeto[whichPho] " << _PhotonDoElectronVeto[whichPho] << endl; 
+             if( _PhotonDoElectronVeto[whichPho] ) {
+                 pho_ids[whichPho] = pho_elv[whichPho];
+                 if(DEBUG) std::cout << "DOING VETO! pass: " << pho_elv[whichPho] << " " << whichPho << " "<< dipho->leadingPhoton()->passElectronVeto() << " "<< dipho->subLeadingPhoton()->passElectronVeto() << endl; 
              }
-             int pho1_id = bbggTools::isPhoISO(dipho, whichPho, theISOWP[pho1Index], _nhCorr[pho1Index], _phCorr[pho1Index]);
-             if (!pho1_id) pho_ids[whichPho] = 0;
-         }//here
-     }
-     if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] After Photon loop..." << std::endl;
+             int pho1Index = 0; //Index 0 = barrel, 1 = endcap
+             double pho_eta = (whichPho) ? fabs(pho2_eta) : fabs(pho1_eta);
+             if( pho_eta > _PhotonEta[0] ) pho1Index = 1;	 
+             if( _PhotonDoID[whichPho] )
+             { 
+                 std::map<int, vector<double> > theIDWP = bbggTools::getWhichID(_phoWhichID[whichPho]);
+                 if(theIDWP.size() < 1) {
+                     std::cout << "[bbggTools::AnalysisSelection] _phoWhichID[ " << whichPho << "] = " << _phoWhichID[whichPho] << " has to be either loose, medium or tight!" << std::endl;
+                     break;
+                 }
+                 int pho1_id = (whichPho) ? bbggTools::isPhoID(dipho->subLeadingPhoton(), theIDWP[pho1Index]) : bbggTools::isPhoID(dipho->leadingPhoton(), theIDWP[pho1Index]) ;
+                 if (!pho1_id) pho_ids[whichPho] = 0;
+             }
+             if(_PhotonDoISO[whichPho])
+             {
+                 std::map<int, vector<double> > theISOWP = bbggTools::getWhichISO(_phoWhichISO[whichPho]);
+                 if(theISOWP.size() < 1) {
+                     std::cout << "[bbggTools::AnalysisSelection] _phoWhichISO[ " << whichPho << "] = " << _phoWhichISO[whichPho] << " has to be either loose, medium or tight!" << std::endl;
+                     break;
+                 }
+                 int pho1_id = bbggTools::isPhoISO(dipho, whichPho, theISOWP[pho1Index], _nhCorr[pho1Index], _phCorr[pho1Index]);
+                 if (!pho1_id) pho_ids[whichPho] = 0;
+             }//here
+         }
+         if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] After Photon loop..." << std::endl;
 
-     if(pho_ids[0] == true && pho_ids[1] == true){
- 	  isValidDiPhotonCandidate = true;
-   	  //CandVtx = dipho->vtx();
- 	  diphoCandidate = dipho;
-	  hasDiPho = true;
- 	  _isSignal = 1;
-	  _isPhotonCR = 0;
-	  PreselDiPhotons.push_back(dipho);
+         if(pho_ids[0] == true && pho_ids[1] == true){
+             isValidDiPhotonCandidate = true;
+             //CandVtx = dipho->vtx();
+             diphoCandidate = dipho;
+             hasDiPho = true;
+             _isSignal = 1;
+             _isPhotonCR = 0;
+             PreselDiPhotons.push_back(dipho);
+         }
      }
-    }
-	return PreselDiPhotons;
+     return PreselDiPhotons;
 }
 
 std::vector<edm::Ptr<flashgg::Jet>> bbggTools::DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets)

@@ -5,6 +5,8 @@ import flashgg.bbggTools.KinFitParams as KinFit
 ### For more information on each parameter, see parameters.py
 
 bbggtree = cms.EDAnalyzer('bbggTree',
+	triggerTag=param._triggerTag,
+	myTriggers=param._myTriggers,
 	DiPhotonTag=param._DiPhotonTag,
 	JetTag=param._JetTag,
 	inputTagJets= flashggTags.UnpackedJetCollectionVInputTag, #param._inputTagJets,

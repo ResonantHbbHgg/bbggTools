@@ -53,6 +53,8 @@ process.bbggtree.puBins=cms.vdouble()
 process.bbggtree.dataPu=cms.vdouble()
 process.bbggtree.mcPu=cms.vdouble()
 
+print "I'M HERE 1"
+
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring("test.root")
@@ -83,10 +85,18 @@ customize.register('nPromptPhotons',
 					VarParsing.VarParsing.multiplicity.singleton,
 					VarParsing.VarParsing.varType.int,
 					'Number of prompt photons to be selected - to use this, set doDoubleCountingMitigation=1')
+customize.register('PURW',
+				1,
+				VarParsing.VarParsing.multiplicity.singleton,
+				VarParsing.VarParsing.varType.bool,
+				"Do PU reweighting? Doesn't work on 76X")
+
 
 # call the customization
 customize(process)
 
+process.bbggtree.puReWeight=cms.bool( customize.PURW )
+print "I'M HERE 2"
 
 maxEvents = 5
 if customize.maxEvents:
@@ -119,6 +129,8 @@ print customize.inputFiles, customize.outputFile, customize.maxEvents, customize
 #        customize.inputFiles
 #    )
 #)
+
+print "I'M HERE 3"
 
 #process.load("flashgg.bbggTools.bbggTree_cfi")
 process.load("flashgg.Taggers.flashggTags_cff")

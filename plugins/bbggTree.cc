@@ -41,7 +41,8 @@ Implementation:
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
-
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 
 //FLASHgg files
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
@@ -93,6 +94,7 @@ private:
     std::vector<edm::EDGetTokenT<edm::View<flashgg::Jet> > > tokenJets_;
     edm::InputTag genInfo_;
     edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
+    edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
 
     std::string bTagType;
     unsigned int doSelection; 
@@ -108,6 +110,7 @@ private:
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
     float CosThetaStar;
+    vector<int> myTriggerResults;
     
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -143,6 +146,7 @@ private:
     std::vector<double> dijt_pt, dijt_eta, dijt_mass;
     std::vector<double> cand_pt, cand_eta, cand_mass, dr_cands;
     unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR, doJetRegression;
+    std::vector<std::string> myTriggers;
 
     //OutFile & Hists
     TFile* outFile;
@@ -219,6 +223,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
     unsigned int def_doJetRegression = 0;
+    
+    std::vector<std::string> def_myTriggers;
+//    def_myTriggers.push_back("");
 	  
 
     std::string def_fileName;
@@ -282,6 +289,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
     genInfoToken_ = consumes<GenEventInfoProduct>( genInfo_ );
 	
+    myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
+    triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
+    
     tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
     tools_.SetCut_PhotonEta( ph_eta );
@@ -451,6 +461,14 @@ void
     tools_.setRho(rhoFixedGrd);
 
     Handle<View<pat::PackedGenParticle> > genParticles;
+    
+    //Trigger
+    if(myTriggers.size() > 0){
+        Handle<edm::TriggerResults> trigResults;
+        iEvent.getByToken(triggerToken_, trigResults);
+        const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
+        myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
+    }
 
     //MC Weights
     Handle<GenEventInfoProduct> genInfo;
@@ -497,17 +515,29 @@ void
         }
 
         if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
+        
+        //Trigger preselection:
+        if(myTriggers.size() > 0){
+            bool triggerAccepted = false;
+            for( unsigned int tr = 0; tr < myTriggerResults.size(); tr++){
+                if(myTriggerResults[tr] == 1){
+                    triggerAccepted = true;
+                    break;
+                }
+            }
+            if(!triggerAccepted) return;
+        }
 
         bool passedSelection = tools_.AnalysisSelection(diphoVec, theJetsCols);
-	isSignal = tools_.IsSignal();
-	isPhotonCR = tools_.IsPhotonCR();
-	bool hasLJet = tools_.HasLeadJet();
-	bool hasSJet = tools_.HasSubJet();
-
-    if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
-	if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
-	//if(!passedSelection) return;
-	if(!hasLJet || !hasSJet) return;
+	    isSignal = tools_.IsSignal();
+	    isPhotonCR = tools_.IsPhotonCR();
+	    bool hasLJet = tools_.HasLeadJet();
+	    bool hasSJet = tools_.HasSubJet();
+        
+        if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
+	    if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
+	    //if(!passedSelection) return;
+	    if(!hasLJet || !hasSJet) return;
 		
         if(DEBUG) std::cout << "[bbggTree::analyze] tools_.AnalysisSelection returned " << passedSelection << std::endl;
 		
@@ -566,8 +596,9 @@ void
         BoostedHgg.SetPtEtaPhiE( diphoCand->pt(), diphoCand->eta(), diphoCand->phi(), diphoCand->energy());
         TLorentzVector HHforBoost(0,0,0,0);
         HHforBoost.SetPtEtaPhiE( diHiggsCandidate.pt(), diHiggsCandidate.eta(), diHiggsCandidate.phi(), diHiggsCandidate.energy());
-        TVector3 HHBoostVector = HHforBoost.BoostVector();
-        BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
+        TVector3 HHBoostVector = -HHforBoost.BoostVector();
+//        BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
+        BoostedHgg.Boost( -HHBoostVector );
         CosThetaStar = BoostedHgg.CosTheta();
         
         		
@@ -845,13 +876,13 @@ void
         tree->Branch("leadingJet_Reg", &leadingJet_Reg);
         tree->Branch("leadingJet_RegKF", &leadingJet_RegKF);
         tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
-	tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
+	    tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
         tree->Branch("subleadingJet", &subleadingJet);
         tree->Branch("subleadingJet_KF", &subleadingJet_KF);
         tree->Branch("subleadingJet_Reg", &subleadingJet_Reg);
         tree->Branch("subleadingJet_RegKF", &subleadingJet_RegKF);
         tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/F");
-	tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
+	    tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
         tree->Branch("dijetCandidate", &dijetCandidate);
         tree->Branch("dijetCandidate_KF", &dijetCandidate_KF);
         tree->Branch("dijetCandidate_Reg", &dijetCandidate_Reg);
@@ -860,15 +891,16 @@ void
         tree->Branch("diHiggsCandidate_KF", &diHiggsCandidate_KF);
         tree->Branch("diHiggsCandidate_Reg", &diHiggsCandidate_Reg);
         tree->Branch("diHiggsCandidate_RegKF", &diHiggsCandidate_RegKF);
-	tree->Branch("isSignal", &isSignal, "isSignal/I");
-	tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
+	    tree->Branch("isSignal", &isSignal, "isSignal/I");
+	    tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
         tree->Branch("jet1PtRes", &jet1PtRes, "jet1PtRes/F");
         tree->Branch("jet1EtaRes", &jet1EtaRes, "jet1EtaRes/F");
         tree->Branch("jet1PhiRes", &jet1PhiRes, "jet1PhiRes/F");
         tree->Branch("jet2PtRes", &jet2PtRes, "jet2PtRes/F");
         tree->Branch("jet2EtaRes", &jet2EtaRes, "jet2EtaRes/F");
         tree->Branch("jet2PhiRes", &jet2PhiRes, "jet2PhiRes/F");
-	tree->Branch("CosThetaStar", &CosThetaStar, "CosThetaStar/D");
+	    tree->Branch("CosThetaStar", &CosThetaStar, "CosThetaStar/F");
+        tree->Branch("TriggerResults", &myTriggerResults);
 		
     }
     std::map<std::string, std::string> replacements;

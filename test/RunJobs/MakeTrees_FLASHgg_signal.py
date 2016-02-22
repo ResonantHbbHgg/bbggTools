@@ -85,10 +85,17 @@ customize.register('nPromptPhotons',
 					VarParsing.VarParsing.multiplicity.singleton,
 					VarParsing.VarParsing.varType.int,
 					'Number of prompt photons to be selected - to use this, set doDoubleCountingMitigation=1')
+customize.register('PURW',
+				1,
+				VarParsing.VarParsing.multiplicity.singleton,
+				VarParsing.VarParsing.varType.bool,
+				"Do PU reweighting? Doesn't work on 76X")
+
 
 # call the customization
 customize(process)
 
+process.bbggtree.puReWeight=cms.bool( customize.PURW )
 print "I'M HERE 2"
 
 maxEvents = 5

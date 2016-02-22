@@ -8,6 +8,8 @@
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 // system include files
 #include <memory>
 #include <vector>
@@ -34,6 +36,8 @@ public:
 	std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotonIDSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
 	std::vector<edm::Ptr<flashgg::Jet>> DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets);
 	std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
+    
+    std::vector<int> TriggerSelection(std::vector<std::string> myTriggers, const edm::TriggerNames &names, edm::Handle<edm::TriggerResults> triggerBits);
 
 
     std::map<int, vector<double> > getWhichID (std::string wpoint);

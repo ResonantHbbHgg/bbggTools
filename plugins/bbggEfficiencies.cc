@@ -82,6 +82,8 @@ private:
     std::vector<edm::InputTag> inputTagJets_;
     std::vector<edm::EDGetTokenT<edm::View<flashgg::Jet> > > tokenJets_;
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > genToken_;
+    edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
+    
 
 //    edm::InputTag rhoFixedGrid_;
     std::string bTagType;
@@ -143,6 +145,8 @@ private:
     std::vector<double> dijt_pt, dijt_eta, dijt_mass;
     std::vector<double> cand_pt, cand_eta, cand_mass, dr_cands;
     unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR;
+    std::vector<std::string> myTriggers;
+    
 
     //OutFile & Hists
     TFile* outFile;
@@ -225,7 +229,9 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     unsigned int def_nPromptPhotons = 0;
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
-	  
+
+    std::vector<std::string> def_myTriggers;
+
 
     std::string def_fileName;
 
@@ -284,6 +290,9 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
 //    rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
     bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
+    
+    myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
+    triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
 	
     tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
@@ -503,7 +512,23 @@ Efficiencies->Fill(1);
 passed1 = 1;
 
 //Check number of diphotons after presel:
-if( diphoVec.size() < 1 ) {tree->Fill(); return;}
+//76x: Check trigger results
+//Trigger
+std::vector<int> myTriggerResults;
+bool triggerAccepted = false;
+if(myTriggers.size() > 0){
+    Handle<edm::TriggerResults> trigResults;
+    iEvent.getByToken(triggerToken_, trigResults);
+    const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
+    myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
+    for( unsigned int tr = 0; tr < myTriggerResults.size(); tr++){
+        if(myTriggerResults[tr] == 1){
+            triggerAccepted = true;
+            break;
+        }
+    }
+}
+if( !triggerAccepted ) {tree->Fill(); return;}
 Efficiencies->Fill(2);
 passed2 = 1;
 
