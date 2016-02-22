@@ -5,6 +5,8 @@ import flashgg.Taggers.flashggTags_cff as flashggTags
 ### For more information on each parameter, see parameters.py
 
 bbggefficiencies = cms.EDAnalyzer('bbggEfficiencies',
+        triggerTag=param._triggerTag,
+        myTriggers=param._myTriggers,
 	DiPhotonTag=param._DiPhotonTag,
 	JetTag=param._JetTag,
 	inputTagJets= flashggTags.UnpackedJetCollectionVInputTag, #param._inputTagJets,
