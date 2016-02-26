@@ -59,6 +59,9 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	ptRes=KinFit._ptRes,
 	etaRes=KinFit._etaRes,
 	phiRes=KinFit._phiRes,
-	etaBins=KinFit._etaBins
+	etaBins=KinFit._etaBins,
+	DoMVAPhotonID=param._DoMVAPhotonID,
+	MVAPhotonID=param._MVAPhotonID,
+	PhotonMVAEstimator=param._PhotonMVAEstimator
 #	doSelectionTree=param._doSelectionTree
 )

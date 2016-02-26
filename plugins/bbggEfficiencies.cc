@@ -86,8 +86,6 @@ private:
     
 
 //    edm::InputTag rhoFixedGrid_;
-    std::string bTagType;
-    unsigned int doSelection; 
 	  
     //Tree objects
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
@@ -102,21 +100,7 @@ private:
     int leadingJet_flavour, subleadingJet_flavour;
     int isSignal, isPhotonCR;
 //    int nvtx;
-    int passed0;
-    int passed1;
-    int passed2;
-    int passed3;
-    int passed4;
-    int passed5;
-    int passed6;
-    int passed7;
-    int passed8;
-    int passed9;
-    int passed10;
-    int passed11;
-    int passed12;
-    int passed13;
-    int passed14;
+    int passed0, passed1, passed2, passed3, passed4, passed5, passed6, passed7, passed8, passed9, passed10, passed11, passed12, passed13, passed14;
 
     vector<LorentzVector> leadingjets, subleadingjets, dijets;
     vector<double> leadingjets_bDiscriminant, subleadingjets_bDiscriminant;
@@ -135,7 +119,7 @@ private:
     std::vector<double> nhCorrEB, nhCorrEE;
     std::vector<double> phCorrEB, phCorrEE;
     std::vector<double> ph_pt, ph_eta, ph_r9;
-    std::vector<double> diph_pt, diph_eta, diph_mass;
+    std::vector<double> diph_pt, diph_eta, diph_mass, MVAPhotonID;
     std::vector<int> ph_elVeto, ph_doelVeto, ph_doID, ph_doISO;
     std::vector<std::string> ph_whichID, ph_whichISO;
     unsigned int diph_onlyfirst;
@@ -144,8 +128,10 @@ private:
     unsigned int n_bJets;
     std::vector<double> dijt_pt, dijt_eta, dijt_mass;
     std::vector<double> cand_pt, cand_eta, cand_mass, dr_cands;
-    unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR;
+    unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR, doJetRegression;
     std::vector<std::string> myTriggers;
+    std::string bTagType, PhotonMVAEstimator;
+    unsigned int doSelection, DoMVAPhotonID; 
     
 
     //OutFile & Hists
@@ -184,10 +170,10 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     globVar_->dumpLumiFactor(lumiWeight_);
     EvtCount = 0;
     //Default values for thresholds
-    std::string def_bTagType;
+    std::string def_bTagType, def_PhotonMVAEstimator;
     unsigned int def_doSelection = 0;
     std::vector<double> def_ph_pt, def_ph_eta, def_ph_r9;
-    std::vector<double> def_diph_pt, def_diph_eta, def_diph_mass;
+    std::vector<double> def_diph_pt, def_diph_eta, def_diph_mass, def_MVAPhotonID;
     std::vector<double> def_jt_pt, def_jt_eta, def_jt_drPho, def_jt_bDis;
     std::vector<double> def_dijt_pt, def_dijt_eta, def_dijt_mass, def_cand_pt, def_cand_eta, def_cand_mass, def_dr_cands;
     std::vector<int> def_ph_elVeto, def_ph_doelVeto, def_ph_doID;
@@ -229,6 +215,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     unsigned int def_nPromptPhotons = 0;
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
+    unsigned int def_DoMVAPhotonID = 0;
 
     std::vector<std::string> def_myTriggers;
 
@@ -293,6 +280,15 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
+    
+    //MVA Photon ID
+    DoMVAPhotonID = iConfig.getUntrackedParameter<unsigned int>("DoMVAPhotonID", def_DoMVAPhotonID);
+    MVAPhotonID = iConfig.getUntrackedParameter<std::vector<double>>("MVAPhotonID", def_MVAPhotonID);
+    PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
+    
+    tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
+    tools_.SetCut_MVAPhotonID(MVAPhotonID);
+    tools_.SetCut_PhotonMVAEstimator(PhotonMVAEstimator);
 	
     tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );

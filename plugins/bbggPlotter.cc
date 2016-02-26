@@ -439,12 +439,12 @@ void
     double pho1_elveto = diphoCand->leadingPhoton()->passElectronVeto();
     double pho2_elveto = diphoCand->subLeadingPhoton()->passElectronVeto();
  	
-    double pho1_chiso = tools_.getCHisoToCutValue( diphoCand, 0);
-    double pho2_chiso = tools_.getCHisoToCutValue( diphoCand, 1);
-    double pho1_nhiso = tools_.getNHisoToCutValue( diphoCand->leadingPhoton() );
-    double pho2_nhiso = tools_.getNHisoToCutValue( diphoCand->subLeadingPhoton() );
-    double pho1_phiso = tools_.getPHisoToCutValue( diphoCand->leadingPhoton() );
-    double pho2_phiso = tools_.getPHisoToCutValue( diphoCand->subLeadingPhoton() ); 
+    // double pho1_chiso = tools_.getCHisoToCutValue( diphoCand, 0);
+    // double pho2_chiso = tools_.getCHisoToCutValue( diphoCand, 1);
+    // double pho1_nhiso = tools_.getNHisoToCutValue( diphoCand->leadingPhoton() );
+    // double pho2_nhiso = tools_.getNHisoToCutValue( diphoCand->subLeadingPhoton() );
+    // double pho1_phiso = tools_.getPHisoToCutValue( diphoCand->leadingPhoton() );
+    // double pho2_phiso = tools_.getPHisoToCutValue( diphoCand->subLeadingPhoton() );
     //END photon Variables
     edm::Ptr<flashgg::Jet> LeadingJet = tools_.GetSelected_leadingJetCandidate();
     //Leading Jet Variables
@@ -539,9 +539,9 @@ void
     hists["pho1_hoe"].Fill(pho1_hoe);
     hists["pho1_sieie"].Fill(pho1_sieie);
     hists["pho1_r9"].Fill(pho1_r9);
-    hists["pho1_chiso"].Fill(pho1_chiso);
-    hists["pho1_nhiso"].Fill(pho1_nhiso);
-    hists["pho1_phiso"].Fill(pho1_phiso);
+    // hists["pho1_chiso"].Fill(pho1_chiso);
+    // hists["pho1_nhiso"].Fill(pho1_nhiso);
+    // hists["pho1_phiso"].Fill(pho1_phiso);
     hists["pho1_elveto"].Fill(pho1_elveto);
 	
     hists["pho2_pt"].Fill(pho2_pt);
@@ -551,9 +551,9 @@ void
     hists["pho2_hoe"].Fill(pho2_hoe);
     hists["pho2_sieie"].Fill(pho2_sieie);
     hists["pho2_r9"].Fill(pho2_r9);
-    hists["pho2_chiso"].Fill(pho2_chiso);
-    hists["pho2_nhiso"].Fill(pho2_nhiso);
-    hists["pho2_phiso"].Fill(pho2_phiso);
+    // hists["pho2_chiso"].Fill(pho2_chiso);
+    // hists["pho2_nhiso"].Fill(pho2_nhiso);
+    // hists["pho2_phiso"].Fill(pho2_phiso);
     hists["pho2_elveto"].Fill(pho2_elveto);
 	
     hists["jet1_pt"].Fill(jet1_pt);

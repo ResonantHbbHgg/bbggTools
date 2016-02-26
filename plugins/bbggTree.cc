@@ -95,9 +95,6 @@ private:
     edm::InputTag genInfo_;
     edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
-
-    std::string bTagType;
-    unsigned int doSelection; 
 	  
     //Tree objects
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
@@ -136,7 +133,7 @@ private:
     std::vector<double> nhCorrEB, nhCorrEE;
     std::vector<double> phCorrEB, phCorrEE;
     std::vector<double> ph_pt, ph_eta, ph_r9;
-    std::vector<double> diph_pt, diph_eta, diph_mass;
+    std::vector<double> diph_pt, diph_eta, diph_mass, MVAPhotonID;
     std::vector<int> ph_elVeto, ph_doelVeto, ph_doID, ph_doISO;
     std::vector<std::string> ph_whichID, ph_whichISO;
     unsigned int diph_onlyfirst;
@@ -147,6 +144,8 @@ private:
     std::vector<double> cand_pt, cand_eta, cand_mass, dr_cands;
     unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR, doJetRegression;
     std::vector<std::string> myTriggers;
+    std::string bTagType, PhotonMVAEstimator;
+    unsigned int doSelection, DoMVAPhotonID; 
 
     //OutFile & Hists
     TFile* outFile;
@@ -177,10 +176,10 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     globVar_->dumpLumiFactor(lumiWeight_);
     EvtCount = 0;
     //Default values for thresholds
-    std::string def_bTagType;
+    std::string def_bTagType, def_PhotonMVAEstimator;
     unsigned int def_doSelection = 0;
     std::vector<double> def_ph_pt, def_ph_eta, def_ph_r9;
-    std::vector<double> def_diph_pt, def_diph_eta, def_diph_mass;
+    std::vector<double> def_diph_pt, def_diph_eta, def_diph_mass, def_MVAPhotonID;
     std::vector<double> def_jt_pt, def_jt_eta, def_jt_drPho, def_jt_bDis;
     std::vector<double> def_dijt_pt, def_dijt_eta, def_dijt_mass, def_cand_pt, def_cand_eta, def_cand_mass, def_dr_cands;
     std::vector<int> def_ph_elVeto, def_ph_doelVeto, def_ph_doID;
@@ -199,6 +198,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     def_ph_whichID.push_back("loose");  def_ph_whichID.push_back("loose");
     def_ph_doISO.push_back(0);	        def_ph_doISO.push_back(0);
     def_ph_whichISO.push_back("loose"); def_ph_whichISO.push_back("loose");
+    def_MVAPhotonID.push_back(1.);      def_MVAPhotonID.push_back(1.);
     def_diph_pt.push_back(10.);         def_diph_pt.push_back(10.);
     def_diph_eta.push_back(0.);         def_diph_eta.push_back(0.);
     def_diph_mass.push_back(0.);        def_diph_mass.push_back(1000.);
@@ -223,10 +223,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
     unsigned int def_doJetRegression = 0;
+    unsigned int def_DoMVAPhotonID = 0;
     
-    std::vector<std::string> def_myTriggers;
-//    def_myTriggers.push_back("");
-	  
+    std::vector<std::string> def_myTriggers;	  
 
     std::string def_fileName;
 
@@ -283,7 +282,6 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
     doPhotonCR = iConfig.getUntrackedParameter<unsigned int>("doPhotonCR", def_doPhotonCR);
     doJetRegression = iConfig.getUntrackedParameter<unsigned int>("doJetRegression", def_doJetRegression);
-//    rhoFixedGrid_  = iConfig.getUntrackedParameter<edm::InputTag>( "rhoFixedGridCollection", edm::InputTag( "fixedGridRhoAll" ) );
     bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
@@ -291,6 +289,15 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 	
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
+    
+    //MVA Photon ID
+    DoMVAPhotonID = iConfig.getUntrackedParameter<unsigned int>("DoMVAPhotonID", def_DoMVAPhotonID);
+    MVAPhotonID = iConfig.getUntrackedParameter<std::vector<double>>("MVAPhotonID", def_MVAPhotonID);
+    PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
+    
+    tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
+    tools_.SetCut_MVAPhotonID(MVAPhotonID);
+    tools_.SetCut_PhotonMVAEstimator(PhotonMVAEstimator);
     
     tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
@@ -536,7 +543,7 @@ void
         
         if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
 	    if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
-	    //if(!passedSelection) return;
+        if(!passedSelection) return;
 	    if(!hasLJet || !hasSJet) return;
 		
         if(DEBUG) std::cout << "[bbggTree::analyze] tools_.AnalysisSelection returned " << passedSelection << std::endl;
@@ -558,10 +565,10 @@ void
         subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
         leadingJet = LeadingJet->p4();
         leadingJet_bDis = LeadingJet->bDiscriminator(bTagType);
-	leadingJet_flavour = LeadingJet->partonFlavour();
+	    leadingJet_flavour = LeadingJet->partonFlavour();
         subleadingJet = SubLeadingJet->p4();
         subleadingJet_bDis = SubLeadingJet->bDiscriminator(bTagType);
-	subleadingJet_flavour = SubLeadingJet->partonFlavour();
+	    subleadingJet_flavour = SubLeadingJet->partonFlavour();
         dijetCandidate = leadingJet + subleadingJet;
         diHiggsCandidate = diphotonCandidate + dijetCandidate;
         
@@ -597,8 +604,8 @@ void
         TLorentzVector HHforBoost(0,0,0,0);
         HHforBoost.SetPtEtaPhiE( diHiggsCandidate.pt(), diHiggsCandidate.eta(), diHiggsCandidate.phi(), diHiggsCandidate.energy());
         TVector3 HHBoostVector = -HHforBoost.BoostVector();
-//        BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
-        BoostedHgg.Boost( -HHBoostVector );
+        BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
+//        BoostedHgg.Boost( -HHBoostVector );
         CosThetaStar = BoostedHgg.CosTheta();
         
         		
