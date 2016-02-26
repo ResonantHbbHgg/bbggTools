@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int Process(string file, string outFile, string mtotMin, string mtotMax,string scale, string photonCR){
+int Process(string file, string outFile, string mtotMin, string mtotMax,string scale, string photonCR, string doKinFit, string doMX){
     TFile* iFile = new TFile(TString(file), "READ");
     TTree* iTree = (TTree*) iFile->Get("bbggSelectionTree");
     cout << "[LimitTreeMaker:Process] Processing tree with " << iTree->GetEntries() << " entries." << endl;
@@ -21,6 +21,10 @@ int Process(string file, string outFile, string mtotMin, string mtotMax,string s
     option.append(scale);
     option.append(";");
     option.append(photonCR);
+    option.append(";");
+    option.append(doKinFit);
+    option.append(";");
+    option.append(doMX);
     cout << "[LimitTreeMaker:Process] Option parsing: " << option << endl;
     iTree->Process("flashgg/bbggTools/src/bbggLTMaker.cc+", TString(option)); 
     delete iFile;
@@ -35,6 +39,8 @@ int main(int argc, char *argv[]) {
     string mtotMin = "0";
     string scale = "1";
     string photonCR = "0";
+    string doKinFit = "0";
+    string doMX = "0";
 
     for( int i = 1; i < argc; i++){
 	if ( std::string(argv[i]) == "-i"){
@@ -80,14 +86,20 @@ int main(int argc, char *argv[]) {
 	else if ( std::string(argv[i]) =="-photonCR"){
 		photonCR = "1";
 	}
+    else if ( std::string(argv[i]) =="-KF"){
+        doKinFit = "1";
+    }
+    else if ( std::string(argv[i]) =="-MX"){
+        doMX = "1";
+    }
 	else {
-		cout << "Usage: LimitTreeMaker -i <input list of files> -o <output location> [optional: -min <min mtot> -max <max mtot> -scale <scale factor> -photonCR (do photon control region" << endl;
+		cout << "Usage: LimitTreeMaker -i <input list of files> -o <output location> [optional: -min <min mtot> -max <max mtot> -scale <scale factor> -photonCR (do photon control region) -KF (use Mtot_KF to cut on mass window) -MX (use MX to cut on mass window) (choose either -MX or -KF!)" << endl;
 		return -1;
 	}	
     }
 
     if(inputFile == "" || outputLocation == "") {
-	cout << "Usage: LimitTreeMaker -i <input list of files> -o <output location> [optional: -min <min mtot> -max <max mtot> -scale <scale factor> -photonCR (do photon control region" << endl;
+	cout << "Usage: LimitTreeMaker -i <input list of files> -o <output location> [optional: -min <min mtot> -max <max mtot> -scale <scale factor> -photonCR (do photon control region) -KF (use Mtot_KF to cut on mass window) -MX (use MX to cut on mass window) (choose either -MX or -KF!)" << endl;
 	return 0;
     }
 /*
@@ -123,14 +135,12 @@ int main(int argc, char *argv[]) {
             cout << "[LimitTreeMaker] The following line in file is not a root file: " << line << endl;
             continue;
         }
-        size_t sLoc = rootFileName.find("bbggSelectionTree_");
-        size_t sLen = std::string("bbggSelectionTree_").length();
-        rootFileName.replace(sLoc, sLen, "");
+        size_t sLoc = line.find_last_of("/");
         string outF = outputLocation;
         outF.append("/LT_");
-        outF.append(rootFileName);
+        outF.append(line.substr(sLoc+1));
         cout << "Output file: " << outF << endl;
-        Process(line, outF, mtotMin, mtotMax, scale, photonCR);
+        Process(line, outF, mtotMin, mtotMax, scale, photonCR, doKinFit, doMX);
     }
     
     return 0;

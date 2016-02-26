@@ -37,8 +37,6 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
 
    TString option = GetOption();
    TString fileName = "";
-//   TString mtotMin = "";
-//   TString mtotMax = "";
    TString cat = "";
    if(!option.Contains(";")) {
        std::cout << "[bbggLTMaker::Begin] Please, make sure your input is in the form \"<fileName>;<Category>\", where <Category> : 0 (no b-tag), 1 (loose b-tag), 2 (tight b-tag)." << endl;
@@ -55,8 +53,16 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
 	   mtotMax = (((TObjString *)(options->At(2)))->String()).Atof();
 	   normalization = (((TObjString *)(options->At(3)))->String()).Atof();
 	   photonCR = (((TObjString *)(options->At(4)))->String()).Atoi();
+	   doKinFit = (((TObjString *)(options->At(5)))->String()).Atoi();
+	   doMX = (((TObjString *)(options->At(6)))->String()).Atoi();
+       if(doKinFit == 1 && doMX == 1){
+            std::cout << "[bbggLTMaker::Begin] You need to choose either MX or KinFit, not both!" << std::endl;
+            TSelector::Abort("Wrong input!");
+       }
 	   std::cout << "[bbggLTMaker::Begin] Using normalization factor = " << normalization << std::endl;
 	   std::cout << "[bbggLTMaker::Begin] Doing photon control region? " << photonCR << std::endl;
+	   std::cout << "[bbggLTMaker::Begin] Cutting on Kinematic Fitted M(4body) ? " << doKinFit << std::endl;
+	   std::cout << "[bbggLTMaker::Begin] Cutting on MX ? " << doMX << std::endl;
        }
    }
    if(!fileName.Contains(".root")) {
@@ -129,6 +135,11 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    o_bbMass = dijetCandidate->M();
    o_ggMass = diphotonCandidate->M();
    o_bbggMass = diHiggsCandidate->M();
+   if(doKinFit)
+        o_bbggMass = diHiggsCandidate_KF->M();
+   if(doMX)
+        o_bbggMass = diHiggsCandidate->M() - dijetCandidate->M() + 125.;
+
    double sumbtag = leadingJet_bDis + subleadingJet_bDis;
   
    if( dijetCandidate->Pt() < 50 )
