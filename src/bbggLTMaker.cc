@@ -142,8 +142,8 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
 
    double sumbtag = leadingJet_bDis + subleadingJet_bDis;
   
-   if( dijetCandidate->Pt() < 50 )
-	return kTRUE;
+//   if( dijetCandidate->Pt() < 50 )
+//	return kTRUE;
 
    //mtot cut
    if(o_bbggMass < mtotMin || o_bbggMass > mtotMax)
@@ -153,9 +153,15 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    if(photonCR == 0 && isPhotonCR == 1)
 	return kTRUE;
    
-   if ( sumbtag > 1.64 ) o_category = 0;
-   if (sumbtag > 0.82 && sumbtag < 1.64 ) o_category = 1;
-   if (sumbtag < 0.82 ) o_category = -1;
+//   double upper = 1.83;
+//   double lower = 1.11;
+//   if ( sumbtag > upper ) o_category = 0;
+//   if (sumbtag > lower && sumbtag < upper ) o_category = 1;
+//   if (sumbtag < lower ) o_category = -1;
+   if ( leadingJet_bDis > 0.8 && subleadingJet_bDis > 0.8 ) {o_category = 0;}
+   else if ( leadingJet_bDis > 0.8 && subleadingJet_bDis < 0.8 ) { o_category = 1; }
+   else if ( leadingJet_bDis < 0.8 && subleadingJet_bDis > 0.8 ) { o_category = 1; }
+   else if ( leadingJet_bDis < 0.8 && subleadingJet_bDis < 0.8 ) { o_category = -1; }
    outTree->Fill();
 
    return kTRUE;

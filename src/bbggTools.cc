@@ -232,6 +232,8 @@ bool bbggTools::isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPh
 
 bool bbggTools::isPhoISO(const flashgg::DiPhotonCandidate * dipho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr)
 {
+	if(DEBUG) std::cout << "[bbggTools::isPhoISO] Doing cut based isolation!" << std::endl;
+
 	if(rho_ == -10 ){
 		cout << "[bbggTools::isPhoISO] You have to do tools->setRho(rho)!" << endl;
 		return -1;
@@ -251,9 +253,13 @@ bool bbggTools::isPhoISO(const flashgg::DiPhotonCandidate * dipho, int whichPho,
 	nhiso = bbggTools::getNHisoToCutValue( pho, nhCorr );
 	phiso = bbggTools::getPHisoToCutValue( pho, phCorr );
 	bool isiso = true;
+	if(DEBUG) std::cout << "[bbggTools::isPhoISO] \t Before cuts: " << isiso << std::endl;
 	if(chiso > cuts[0]) isiso = false;
+	if(DEBUG) std::cout << "[bbggTools::isPhoISO] \t After chiso: " << isiso << std::endl;
 	if(nhiso > cuts[1]) isiso = false;
+	if(DEBUG) std::cout << "[bbggTools::isPhoISO] \t Before nhiso: " << isiso << std::endl;
 	if(phiso > cuts[2]) isiso = false;
+	if(DEBUG) std::cout << "[bbggTools::isPhoISO] \t Before phiso: " << isiso << std::endl;
 	
 	return isiso;
 	
@@ -365,7 +371,16 @@ vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonKinematicSelecti
 
 vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonIDSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol)
 {
-    vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > SelectedDiPhotons = bbggTools::EvaluatePhotonIDs( diphoCol);;
+    vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > SelectedDiPhotons = bbggTools::EvaluatePhotonIDs( diphoCol);
+    if (DEBUG){
+	std::cout << "[bbggTools::DiPhotonIDSelection] Selected photons" << std::endl;
+	int di = 0;
+	for ( vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > >::const_iterator it = SelectedDiPhotons.begin();
+            it != SelectedDiPhotons.end(); it++){
+		std::cout << "\t Diphoton " << di << " -- ID: " << it->second << std::endl;
+		di++;
+   	}
+    }
     vector<edm::Ptr<flashgg::DiPhotonCandidate>> SignalDiPhotons = bbggTools::GetDiPhotonsInCategory(SelectedDiPhotons, 2);
     
     return SignalDiPhotons;
@@ -418,27 +433,32 @@ vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > bbggTools::EvaluatePho
              if( pho_eta > _PhotonEta[0] ) pho1Index = 1;
              
              if(_DoMVAPhotonID){
-                 if( pho_mvas[whichPho] < _MVAPhotonID[pho1Index] ){
-                     pho_ids[whichPho] = 0;
-                 }
-                 continue;
+		if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] Doing MVA ID!" << std::endl;
+                if( pho_mvas[whichPho] < _MVAPhotonID[pho1Index] ){
+                    pho_ids[whichPho] = 0;
+                }
+                continue;
              }
 
-             if( _PhotonDoID[whichPho] )
+             if( _PhotonDoID[whichPho] && _DoMVAPhotonID == 0)
              { 
+ 		 if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] Doing Cut Based ID!" << std::endl;
                  std::map<int, vector<double> > theIDWP = bbggTools::getWhichID(_phoWhichID[whichPho]);
                  if(theIDWP.size() < 1) break;
                  
                  int pho1_id = (whichPho) ? bbggTools::isPhoID(dipho->subLeadingPhoton(), theIDWP[pho1Index]) : bbggTools::isPhoID(dipho->leadingPhoton(), theIDWP[pho1Index]) ;
                  if (!pho1_id) pho_ids[whichPho] = 0;
+		 if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] \t Result: " << pho_ids[whichPho] << std::endl;
              }
-             if(_PhotonDoISO[whichPho])
+             if(_PhotonDoISO[whichPho] && _DoMVAPhotonID == 0)
              {
+		 if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] Doing Cut Based ISO!" << std::endl;
                  std::map<int, vector<double> > theISOWP = bbggTools::getWhichISO(_phoWhichISO[whichPho]);
                  if(theISOWP.size() < 1) break;
                  
                  int pho1_id = bbggTools::isPhoISO(dipho, whichPho, theISOWP[pho1Index], _nhCorr[pho1Index], _phCorr[pho1Index]);
                  if (!pho1_id) pho_ids[whichPho] = 0;
+		 if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] \t Result: " << pho_ids[whichPho] << std::endl;
              }//here
          }
          if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] After Photon loop..." << std::endl;

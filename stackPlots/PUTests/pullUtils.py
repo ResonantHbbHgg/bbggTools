@@ -312,6 +312,9 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	c1.SaveAs(dirName+"/LOG_" + fileName + ".png")
 	c1.Delete()
 
+	print "Expected number of events (MC):", SUM.Integral()
+	print "Observed number of events (DATA):", data.Integral()
+
 def SavePull(pullH, pullE, LowEdge, UpEdge, dirName):
 	ca = TCanvas("ca", "ca", 1000, 800)
 	ca.cd()

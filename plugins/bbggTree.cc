@@ -106,7 +106,7 @@ private:
     vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
-    float CosThetaStar;
+    float CosThetaStar, leadingPhotonIDMVA, subleadingPhotonIDMVA;
     vector<int> myTriggerResults;
     
     double genTotalWeight;
@@ -565,10 +565,10 @@ void
         subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
         leadingJet = LeadingJet->p4();
         leadingJet_bDis = LeadingJet->bDiscriminator(bTagType);
-	    leadingJet_flavour = LeadingJet->partonFlavour();
+	leadingJet_flavour = LeadingJet->partonFlavour();
         subleadingJet = SubLeadingJet->p4();
         subleadingJet_bDis = SubLeadingJet->bDiscriminator(bTagType);
-	    subleadingJet_flavour = SubLeadingJet->partonFlavour();
+	subleadingJet_flavour = SubLeadingJet->partonFlavour();
         dijetCandidate = leadingJet + subleadingJet;
         diHiggsCandidate = diphotonCandidate + dijetCandidate;
         
@@ -626,6 +626,9 @@ void
 
         float lpho_eta_abs = fabs( diphoCand->leadingPhoton()->superCluster()->eta() );
         float spho_eta_abs = fabs( diphoCand->subLeadingPhoton()->superCluster()->eta() );
+
+	leadingPhotonIDMVA = diphoCand->leadingPhoton()->userFloat(PhotonMVAEstimator);
+	subleadingPhotonIDMVA = diphoCand->leadingPhoton()->userFloat(PhotonMVAEstimator);
 
         if(lpho_eta_abs < 1.44){
             lphoIDloose 	= tools_.isPhoID(diphoCand->leadingPhoton(), phoIDlooseEB);
@@ -872,10 +875,12 @@ void
         tree->Branch("leadingPhotonID", &leadingPhotonID);
         tree->Branch("leadingPhotonISO", &leadingPhotonISO);
         tree->Branch("leadingPhotonEVeto", &leadingPhotonEVeto, "leadingPhotonEVeto/I");
+	tree->Branch("leadingPhotonIDMVA", &leadingPhotonIDMVA, "leadingPhotonIDMVA/f");
         tree->Branch("subleadingPhoton", &subleadingPhoton);
         tree->Branch("subleadingPhotonID", &subleadingPhotonID);
         tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
         tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
+	tree->Branch("subleadingPhotonIDMVA", &subleadingPhotonIDMVA, "subleadingPhotonIDMVA/f");
         tree->Branch("diphotonCandidate", &diphotonCandidate);
         tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
         tree->Branch("leadingJet", &leadingJet);
@@ -883,13 +888,13 @@ void
         tree->Branch("leadingJet_Reg", &leadingJet_Reg);
         tree->Branch("leadingJet_RegKF", &leadingJet_RegKF);
         tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
-	    tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
+	tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
         tree->Branch("subleadingJet", &subleadingJet);
         tree->Branch("subleadingJet_KF", &subleadingJet_KF);
         tree->Branch("subleadingJet_Reg", &subleadingJet_Reg);
         tree->Branch("subleadingJet_RegKF", &subleadingJet_RegKF);
         tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/F");
-	    tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
+	tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
         tree->Branch("dijetCandidate", &dijetCandidate);
         tree->Branch("dijetCandidate_KF", &dijetCandidate_KF);
         tree->Branch("dijetCandidate_Reg", &dijetCandidate_Reg);
@@ -898,17 +903,16 @@ void
         tree->Branch("diHiggsCandidate_KF", &diHiggsCandidate_KF);
         tree->Branch("diHiggsCandidate_Reg", &diHiggsCandidate_Reg);
         tree->Branch("diHiggsCandidate_RegKF", &diHiggsCandidate_RegKF);
-	    tree->Branch("isSignal", &isSignal, "isSignal/I");
-	    tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
+	tree->Branch("isSignal", &isSignal, "isSignal/I");
+	tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
         tree->Branch("jet1PtRes", &jet1PtRes, "jet1PtRes/F");
         tree->Branch("jet1EtaRes", &jet1EtaRes, "jet1EtaRes/F");
         tree->Branch("jet1PhiRes", &jet1PhiRes, "jet1PhiRes/F");
         tree->Branch("jet2PtRes", &jet2PtRes, "jet2PtRes/F");
         tree->Branch("jet2EtaRes", &jet2EtaRes, "jet2EtaRes/F");
         tree->Branch("jet2PhiRes", &jet2PhiRes, "jet2PhiRes/F");
-	    tree->Branch("CosThetaStar", &CosThetaStar, "CosThetaStar/F");
+	tree->Branch("CosThetaStar", &CosThetaStar, "CosThetaStar/F");
         tree->Branch("TriggerResults", &myTriggerResults);
-		
     }
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);

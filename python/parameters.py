@@ -7,9 +7,9 @@ _doPhotonCR				=	cms.untracked.uint32(1)
 #_triggerTag				=	cms.InputTag("TriggerResults", "", "FLASHggMicroAOD")
 _triggerTag				=	cms.InputTag("TriggerResults", "", "HLT")
 _myTriggers				=	cms.untracked.vstring(
-					"HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95_v",
-					"HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v",
-					"HLT_Diphoton30EB_18EB_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v"
+						"HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95_v",
+						"HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v",
+						"HLT_Diphoton30EB_18EB_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v"
 													)
 _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 #_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
@@ -45,7 +45,7 @@ _JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 25.)
 #0: jet1, 1: jet2
 _JetEta						=	cms.untracked.vdouble(2.4, 2.4)
 #0: lowest b-tag requirement for any jet (default 0), standard b-tag cut (loose, medium, tight) 
-_JetBDiscriminant			=	cms.untracked.vdouble(-50., 0.87)
+_JetBDiscriminant			=	cms.untracked.vdouble(-50., 0.8)
 #0: jet1, 1: jet2
 _JetDoPUID					=	cms.untracked.vint32(1, 1)
 #Number of required jets passing requirements in JetBDiscriminant
