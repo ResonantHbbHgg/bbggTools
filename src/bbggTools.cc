@@ -6,6 +6,7 @@
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/deltaR.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 
@@ -196,8 +197,9 @@ double bbggTools::getEA( float eta, int whichEA){
 
 double bbggTools::DeltaR(bbggTools::LorentzVector vec1, bbggTools::LorentzVector vec2)
 {
-	double R2 = (vec1.phi() - vec2.phi())*(vec1.phi() - vec2.phi()) + (vec1.eta() - vec2.eta())*(vec1.eta() - vec2.eta());
-	return sqrt(R2);
+//	double R2 = (vec1.phi() - vec2.phi())*(vec1.phi() - vec2.phi()) + (vec1.eta() - vec2.eta())*(vec1.eta() - vec2.eta());
+//	return sqrt(R2);
+	return deltaR(vec1, vec2);
 }
 
 bool bbggTools::isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts)
@@ -569,8 +571,42 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::JetPreSelection(JetCollectionVect
 return Jets;
 }
 
+edm::Ptr<flashgg::DiPhotonCandidate> bbggTools::MVAIDDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons)
+{
+	float sumMVA_ref = -999;
+	unsigned int maxId = -1;
+	if(DEBUG) std::cout << "[bbggTools::MVAIDDiPhotonSelection] Number of diphotons: " << DiPhotons.size() << std::endl;
+	for( unsigned int p = 0; p < DiPhotons.size(); p++  )
+	{
+		edm::Ptr<flashgg::DiPhotonCandidate> it = DiPhotons[p];
+		float sumMVA = it->leadingPhoton()->userFloat(_PhotonMVAEstimator) + it->subLeadingPhoton()->userFloat(_PhotonMVAEstimator);
+		if(DEBUG) std::cout << "[bbggTools::MVAIDDiPhotonSelection] Diphoton " << p << " sum mva: " << sumMVA << std::endl;
+		if(sumMVA > sumMVA_ref){
+			sumMVA_ref = sumMVA;
+			maxId = p;
+		}
+	}
 
+	if(DEBUG) std::cout << "[bbggTools::MVAIDDiPhotonSelection] Selected diphoton index: " << maxId << std::endl;
+	return DiPhotons[maxId];
+}
 
+edm::Ptr<flashgg::DiPhotonCandidate> bbggTools::PtSumDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons)
+{
+	float sumPt_ref = 0;
+	unsigned int maxId = -1;
+	for( unsigned int p = 0; p < DiPhotons.size(); p++  )
+	{
+		edm::Ptr<flashgg::DiPhotonCandidate> it = DiPhotons[p];
+		float sumPt = it->leadingPhoton()->pt() + it->subLeadingPhoton()->pt();
+		if(sumPt > sumPt_ref){
+			sumPt_ref = sumPt;
+			maxId = p;
+		}
+	}
+
+	return DiPhotons[maxId];
+}
 
 bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol,
                                     JetCollectionVector jetsCol)
@@ -583,7 +619,7 @@ bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> 
     
     //Begin DiPhoton Loop/Selection -----------------------------------------------------------
     //1st: do diphoton kinematic selection, including diphoton mass window
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> KinDiPhoton = bbggTools::DiPhotonKinematicSelection( diphoCol, 1);
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> KinDiPhoton = bbggTools::DiPhotonKinematicSelection( diphoCol, 0);
     if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of kinematically selected diphotons:" << KinDiPhoton.size() << std::endl;
     if( KinDiPhoton.size() < 1) return 0;
     //2nd: evaluate photon ID on kinematic selected diphotons
@@ -605,12 +641,12 @@ bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> 
     _isSignal = 0;
     _isPhotonCR = 0;
     if(SignalDiPhotons.size() > 0) {
-        diphoCandidate = SignalDiPhotons[0];
+        diphoCandidate = bbggTools::MVAIDDiPhotonSelection(SignalDiPhotons);//SignalDiPhotons[0];
         _isSignal = 1;
         _isPhotonCR = 0;
     }
     if(SignalDiPhotons.size() < 1 && _doPhotonCR && CRDiPhotons.size() > 0) {
-        diphoCandidate = CRDiPhotons[0];
+        diphoCandidate = bbggTools::MVAIDDiPhotonSelection(CRDiPhotons);//CRDiPhotons[0];
         _isSignal = 0;
         _isPhotonCR = 1;
     }    
@@ -627,7 +663,7 @@ bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> 
     if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of preselected jets:" << KinJets.size() << std::endl;
     if( KinJets.size() < 2 ) return 0;
     //2nd: select dijet with mass window cut:
-    std::vector<edm::Ptr<flashgg::Jet>> SelJets = bbggTools::DiJetSelection(KinJets, 1);
+    std::vector<edm::Ptr<flashgg::Jet>> SelJets = bbggTools::DiJetSelection(KinJets, 0);
     if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of selected jets:" << SelJets.size() << std::endl;
     if( SelJets.size() < 2 ) return 0;
     if( SelJets.size() > 1 ){

@@ -43,6 +43,7 @@ Implementation:
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 //FLASHgg files
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
@@ -106,7 +107,7 @@ private:
     vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
-    float CosThetaStar, leadingPhotonIDMVA, subleadingPhotonIDMVA;
+    float CosThetaStar, leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR_2, DiJetDiPho_DR_1;
     vector<int> myTriggerResults;
     
     double genTotalWeight;
@@ -571,6 +572,10 @@ void
 	subleadingJet_flavour = SubLeadingJet->partonFlavour();
         dijetCandidate = leadingJet + subleadingJet;
         diHiggsCandidate = diphotonCandidate + dijetCandidate;
+
+
+	DiJetDiPho_DR_1 = tools_.DeltaR(diphotonCandidate, dijetCandidate);
+	DiJetDiPho_DR_2 = deltaR(diphotonCandidate,dijetCandidate);
         
         //Kinematic fit:
         if(DEBUG) std::cout << "[bbggTree::analyze] Doing kinematic fit!" << std::endl;
@@ -913,6 +918,8 @@ void
         tree->Branch("jet2PhiRes", &jet2PhiRes, "jet2PhiRes/F");
 	tree->Branch("CosThetaStar", &CosThetaStar, "CosThetaStar/F");
         tree->Branch("TriggerResults", &myTriggerResults);
+	tree->Branch("DiJetDiPho_DR_1", &DiJetDiPho_DR_1, "DiJetDiPho_DR_1/F");
+	tree->Branch("DiJetDiPho_DR_2", &DiJetDiPho_DR_2, "DiJetDiPho_DR_2/F");
     }
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);

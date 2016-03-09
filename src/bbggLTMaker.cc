@@ -140,7 +140,6 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    if(doMX)
         o_bbggMass = diHiggsCandidate->M() - dijetCandidate->M() + 125.;
 
-   double sumbtag = leadingJet_bDis + subleadingJet_bDis;
   
 //   if( dijetCandidate->Pt() < 50 )
 //	return kTRUE;
@@ -153,6 +152,7 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    if(photonCR == 0 && isPhotonCR == 1)
 	return kTRUE;
    
+//   double sumbtag = leadingJet_bDis + subleadingJet_bDis;
 //   double upper = 1.83;
 //   double lower = 1.11;
 //   if ( sumbtag > upper ) o_category = 0;

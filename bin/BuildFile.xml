@@ -1,60 +1,6 @@
-<use name="FWCore/Framework"/>
-<use name="FWCore/PluginManager"/>
-<use name="FWCore/ParameterSet"/>
-<use name="flashgg/DataFormats"/>
-<use name="FWCore/Utilities"/>
-<use name="root"/>
-<use name="roofit"/>
-<use name="rootcore"/>
-<use name="roostats"/>
-<!--<use name="rootcling"/>
-<use name="rooteve"/>
-<use name="rootgeompainter"/>
-<use name="rootguihtml"/>
-<use name="rootinteractive"/>
-<use name="rootminuit"/>
-<use name="rootphysics"/>
-<use name="rootrgl"/>
-<use name="rootspectrum"/>
-<use name="rootxml"/>
-<use name="root_cxxdefaults"/>
-<use name="rootcore"/>
-<use name="rootfoam"/>
-<use name="rootgpad"/>
-<use name="roothistmatrix"/>
-<use name="rootmath"/>
-<use name="rootminuit2"/>
-<use name="rootpy"/>
-<use name="rootrint"/>
-<use name="rootthread"/>
-<use name="rootxmlio"/>
-<use name="root_interface"/>
-<use name="rooteg"/>
-<use name="rootgeom"/>
-<use name="rootgraphics"/>
-<use name="roothtml"/>
-<use name="rootmathcore"/>
-<use name="rootmlp"/> -->
-<use name="boost"/>
-<use name="boost_header"/>
-<use name="rootrflx"/>
-<use name="rootrio"/>
-<use name="roottmva"/>
-<use name="DataFormats/Candidate"/>
-<use name="DataFormats/PatCandidates"/>
-<use name="CommonTools/CandUtils"/>
-<use name="DataFormats/VertexReco"/>
-<use name="DataFormats/Common"/>
-<use name="DataFormats/JetReco"/>
-<use name="DataFormats/HepMCCandidate"/>
-<use name="SimDataFormats/GeneratorProducts"/>
-<use name="FWCore/TFWLiteSelector"/>
-<use name="flashgg/bbggTools"/>
 <bin name="LimitTreeMaker" file="LimitTreeMaker.C">
-	<use name="boost"/>
+	<use name="boost_program_options"/>
 	<use name="root"/>
+	<use name="flashgg/bbggTools"/>
 </bin>
-<bin name="bbgg2DFit" file="bbgg2DFit.C">
-	<use name="boost"/>
-	<use name="root"/>
-</bin>
+

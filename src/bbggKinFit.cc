@@ -8,6 +8,7 @@
 #include "flashgg/DataFormats/interface/Muon.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/JetReco/interface/GenJet.h" 
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
@@ -42,8 +43,9 @@ bbggKinFit::bbggKinFit(){
 
 double bbggKinFit::DeltaR(bbggKinFit::LorentzVector vec1, bbggKinFit::LorentzVector vec2)
 {
-	double R2 = (vec1.phi() - vec2.phi())*(vec1.phi() - vec2.phi()) + (vec1.eta() - vec2.eta())*(vec1.eta() - vec2.eta());
-	return sqrt(R2);
+//	double R2 = (vec1.phi() - vec2.phi())*(vec1.phi() - vec2.phi()) + (vec1.eta() - vec2.eta())*(vec1.eta() - vec2.eta());
+//	return sqrt(R2);
+	return deltaR(vec1, vec2);
 }
 
 void bbggKinFit::SetJetResolutionParameters(vector<double> etaIntervals, vector<double> pt, vector<double> eta, vector<double> phi)
