@@ -1,0 +1,11 @@
+{
+    "processes" : {
+	"bbHToGG_M-125_4FS_ybyt_13TeV_amcatnlo" : [
+	    "/bbHToGG_M-125_4FS_ybyt_13TeV_amcatnlo"
+	],
+	"bbHToGG_M-125_4FS_yb2_13TeV_amcatnlo" : [
+	    "/bbHToGG_M-125_4FS_yb2_13TeV_amcatnlo"
+	]
+   },
+	"cmdLine" : "campaign=rateixei-bbH_HH_Background doDoubleCountingMitigation=0 targetLumi=2.58e+3 doSelection=1 PURW=0"
+}

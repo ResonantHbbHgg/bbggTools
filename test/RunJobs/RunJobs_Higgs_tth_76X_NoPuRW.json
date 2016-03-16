@@ -1,0 +1,8 @@
+{
+    "processes" : {
+	"ttHJetToGG_M125_13TeV_amcatnloFXFX_madspin_pythia8" : [
+	    "/ttHJetToGG_M125_13TeV_amcatnloFXFX_madspin_pythia8"
+	]
+   },
+	"cmdLine" : "campaign=RunIIFall15DR76-1_3_0-25ns_ext1 doDoubleCountingMitigation=0 targetLumi=2.58e+3 doSelection=1 PURW=0"
+}

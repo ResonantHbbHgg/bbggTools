@@ -28,6 +28,8 @@
 #include "TLegend.h"
 #include "RooMinuit.h"
 #include "TH1F.h"
+#include "RooChi2Var.h"
+#include "RooFitResult.h"
 
 //Boost
 #include <boost/program_options.hpp>
@@ -72,7 +74,8 @@ enum EColor { kWhite =0,   kBlack =1,   kGray=920,
               kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900 };
 */
 
-  int colors[] = {632, 416, 600, 400, 616, 432, 800, 820, 840, 860};
+  int colors[] = {632, 600, 417, 616, 432, 800, 820, 840, 860};
+  int styles[] = {2, 3, 4, 5, 6, 7, 8, 9};
 
   //Read json
   boost::property_tree::ptree pt;
@@ -161,12 +164,28 @@ enum EColor { kWhite =0,   kBlack =1,   kGray=920,
       //Start fitting businness - fit for each fit function
       std::vector<double> kolmos;
       for ( unsigned int ff = 0; ff < functionsToFit.size(); ff++) {
-	const char* modelName = functionsToFit[ff].c_str();
+
+	TObjArray* funcNames = (TObjArray*) TString(functionsToFit[ff]).Tokenize(":");
+	const char* modelName = ((TObjString*) funcNames->At(0) )->String().Data();
+
+	TObjArray* sComponents = 0;
+	if(funcNames->GetEntries() > 1)
+		sComponents  = (TObjArray*) ((TObjString*) funcNames->At(1) )->String().Tokenize(",");
+
+	std::vector<const char*> components;
+	if(sComponents != 0){
+	  for (int comp = 0; comp < sComponents->GetEntries(); comp++) {
+	    components.push_back( ((TObjString*) sComponents->At(comp) )->String().Data() );
+	  }
+	}
 	std::cout << "Fitting model: " << modelName << std::endl;
+	if(components.size() > 0) std::cout << "\t including " << components.size() << " components" << std::endl;
+
 	if(w->pdf(modelName) == 0 ){
 	  std::cout << "Model " << modelName << " not found in workspace! Are you sure you have added it to the list of funtions?" << std::endl;
 	  continue;
 	}
+
 	RooAbsReal* nll = w->pdf( modelName )->createNLL(*data, NumCPU(8));
 	RooMinuit minuit(*nll);
 	minuit.migrad();
@@ -179,10 +198,30 @@ enum EColor { kWhite =0,   kBlack =1,   kGray=920,
 	kolmos.push_back(kolmo);
 
 	w->pdf( modelName )->plotOn(frame, LineColor( colors[ff] ), Name(modelName), MoveToBack());
+	//Plotting subcomponents of pdf
+	for (unsigned int comp = 0; comp < components.size(); comp++){
+	  std::cout << "Plotting model component: " << components[comp] << std::endl;
+	  w->pdf( modelName )->plotOn(frame, Components( components[comp] ), LineColor( colors[ff] ), LineStyle( styles[comp] ), MoveToBack());
+	}
+
 	if(error == "1")
 	  w->pdf( modelName )->plotOn(frame, FillColor( kGray ), VisualizeError(*fitResult, 2), MoveToBack());
-	
-	leg->AddEntry( frame->findObject(modelName), TString::Format("%s KS Test = %f", modelName, kolmo), "l" );
+
+	int nParams = w->pdf( modelName )->getParameters(data)->getSize();
+//	double chi2 = frame->chiSquare(modelName, "data", nParams);
+	double chi2 = frame->chiSquare(0);
+
+	RooChi2Var Chi2 ("chi2", "chi2", *(w->pdf( modelName )), *(data->binnedClone()));
+	double chi2_val = Chi2.getVal(); 
+	double finalchi2_val = chi2_val/((float) nParams);
+	double minNLL = fitResult->minNll();
+	std::cout<<" This is the final value of chi2/DOF: "<< finalchi2_val << std::endl;
+	std::cout <<" This is the minimum negative log likelihood: " <<  minNLL << std::endl;
+
+	std::cout << "############## chi2: " <<  chi2 << "\t <<<< Nparams: " << nParams << std::endl;
+
+//	leg->AddEntry( frame->findObject(modelName), TString::Format("%s | KS Test = %.4f | #chi^{2}/ndof = %.4f | minNLL = %.4f", modelName, kolmo, finalchi2_val, minNLL), "l" );
+	leg->AddEntry( frame->findObject(modelName), TString::Format("%s | KS Test = %.4f | #chi^{2}/ndof = %.4f", modelName, kolmo, finalchi2_val), "l" );
 
 	delete nll;
 	delete histo;

@@ -7,12 +7,12 @@ import shutil
 doBlind = False
 doSignalRegion = True
 doJetCR = False
-isPhoCR = True
+isPhoCR = False
 addHiggs = True
 hideData = False
 addbbH = False
 
-data_file = open("datasets76X_nobbh_notth_NoQCD.json")
+data_file = open("datasets76X_nobbh_notth.json")
 data = json.load(data_file)
 
 version = "correctcuts_71"
@@ -20,9 +20,11 @@ version = "correctcuts_71"
 fLocation = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/" + version + "/Hadd/"
 
 prefix = "PhoIDloose_"
-dirSuffix = "1_3_0_JCRUnweighted_PhoMVA_noQCD"
+dirSuffix = "1_3_0_JCR_selmva"
 dirPrefix = "/afs/cern.ch/user/r/rateixei/www/HHBBGG/"
 dirName = dirPrefix + dirSuffix
+
+yieldsFile = open(dirPrefix+dirSuffix+"/yields.txt", "w")
 
 if not os.path.exists(dirName):
 	print dirName, "doesn't exist, creating it..."
@@ -39,7 +41,7 @@ signals = []
 
 if addHiggs:
 	for bkg in data['higgs']:
-		fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_hig/Hadd/"
+		fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/selmva_all_8nm/Hadd/"
 		if addbbH == False and "bbH" in bkg['name']:
 			continue
 		tempfile = TFile(fLocation+bkg['file'], "READ")
@@ -51,9 +53,9 @@ if addHiggs:
 
 
 for bkg in data['background']:
-	fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_bkg/Hadd/"
-	if "QCD" in bkg['name']:
-		continue
+	fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/selmva_all_8nm/Hadd/"
+#	if "QCD" in bkg['name']:
+#		continue
 #	if "DiPho" in bkg['name']:
 #		fLocation = ''
 #	if "DiPho" not in bkg['name']:
@@ -68,7 +70,7 @@ for bkg in data['background']:
 
 
 for i,bkg in enumerate(data['signal']):
-	fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_sig/Hadd/"
+	fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/selmva_all_8nm/Hadd/"
 	tempfile = TFile.Open(fLocation+bkg['file'])
 	temptree = tempfile.Get('bbggSelectionTree')
 	normalization = 50
@@ -78,7 +80,7 @@ for i,bkg in enumerate(data['signal']):
 
 
 print data['data']
-fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_data/Hadd/"
+fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/selmva_all_8nm/Hadd/"
 f = TFile.Open( fLocation+data['data'] )
 t = f.Get('bbggSelectionTree')
 
@@ -86,7 +88,7 @@ bhists = {}
 
 
 Cut = " diphotonCandidate.M() > 100 && diphotonCandidate.M() < 180"
-#Cut += " && dijetCandidate.M() > 100 && dijetCandidate.M() < 180"
+Cut += " && dijetCandidate.M() > 60 && dijetCandidate.M() < 180"
 #Cut += " && diHiggsCandidate.M() > 280 && diHiggsCandidate.M() < 320"
 #Cut += " && (leadingJet.pt()/dijetCandidate.M()) > 0.3333"
 #Cut += " && (subleadingJet.pt()/dijetCandidate.M()) > 0.25"
@@ -110,14 +112,17 @@ if doBlind == True:
 	Cut += " && !((diphotonCandidate.M() > 120 && diphotonCandidate.M() < 130))"
 if isPhoCR == True:
 	Cut += " && (isPhotonCR == 1)"
+	CutSignal += " && (isPhotonCR == 1)"
 if isPhoCR == False:
 	Cut += " && (isSignal == 1)"
+	CutSignal += " && (isSignal == 1)"
 if doSignalRegion == True:
 #	Cut += " && (( leadingJet_bDis > 0.8 && subleadingJet_bDis < 0.8 ) || (leadingJet_bDis < 0.8 && subleadingJet_bDis > 0.8) ) && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) > 290 && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) < 310 "
-	Cut += " && (( leadingJet_bDis < 0.8 && subleadingJet_bDis > 0.8 )) && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) > 290 && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) < 310 "
+#	Cut += " && (( leadingJet_bDis < 0.8 && subleadingJet_bDis > 0.8 )) && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) > 290 && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) < 310 "
 #	CutSignal += " && (( leadingJet_bDis > 0.8 && subleadingJet_bDis < 0.8 ) || (leadingJet_bDis < 0.8 && subleadingJet_bDis > 0.8) ) && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) > 290 && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) < 310"
-	CutSignal += " && (( leadingJet_bDis < 0.8 && subleadingJet_bDis > 0.8 )) && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) > 290 && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) < 310"
-#	CutSignal += " && ( leadingJet_bDis > 0.8 && subleadingJet_bDis > 0.8 ) "
+#	CutSignal += " && (( leadingJet_bDis < 0.8 && subleadingJet_bDis > 0.8 )) && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) > 290 && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) < 310"
+	CutSignal += " && ( leadingJet_bDis > 0.8 || subleadingJet_bDis > 0.8 ) "
+	Cut += " && ( leadingJet_bDis > 0.8 || subleadingJet_bDis > 0.8 ) "
 if doJetCR == True:
 	Cut += " && leadingJet_bDis < 0.80 && subleadingJet_bDis < 0.8 "
 weight = ""
@@ -132,31 +137,39 @@ cut_data = TCut(Cut)
 
 plots = []
 
-nbin = 50
+yieldsFile.write("Extra cuts on selection tree:\n")
+yieldsFile.write(Cut+"\nYields:\n")
+
+nbin = 25
 
 dr = "sqrt( (leadingPhoton.Eta() - subleadingPhoton.Eta())*(leadingPhoton.Eta() - subleadingPhoton.Eta()) + (leadingPhoton.Phi() - subleadingPhoton.Phi())*(leadingPhoton.Phi() - subleadingPhoton.Phi()) )"
 
-#plots.append(["costhetastar", "fabs(CosThetaStar)", "|cos#theta*|", nbin, 0, 1])
-#plots.append(["leadingPhoton_pt", "leadingPhoton.pt()", "Leading Photon Pt (GeV)", nbin, 30, 300])
-#plots.append(["nvtx", "nvtx", "Number of vertices", 30, 0, 30])
-#plots.append(["diPho_Mass", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 100, 180])
-#plots.append(["diPho_Mass_HM", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 80, 2000])
+plots.append(["diPho_Mass", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 100, 180])
+plots.append(["costhetastar", "fabs(CosThetaStar)", "|cos#theta*|", nbin, 0, 1])
+'''
+plots.append(["leadingPhoton_pt", "leadingPhoton.pt()", "Leading Photon Pt (GeV)", nbin, 30, 300])
+plots.append(["nvtx", "nvtx", "Number of vertices", 30, 0, 30])
+plots.append(["diPho_Mass", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 100, 180])
+plots.append(["diPho_Mass_HM", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 80, 2000])
 plots.append(["diJet_Mass", "dijetCandidate.M()", "DiJet Candidate Mass (GeV)", nbin, 60, 180])
-#plots.append(["diJet_Mass_Limit", "dijetCandidate.M()", "DiJet Candidate Mass (GeV)", nbin, 60, 180])
-#plots.append(["diJet_Mass_HM", "dijetCandidate.M()", "DiJet Candidate Mass (GeV)", nbin, 80, 2000])
-#plots.append(["leadingJet_pt", "leadingJet.pt()", "Leading Jet Pt (GeV)", nbin, 15, 200] )
-#plots.append(["subleadingJet_pt", "subleadingJet.pt()", "Subleading Jet Pt (GeV)", nbin, 15, 80] )
-#plots.append(["leadingJet_eta", "leadingJet.Eta()", "Leading Jet Eta", nbin, -3, 3] )
-#plots.append(["leadingPhoton_eta", "leadingPhoton.Eta()", "Leading Photon Eta", nbin, -3, 3] )
-#plots.append(["dicandidate_Mass", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 100, 1000])
-#plots.append(["MX", "diHiggsCandidate.M() - dijetCandidate.M() + 125.", "M_{X} (GeV)", nbin, 100, 1000])
-#plots.append(["MKF", "diHiggsCandidate_KF.M()", "M_{KinFit}(bb#gamma#gamma) (GeV)", nbin, 100, 1000])
-#plots.append(["dicandidate_Mass_Limit", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 225, 350])
-#plots.append(["dicandidate_Mass_HM", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 250, 5000])
-#plots.append(["btagSum", "leadingJet_bDis+subleadingJet_bDis", "Sum of b-tag of jet pair", nbin, 0, 2])
-#plots.append(["subleadingPhoton_pt", "subleadingPhoton.pt()", "Subleading Photon Pt (GeV)", nbin, 30, 150])
-#plots.append(["subleadingPhoton_eta", "subleadingPhoton.eta()", "Subleading Photon Eta)", nbin, -3, 3])
-#plots.append(["dr_photons", dr, "#DeltaR between photons", nbin, 0, 10])
+plots.append(["diJet_Mass_Limit", "dijetCandidate.M()", "DiJet Candidate Mass (GeV)", nbin, 60, 180])
+plots.append(["diJet_Mass_HM", "dijetCandidate.M()", "DiJet Candidate Mass (GeV)", nbin, 80, 2000])
+plots.append(["leadingJet_pt", "leadingJet.pt()", "Leading Jet Pt (GeV)", nbin, 15, 200] )
+plots.append(["subleadingJet_pt", "subleadingJet.pt()", "Subleading Jet Pt (GeV)", nbin, 15, 80] )
+plots.append(["leadingJet_eta", "leadingJet.Eta()", "Leading Jet Eta", nbin, -3, 3] )
+plots.append(["leadingPhoton_eta", "leadingPhoton.Eta()", "Leading Photon Eta", nbin, -3, 3] )
+plots.append(["dicandidate_Mass", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 100, 1000])
+plots.append(["MX", "diHiggsCandidate.M() - dijetCandidate.M() + 125.", "M_{X} (GeV)", nbin, 100, 1000])
+plots.append(["MKF", "diHiggsCandidate_KF.M()", "M_{KinFit}(bb#gamma#gamma) (GeV)", nbin, 100, 1000])
+plots.append(["dicandidate_Mass_Limit", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 225, 350])
+plots.append(["dicandidate_Mass_HM", "diHiggsCandidate.M()", "DiHiggs Candidate Mass (GeV)", nbin, 250, 5000])
+plots.append(["btagSum", "leadingJet_bDis+subleadingJet_bDis", "Sum of b-tag of jet pair", nbin, 0, 2])
+plots.append(["subleadingPhoton_pt", "subleadingPhoton.pt()", "Subleading Photon Pt (GeV)", nbin, 30, 150])
+plots.append(["subleadingPhoton_eta", "subleadingPhoton.eta()", "Subleading Photon Eta)", nbin, -3, 3])
+plots.append(["dr_photons", dr, "#DeltaR between photons", nbin, 0, 10])
+plots.append(["leadingPho_MVA", "leadingPhotonIDMVA", "Leading Photon #gammaMVA discriminant", nbin, 0, 1])
+plots.append(["subleadingPho_MVA", "subleadingPhotonIDMVA", "SubLeading Photon #gammaMVA discriminant", nbin, 0, 1])
+'''
 
 #variable = "diphotonCandidate.M()"
 #varName = "DiPhoton Candidate Mass (GeV)"
@@ -190,6 +203,7 @@ for i,plot in enumerate(plots):
 			bhists[bkg[2][0]] = h1.Clone(bkg[2][0])
 			bhists[bkg[2][0]].Reset()
 			bkg[1].Draw(variable+'>>'+bkg[2][0], cut, 'hist')
+			bhists[bkg[2][0]].Sumw2()
 			bhists[bkg[2][0]].Scale(bkg[2][3])
 			bhists[bkg[2][0]].SetFillColor(bkg[2][4])
 	#		bhists[bkg[2][0]].SetLineColor(bkg[2][4])
@@ -222,6 +236,7 @@ for i,plot in enumerate(plots):
 		bhists[bkg[2][0]].Reset()
 		bkg[1].Draw(variable+'>>'+bkg[2][0], cut, 'hist')
 		bhists[bkg[2][0]].Sumw2()
+		nEvtsBeforeScale = bhists[bkg[2][0]].Integral()
 		bhists[bkg[2][0]].Scale(bkg[2][3])
 		bhists[bkg[2][0]].SetFillColor(bkg[2][4])
 #		bhists[bkg[2][0]].SetLineColor(bkg[2][4])
@@ -232,6 +247,10 @@ for i,plot in enumerate(plots):
 		bhists[bkg[2][0]].SetLineWidth(0)
 #		bhists[bkg[2][0]].SetFillStyle(3001)
 		stack.addHist(bhists[bkg[2][0]], bkg[2][1], bkg[2][3])
+		if(i == 0):
+			Yield = bhists[bkg[2][0]].Integral()
+			err = sqrt(nEvtsBeforeScale)*bkg[2][3]
+			yieldsFile.write(bkg[2][1] + "\t&\t" + str(Yield)+ "\t \pm \t" + str(err) + "\n")
 
 
 	for bkg in signals:
@@ -240,11 +259,16 @@ for i,plot in enumerate(plots):
 		bhists[bkg[2][0]].Reset()
 		bkg[1].Draw(variable+'>>'+bkg[2][0], TCut(CutSignal), 'hist')
 		total = bhists[bkg[2][0]].Integral()
+		nEvtsBeforeScale = bhists[bkg[2][0]].Integral()
 		scale = bkg[2][3]/total
 		bhists[bkg[2][0]].Scale(scale)
 		bhists[bkg[2][0]].SetLineColor(bkg[2][4])
 		bhists[bkg[2][0]].SetLineWidth(2)
 		stack.addSignal(bhists[bkg[2][0]], bkg[2][1], bkg[2][3])
+		if(i == 0):
+			Yield = nEvtsBeforeScale #bhists[bkg[2][0]].Integral()
+			err = sqrt(nEvtsBeforeScale)
+			yieldsFile.write(bkg[2][1] + "\t&\t" + str(Yield)+ "\t \pm \t" + str(err) + "\n")
 
 	print 'Adding data to stack!'
 	#h1.Reset()
@@ -265,3 +289,4 @@ for i,plot in enumerate(plots):
 #	stack.drawStack("DCM_" + plot[0])
 	del stack
 
+yieldsFile.close()

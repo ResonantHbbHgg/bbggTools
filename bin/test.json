@@ -1,14 +1,15 @@
 {
-  "file" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/LimitSetting/corr_mva_medium_reweighted_290_310/LT_DoubleEG.root",
+  "file" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/LimitSetting/selmva_290_310/LT_output_DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa.root",
   "vars" : { 
 		"mjj[60,180]" : "M(jj)", 
 		"mgg[100,180]" : "M(#gamma#gamma)"
 	   },
   "nbins" : [ "60", "80" ],
-  "prefix" : "Data",
-  "plotsDir" : "/afs/cern.ch/user/r/rateixei/www/HHBBGG/BackgroundFits/test/",
+  "prefix" : "DiPho",
+  "plotsDir" : "/afs/cern.ch/user/r/rateixei/www/HHBBGG/BackgroundFits/selmva/",
   "categories" : { 
-			"nocat" : "cut_based_ct > -99", 
+			"noreq" : "cut_based_ct > -99", 
+			"nocat" : "cut_based_ct > -1", 
 			"cat0" : "cut_based_ct == 0", 
 			"cat1" : "cut_based_ct == 1",
 			"jcr" : "cut_based_ct == -1"

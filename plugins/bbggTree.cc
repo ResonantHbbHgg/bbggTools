@@ -633,7 +633,7 @@ void
         float spho_eta_abs = fabs( diphoCand->subLeadingPhoton()->superCluster()->eta() );
 
 	leadingPhotonIDMVA = diphoCand->leadingPhoton()->userFloat(PhotonMVAEstimator);
-	subleadingPhotonIDMVA = diphoCand->leadingPhoton()->userFloat(PhotonMVAEstimator);
+	subleadingPhotonIDMVA = diphoCand->subLeadingPhoton()->userFloat(PhotonMVAEstimator);
 
         if(lpho_eta_abs < 1.44){
             lphoIDloose 	= tools_.isPhoID(diphoCand->leadingPhoton(), phoIDlooseEB);

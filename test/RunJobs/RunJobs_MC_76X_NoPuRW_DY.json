@@ -1,0 +1,8 @@
+{
+    "processes" : {
+	"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8" : [
+	    ["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",{"args" : ["doDoubleCountingMitigation=0"]}]
+	]
+   },
+	"cmdLine" : "campaign=RunIIFall15DR76-1_3_0-25ns targetLumi=2.63e+3 doSelection=1 PURW=0"
+}
