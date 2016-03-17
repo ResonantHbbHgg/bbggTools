@@ -4,7 +4,7 @@ from colors import *
 import json, os
 import shutil
 
-doBlind = False
+doBlind = True
 doSignalRegion = True
 doJetCR = False
 isPhoCR = False
@@ -12,19 +12,17 @@ addHiggs = True
 hideData = False
 addbbH = False
 
-data_file = open("datasets76X_nobbh_notth.json")
+data_file = open("datasets76X.json")
 data = json.load(data_file)
 
 version = "correctcuts_71"
 
 fLocation = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/" + version + "/Hadd/"
 
-prefix = "PhoIDloose_"
-dirSuffix = "1_3_0_JCR_selmva"
+prefix = ""
+dirSuffix = "1_3_0_SR_PhoMVAID_76X"
 dirPrefix = "/afs/cern.ch/user/r/rateixei/www/HHBBGG/"
 dirName = dirPrefix + dirSuffix
-
-yieldsFile = open(dirPrefix+dirSuffix+"/yields.txt", "w")
 
 if not os.path.exists(dirName):
 	print dirName, "doesn't exist, creating it..."
@@ -33,15 +31,18 @@ if not os.path.exists(dirName):
 	if os.path.exists(dirName):
 		print dirName, "now exists!"
 
+yieldsFile = open(dirPrefix+dirSuffix+"/yields.txt", "w")
 
-lumi = 2700 #in pb
+lumi = 2700 #in pbs
 
 datasets = []
 signals = []
 
+bkgsToAdd = [['tth', "ttH(#gamma#gamma)"], ['vbf', "VBF H(#gamma#gamma)"], ['ggf', "ggH(#gamma#gamma)"], ["DYJet", "Z/#gamma*+Jets"], ["QCD", "QCD"], ["GJets", "#gamma+Jets"], ["DiPhoJet", "#gamma#gamma+Jets"], ['vh', "VH(#gamma#gamma)"] ]
+
 if addHiggs:
 	for bkg in data['higgs']:
-		fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/selmva_all_8nm/Hadd/"
+		fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_hig/Hadd/"
 		if addbbH == False and "bbH" in bkg['name']:
 			continue
 		tempfile = TFile(fLocation+bkg['file'], "READ")
@@ -53,7 +54,7 @@ if addHiggs:
 
 
 for bkg in data['background']:
-	fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/selmva_all_8nm/Hadd/"
+	fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_bkg/Hadd/"
 #	if "QCD" in bkg['name']:
 #		continue
 #	if "DiPho" in bkg['name']:
@@ -70,7 +71,7 @@ for bkg in data['background']:
 
 
 for i,bkg in enumerate(data['signal']):
-	fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/selmva_all_8nm/Hadd/"
+	fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_sig/Hadd/"
 	tempfile = TFile.Open(fLocation+bkg['file'])
 	temptree = tempfile.Get('bbggSelectionTree')
 	normalization = 50
@@ -80,7 +81,7 @@ for i,bkg in enumerate(data['signal']):
 
 
 print data['data']
-fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/selmva_all_8nm/Hadd/"
+fLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_data/Hadd/"
 f = TFile.Open( fLocation+data['data'] )
 t = f.Get('bbggSelectionTree')
 
@@ -89,24 +90,6 @@ bhists = {}
 
 Cut = " diphotonCandidate.M() > 100 && diphotonCandidate.M() < 180"
 Cut += " && dijetCandidate.M() > 60 && dijetCandidate.M() < 180"
-#Cut += " && diHiggsCandidate.M() > 280 && diHiggsCandidate.M() < 320"
-#Cut += " && (leadingJet.pt()/dijetCandidate.M()) > 0.3333"
-#Cut += " && (subleadingJet.pt()/dijetCandidate.M()) > 0.25"
-#Cut += " && leadingPhoton.pt() > 35 && subleadingPhoton.pt() > 35 "
-#Cut += " && leadingJet.pt() > 35 && subleadingJet.pt() > 35 "
-#Cut += " && leadingJet.Eta() < 2. && leadingJet.Eta() > -2"
-#Cut += " && leadingPhotonID[1] == 1 "
-#Cut += " && subleadingPhotonID[1] == 1 "
-#Cut += " && leadingPhotonISO[1] == 1 "
-#Cut += " && subleadingPhotonISO[1] == 1 "
-#Cut += " && leadingPhotonEVeto == 0 "
-#Cut += " && subleadingPhotonEVeto == 0 "
-#Cut += " && leadingPhotonEVeto == 1 "
-#Cut += " && subleadingPhotonEVeto == 1 "
-#Cut += " && leadingPhotonISO[0] == 1 "
-#Cut += " && subleadingPhotonISO[0] == 1 "
-#Cut += " && leadingJet.pt() > 45 && subleadingJet.pt() > 45 "
-#Cut += " && leadingJet_bDis > 0.9 && subleadingJet_bDis > 0.9"
 CutSignal = Cut
 if doBlind == True:
 	Cut += " && !((diphotonCandidate.M() > 120 && diphotonCandidate.M() < 130))"
@@ -144,9 +127,10 @@ nbin = 25
 
 dr = "sqrt( (leadingPhoton.Eta() - subleadingPhoton.Eta())*(leadingPhoton.Eta() - subleadingPhoton.Eta()) + (leadingPhoton.Phi() - subleadingPhoton.Phi())*(leadingPhoton.Phi() - subleadingPhoton.Phi()) )"
 
-plots.append(["diPho_Mass", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 100, 180])
-plots.append(["costhetastar", "fabs(CosThetaStar)", "|cos#theta*|", nbin, 0, 1])
-'''
+#plots.append(["diPho_Mass_2", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 100, 180])
+plots.append(["diPho_Mass_3", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 100, 180])
+#plots.append(["costhetastar", "fabs(CosThetaStar)", "|cos#theta*|", nbin, 0, 1])
+
 plots.append(["leadingPhoton_pt", "leadingPhoton.pt()", "Leading Photon Pt (GeV)", nbin, 30, 300])
 plots.append(["nvtx", "nvtx", "Number of vertices", 30, 0, 30])
 plots.append(["diPho_Mass", "diphotonCandidate.M()", "DiPhoton Candidate Mass (GeV)", nbin, 100, 180])
@@ -169,7 +153,7 @@ plots.append(["subleadingPhoton_eta", "subleadingPhoton.eta()", "Subleading Phot
 plots.append(["dr_photons", dr, "#DeltaR between photons", nbin, 0, 10])
 plots.append(["leadingPho_MVA", "leadingPhotonIDMVA", "Leading Photon #gammaMVA discriminant", nbin, 0, 1])
 plots.append(["subleadingPho_MVA", "subleadingPhotonIDMVA", "SubLeading Photon #gammaMVA discriminant", nbin, 0, 1])
-'''
+
 
 #variable = "diphotonCandidate.M()"
 #varName = "DiPhoton Candidate Mass (GeV)"
@@ -221,36 +205,61 @@ for i,plot in enumerate(plots):
 	#		bhists[bkg[2][0]].SetFillStyle(3001)
 		stack.addHist( bbhist, bbN2, bbN3 )
 
-
+	allBkgs = []
 	for bkg in datasets:
 		cut = TCut(weight+"("+Cut+")")
 		if 'bbH' in bkg[2][0]:
 			continue
-		if 'DiPho' in bkg[2][0]:
+#		if 'DiPho' in bkg[2][0]:
 #			cut = TCut("puweight*"+weight+"("+Cut+")")
-			cut = TCut(weight+"("+Cut+")")
+#			cut = TCut(weight+"("+Cut+")")
 		print "Adding", bkg[0], 'to stack!'
 	#	bfiles[bkg[0]] = TFile(bkg[2])
 	#	btrees[bkg[0]] = bfiles[bkg[0]].Get('bbggSelectionTree')
 		bhists[bkg[2][0]] = h1.Clone(bkg[2][0])
 		bhists[bkg[2][0]].Reset()
-		bkg[1].Draw(variable+'>>'+bkg[2][0], cut, 'hist')
+		ncut = bkg[1].Draw(variable+'>>'+bkg[2][0], cut, 'hist')
 		bhists[bkg[2][0]].Sumw2()
 		nEvtsBeforeScale = bhists[bkg[2][0]].Integral()
 		bhists[bkg[2][0]].Scale(bkg[2][3])
 		bhists[bkg[2][0]].SetFillColor(bkg[2][4])
 #		bhists[bkg[2][0]].SetLineColor(bkg[2][4])
 		bhists[bkg[2][0]].SetLineColor(1)
-		print bkg[2][1]
-		if  stack.alreadyHas(bkg[2][1]) == 1:
-			bhists[bkg[2][0]].SetLineColor(bkg[2][4])
+		print bkg[2][1], "scale:",bkg[2][3], "tree:",bkg[1].GetEntries(), "ncut:",ncut
+#		if  stack.alreadyHas(bkg[2][1]) == 1:
+#			bhists[bkg[2][0]].SetLineColor(bkg[2][4])
 		bhists[bkg[2][0]].SetLineWidth(0)
 #		bhists[bkg[2][0]].SetFillStyle(3001)
-		stack.addHist(bhists[bkg[2][0]], bkg[2][1], bkg[2][3])
-		if(i == 0):
-			Yield = bhists[bkg[2][0]].Integral()
-			err = sqrt(nEvtsBeforeScale)*bkg[2][3]
-			yieldsFile.write(bkg[2][1] + "\t&\t" + str(Yield)+ "\t \pm \t" + str(err) + "\n")
+		allBkgs.append([bhists[bkg[2][0]], bkg[2][1], bkg[2][3], bkg[2][0] ])
+		print bkg[2][0], "integral:",bhists[bkg[2][0]].Integral(), "nentries:",bhists[bkg[2][0]].GetEntries(), Cut
+#		stack.addHist(bhists[bkg[2][0]], bkg[2][1], bkg[2][3])
+#		if(i == 0):
+#			Yield = bhists[bkg[2][0]].Integral()
+#			err = sqrt(nEvtsBeforeScale)*bkg[2][3]
+#			yieldsFile.write(bkg[2][1] + "\t&\t" + str(Yield)+ "\t \pm \t" + str(err) + "\n")
+
+	for toAdd in bkgsToAdd:
+		thisTotalHist = ""
+		legend = ""
+		normalization = 1.
+		counter = 0
+		for bk in allBkgs:
+			if(counter==0 and toAdd[0] in bk[3]):
+				counter +=1
+				thisTotalHist = bk[0].Clone(toAdd[0])
+				legend = bk[1]
+				normalization = bk[2]
+				print "Adding", bk[3],"to",toAdd[0], bk[0].Integral(), thisTotalHist.Integral()
+				continue
+			if(counter > 0 and toAdd[0] in bk[3]):
+				thisTotalHist.Add(bk[0])
+				print "Adding", bk[3],"to",toAdd[0]
+				continue
+		print thisTotalHist,legend,normalization, thisTotalHist.Integral()
+		if(thisTotalHist == ""):
+			print "Histogram not found!", toAdd[0]
+		if(thisTotalHist != ""):
+			stack.addHist(thisTotalHist, legend, normalization)
 
 
 	for bkg in signals:

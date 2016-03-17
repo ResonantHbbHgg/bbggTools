@@ -141,19 +141,10 @@ def doPull(bkg, data, stack):
 	pullData = getRatio(data, bkg) #TGraphAsymmErrors(len(pX), pX, pY, pXL, pXH, pYL, pYH) #points
 	pullError = TGraphErrors(len(pX), pX, pEY, pEX, pE) #bars
 	Largest = ceil(largest*1.2)
-#	pullError.SetMaximum(Largest + 1)
-#	pullError.SetMinimum(Largest*(-1.) + 1)
-#	pullData.SetMaximum(Largest + 1)
-#	pullData.SetMinimum(Largest*(-1.) +1)
-#	if largest == 1.00001:
-#		pullError.SetMaximum(2.)
-#		pullError.SetMinimum(0.)	
-#		pullData.SetMaximum(2.)
-#		pullData.SetMinimum(0.)
-	pullError.SetMaximum(2.49)
-	pullError.SetMinimum(-0.49)	
-	pullData.SetMaximum(2.49)
-	pullData.SetMinimum(-0.49)
+	pullError.SetMaximum(1.99)
+	pullError.SetMinimum(0.01)	
+	pullData.SetMaximum(1.99)
+	pullData.SetMinimum(0.01)
 	pullError.SetTitle("")
 	pullData.SetTitle("")
 	pullError.SetFillColor(kGray)
@@ -169,20 +160,29 @@ def SaveNoPull(data, bkg, fileName):
 	c0 = TCanvas("c0", "c0", 1000, 800)
 	c0.cd()
 	data.Draw()
-	bkg.Draw('same')
+	bkg.Draw('histsame')
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".pdf")
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".png")
+	c0.Delete()
 
-def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM, isPhoCR):
+def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM, ControlRegion, hideData):
 	data.SetStats(0)
 	Font = 43
 	labelSize = 20
 	titleSize = 24
 	
-	bkg.GetXaxis().SetTitleFont(Font)
-	bkg.GetXaxis().SetTitleSize(0)
-	bkg.GetXaxis().SetLabelFont(Font)
-	bkg.GetXaxis().SetLabelSize(0)
+	if(hideData == False):
+		bkg.GetXaxis().SetTitleFont(Font)
+		bkg.GetXaxis().SetTitleSize(0)
+		bkg.GetXaxis().SetLabelFont(Font)
+		bkg.GetXaxis().SetLabelSize(0)
+	if(hideData):
+		bkg.GetXaxis().SetTitleFont(Font)
+		bkg.GetXaxis().SetTitleSize(titleSize)
+		bkg.GetXaxis().SetLabelFont(Font)
+		bkg.GetXaxis().SetLabelSize(labelSize)
+		bkg.GetXaxis().SetTitle(varName)
+		
 
 	bkg.GetYaxis().SetTitleFont(Font)
 	bkg.GetYaxis().SetTitleSize(titleSize)
@@ -214,11 +214,11 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 
 	pullE.GetYaxis().SetTitle("Data/MC")
 	pullE.GetYaxis().SetTitleFont(Font)
-	pullE.GetYaxis().SetTitleSize(15)
-	pullE.GetYaxis().SetTitleOffset(1.8)
+	pullE.GetYaxis().SetTitleSize(18)
+	pullE.GetYaxis().SetTitleOffset(1.5)
 	pullE.GetYaxis().CenterTitle()
 	pullE.GetYaxis().SetLabelFont(Font)
-	pullE.GetYaxis().SetLabelSize(13)
+	pullE.GetYaxis().SetLabelSize(15)
 
 	pullE.GetYaxis().SetNdivisions(6)
 
@@ -243,30 +243,30 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	p1.Update()
 	gStyle.SetHatchesLineWidth(2)
 	SUM.Draw("E2same")
-	data.Draw('Esame')
+	if(hideData == False):
+		data.Draw('Esame')
 	tlatex = TLatex()
 	baseSize = 25
 	tlatex.SetNDC()
 	tlatex.SetTextAngle(0)
 	tlatex.SetTextColor(kBlack)
 	tlatex.SetTextFont(63)
-	tlatex.SetTextAlign(31)
+	tlatex.SetTextAlign(11)
 	tlatex.SetTextSize(baseSize)
-	tlatex.DrawLatex(0.2, 0.86, "CMS")
+	tlatex.DrawLatex(0.14, 0.86, "CMS")
 	tlatex.SetTextFont(53)
 	tlatex.SetTextSize(baseSize - 5)
-	tlatex.DrawLatex(0.32, 0.861, "Preliminary")
+	tlatex.DrawLatex(0.2, 0.861, "Preliminary")
 	tlatex.SetTextFont(43)
 	tlatex.SetTextSize(baseSize - 5)
 	Lumi = "L = " + str(lumi) + " pb^{-1} (13 TeV, 25 ns)"
 	if lumi > 1000:
 		llumi = float(lumi)/1000.
 		Lumi = "L = " + str(llumi) + " fb^{-1} (13 TeV)"
-	tlatex.DrawLatex(0.34, 0.82, Lumi)
-	if isPhoCR == 1:
-		PhoCR = "Photon Control Sample"
+	tlatex.DrawLatex(0.14, 0.82, Lumi)
+	if ControlRegion != "":
 		tlatex.SetTextFont(63)
-		tlatex.DrawLatex(0.36, 0.76, PhoCR)
+		tlatex.DrawLatex(0.14, 0.78, ControlRegion)
 
 	for leg in legend:
 		leg.Draw('same')
@@ -276,11 +276,15 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 
 	p2.cd()
 #	pullE.GetYaxis().SetNdivisions(4, False)
-	pullE.Draw("A5")
+	if(hideData==False):
+		pullE.Draw("A5")
+	if(hideData):
+		pullE.Draw("A")
 	Line = TLine(pullE.GetXaxis().GetXmin(), 1., pullE.GetXaxis().GetXmax(), 1.)
 	Line.SetLineColor(kRed)
-	Line.Draw()
-	pullH.Draw("Psame")
+	if(hideData==False):
+		Line.Draw()
+		pullH.Draw("Psame")
 	c1.cd()
 	p2.Draw()
 	p1.Draw()
@@ -290,17 +294,26 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 
 	p1.cd()
 	p1.SetLogy()
-	GenMax = pow(10, log10(bkg.GetMaximum()/1.5)*2.)
+	GeneralMaximus = max(bkg.GetMaximum(), data.GetMaximum())
+	if(hideData):
+		GeneralMaximus = bkg.GetMaximum()*10
+	GenMax = pow(10, log10(GeneralMaximus)*2.)
 	bkg.SetMaximum(GenMax)
 	GenMin = bkg.GetMinimum()
 	if GenMin == 0:
 		GenMin = 1
-	bkg.SetMinimum(GenMin*0.1)
+	bkg.SetMinimum(0.01)
+	if(hideData):
+		bkg.SetMinimum(0.001)
 	p1.Update()
 	c1.cd()
 	c1.Update()
 	c1.SaveAs(dirName+"/LOG_" + fileName + ".pdf")
 	c1.SaveAs(dirName+"/LOG_" + fileName + ".png")
+	c1.Delete()
+
+	print "Expected number of events (MC):", SUM.Integral()
+	print "Observed number of events (DATA):", data.Integral()
 
 def SavePull(pullH, pullE, LowEdge, UpEdge, dirName):
 	ca = TCanvas("ca", "ca", 1000, 800)
@@ -315,93 +328,58 @@ def SavePull(pullH, pullE, LowEdge, UpEdge, dirName):
 #		pullE.Draw("same2")
 #	ca.SaveAs(dirName + "/pull.pdf")
 #	ca.SaveAs(dirName + "/pull.png")
-	
+	ca.Delete()
 
 def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
+	newList = []
+	newLegs = []
+	for h in HistList:
+		if h[1] in newLegs:
+			continue
+		else:
+			newList.append(h)
+			newLegs.append(h[1])
+
+	nMaxPerBox = (len(newList)+len(Signals)+2)/2
+	if (2*nMaxPerBox < len(newList)+len(Signals)+2):
+		nMaxPerBox += 1
+	lenPerHist = 0.24/float(nMaxPerBox)
+
 	legends = []
-
-	'''
-	legend = TLegend(0.08, 0.65, 0.81, 0.89)
-	legend.SetNColumns(3)
-	legend.SetColumnSeparation(0.4)
-
-        data_lumi = " Data (" + str(lumi) + " pb^{-1})"
-        if lumi > 1000:
-                llumi = float(lumi)/1000.
-                data_lumi = " Data (" + str(llumi) + " fb^{-1})"
-        legend.AddEntry(DataHist, data_lumi, "lep")
-
-	for i,hist in enumerate(HistList):
-		legend.AddEntry(hist[0], " " +hist[1], "f")
+#	leg1 = TLegend(0.65, 0.65, 0.71, 0.65+lenPerHist*float(nMaxPerBox))
+	leg1 = TLegend(0.65, 0.89-lenPerHist*float(nMaxPerBox), 0.71, 0.89)
+	if (2*nMaxPerBox > len(newList)+len(Signals)+2):
+		nMaxPerBox -= 1
+	leg2 = TLegend(0.40, 0.89-lenPerHist*float(nMaxPerBox), 0.46, 0.89)
 	
-	for hist in Signals:
-		legend.AddEntry(hist[0], " " +hist[1], "l")
-
-	legends.append(legend)
-
-	if 1==1:
-		return legends
-	'''
-	nBoxes = 3
-	nLegPerBoxMin = 4
-	y0 = 0.65
-	y1 = 0.89
-	ystep = (y1 - y0)/4
-	xi = 0.08
-	xf = 0.81
-	xstep = (xf - xi)/nBoxes
-	xgap = xstep/2 + 0.03
-
-	totalHists = len(HistList) + 1
-
-	nPerGroup = (totalHists)//nBoxes
-	if (totalHists)%nBoxes > 0:
-		nPerGroup += 1
-
-	if nPerGroup < nLegPerBoxMin:
-		nPerGroup = nLegPerBoxMin
-
-	nLeg3 = min( totalHists, nPerGroup)
-	nLeg2 = min( totalHists - nLeg3, nPerGroup)
-	print "nLeg2: ", totalHists, nLeg3
-	nLeg1 = totalHists - (nLeg2 + nLeg3)
-
-	yLeg3 = max( y1 - nLeg3*ystep, 0.65)
-	yLeg2 = max( y1 - nLeg2*ystep, 0.65)
-	print "yLeg2 = max( 0.9 - ", nLeg2*ystep, ", 0.65)"
-	yLeg1 = max( y1 - nLeg1*ystep, 0.65)
-	print yLeg3, yLeg2, yLeg1
-
-        leg1 = TLegend( xi + xstep*0 + xgap*1, yLeg1, xi + xstep*1 - xgap*1, y1)
-        leg2 = TLegend( xi + xstep*1 + xgap*1, yLeg2, xi + xstep*2 - xgap*1, y1)
-        leg3 = TLegend( xi + xstep*2 + xgap*1, yLeg3, xi + xstep*3 - xgap*1, y1)
-#	textFont = 63
-#	textSize = 18
-#	leg1.SetTextFont(textFont)
-#	leg1.SetTextSize(textSize)
-#	leg2.SetTextFont(textFont)
-#	leg2.SetTextSize(textSize)
-#	leg3.SetTextFont(textFont)
-#	leg3.SetTextSize(textSize)
+	legends.append(leg1)
+	legends.append(leg2)
 
 	data_lumi = " Data (" + str(lumi) + " pb^{-1})"
 	if lumi > 1000:
 		llumi = float(lumi)/1000.
 		data_lumi = " Data (" + str(llumi) + " fb^{-1})"
-	leg3.AddEntry(DataHist, data_lumi, "lep")
-	leg3.AddEntry(SUM, "Stat. Uncertainty", "lf")
+#	leg1.AddEntry(DataHist, data_lumi, "lep")
+#	leg1.AddEntry(SUM, " Stat. Uncertainty", "lf")
 	
-	for i,hist in enumerate(HistList):
-		if i+1 < nPerGroup:
-			leg3.AddEntry(hist[0], " " +hist[1], "f")
-		if i+1 >= nPerGroup and i+1 < nPerGroup*2:
-			leg2.AddEntry(hist[0], " " +hist[1], "f")
-		if i+1 >= nPerGroup*2 and i+1 < nPerGroup*3:
-			leg1.AddEntry(hist[0], " " +hist[1], "f")
-		
-	legends.append(leg3)
-	legends.append(leg2)
-	legends.append(leg1)
+	allLegs = []
+	allLegs.append([DataHist, " Data (" + str(llumi) + " fb^{-1})"])
+	allLegs.append([SUM,  " Stat. Uncertainty"])
+	allLegs += newList + Signals
+
+	nMaxPerBox = (len(newList)+len(Signals)+2)/2
+	if (2*nMaxPerBox < len(newList)+len(Signals)+2):
+		nMaxPerBox += 1
+
+	for i,l in enumerate(allLegs):
+		Type = 'f'
+		if 'Data' in l[1]:
+			Type = 'lep'
+		if 'Stat' in l[1]:
+			Type = 'lf'
+		iLeg = i//nMaxPerBox
+		legends[iLeg].AddEntry(l[0], ' '+l[1], Type)
+
         textFont = 63
         textSize = 18
 	for leg in legends:
