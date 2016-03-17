@@ -17,10 +17,10 @@ Then, go to the flashgg directory and clone bbggTools, and compile again:
 cd $CMSSW_BASE/src/flashgg
 git clone git@github.com:ResonantHbbHgg/bbggTools.git bbggTools
 cd bbggTools
-./Compile.sh
+scramv1 b -j 10
 ```
 
-Due to some problems with unused variables in limit codes (memory handling in RooFit), we need to set the propert compilation variables to ignore unused variables. That is done in Compile.sh. For cleaning the area, you can still do simply scramv1 b clean.
+*OLD: Due to some problems with unused variables in limit codes (memory handling in RooFit), we need to set the propert compilation variables to ignore unused variables. That is done in Compile.sh. For cleaning the area, you can still do simply scramv1 b clean.*   
 
 
 ## Important steps
