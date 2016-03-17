@@ -12,25 +12,32 @@ addHiggs = True
 hideData = False
 addbbH = False
 
+#Luminosity to normalize backgrounds
 lumi = 2700#pb
 
+#List of datasets to be used (cross section information defined there)
 data_file = open("datasets/datasets76X.json")
 
+#List of different processes in stack plot (number in each contribution reflects the number of datasets to be stacked together)
 bkgsToAdd = [['vbf', "VBF H(#gamma#gamma)", 1], ['vh', "VH(#gamma#gamma)", 1], ['ggf', "ggH(#gamma#gamma)", 1], ['tth', "ttH(#gamma#gamma)", 1], ["DYJet", "Z/#gamma*+Jets", 1], ["GJets", "#gamma+Jets", 2], ["DiPhoJet", "#gamma#gamma+Jets", 1], ["QCD", "QCD", 2] ]
 
+#number of bins in histograms
 nbin = 40
 dr = "sqrt( (leadingPhoton.Eta() - subleadingPhoton.Eta())*(leadingPhoton.Eta() - subleadingPhoton.Eta()) + (leadingPhoton.Phi() - subleadingPhoton.Phi())*(leadingPhoton.Phi() - subleadingPhoton.Phi()) )"
 
+#plots will be saved in dirName
 prefix = ""
 dirSuffix = "1_3_0_SR_PhoMVAID_76X"
 dirPrefix = "/afs/cern.ch/user/r/rateixei/www/HHBBGG/"
 dirName = dirPrefix + dirSuffix
 
+#Location of root files for each invidivual samples. Name of the root files is defined in datasets/datasets(76).json
 higgsLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_hig/Hadd/"
 bkgLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_bkg/Hadd/"
 signalLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_sig/Hadd/"
 dataLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/test/RunJobs/mva_data/Hadd/"
 
+#plots to be made
 plots = []
 plots.append(["j1ratio_dijet", "leadingJet.Pt()/dijetCandidate.M()", "p_{T}(j_{1})/M(jj)", nbin, 0.1, 1.5])
 plots.append(["dijet_deta", "fabs(leadingJet.Eta() - subleadingJet.Eta())", "#Delta#eta between jets", nbin, 0, 5])
@@ -59,6 +66,7 @@ plots.append(["dr_photons", dr, "#DeltaR between photons", nbin, 0, 10])
 plots.append(["leadingPho_MVA", "leadingPhotonIDMVA", "Leading Photon #gammaMVA discriminant", nbin, 0, 1])
 plots.append(["subleadingPho_MVA", "subleadingPhotonIDMVA", "SubLeading Photon #gammaMVA discriminant", nbin, 0, 1])
 
+#cuts to be used to make plots
 Cut = " diphotonCandidate.M() > 100 && diphotonCandidate.M() < 180"
 Cut += " && dijetCandidate.M() > 60 && dijetCandidate.M() < 180"
 #Cut += " && diHiggsCandidate.M() > 280 && diHiggsCandidate.M() < 320"

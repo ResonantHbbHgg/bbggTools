@@ -1,8 +1,8 @@
 ### Making Stack Plots
 
-1) Go to flashgg/MetaData/work
+1) Edit configs.json to reflect what you want to plot and where you want the plots to be saved.
 
-2) Create a json file that lists the datasets you want to process, for example:  
+2) Create a json file that lists
 ```
 {
     "data" : ["/DoubleElectron/CMSSW_7_0_6_patch1-GR_70_V2_AN1_RelVal_zEl2012D-v1/MINIAOD"
