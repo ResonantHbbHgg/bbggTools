@@ -487,7 +487,7 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::DiJetSelection(std::vector<edm::P
     sumbtag_ref = sumbtag_ref;
     sumpt_ref = sumpt_ref;
 
-	if(DEBUG) std::cout << "Jet sorting... " << std::endl;
+    if(DEBUG) std::cout << "Jet sorting... " << std::endl;
     for(unsigned int iJet = 0; iJet < Jets.size(); iJet++)
     {
  		unsigned int isbjet = 0;
@@ -500,14 +500,16 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::DiJetSelection(std::vector<edm::P
  	  		if(_n_bJets && totalbjet != _n_bJets) continue;
 
  	  		bbggTools::LorentzVector dijet = Jets[iJet]->p4() + Jets[jJet]->p4();
-            if(DoMassCut){
-                if(dijet.mass() < _DiJetMassWindow[0] || dijet.mass() > _DiJetMassWindow[1]) continue;
-            }
+            		if(DoMassCut){
+		                if(dijet.mass() < _DiJetMassWindow[0] || dijet.mass() > _DiJetMassWindow[1]) continue;
+		        }
 						
 			double sumbtag = Jets[iJet]->bDiscriminator(_bTagType) + Jets[jJet]->bDiscriminator(_bTagType);
 
-			if( bbggTools::DeltaR(Jets[iJet]->p4(), Jets[jJet]->p4()) < 0.5)
-				continue;
+//			if( bbggTools::DeltaR(Jets[iJet]->p4(), Jets[jJet]->p4()) < 0.5)
+//				continue;
+
+			if( Jets[iJet]->pt() < _JetPt[1] && Jets[jJet]->pt() < _JetPt[1]) continue;
 
 			double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
 // 	  		if(dijet.pt() > dijetPt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
@@ -558,11 +560,11 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::JetPreSelection(JetCollectionVect
         //            isJet = false;
     	if(jet->pt() < _JetPt[0])
             isJet = false;
- 	    if(jet->bDiscriminator(_bTagType) < _JetBDiscriminant[0])
+ 	if(jet->bDiscriminator(_bTagType) < _JetBDiscriminant[0])
             isJet = false;
- 	    if( !isJet )
+ 	if( !isJet )
             continue;
- 	    if( bbggTools::DeltaR(jet->p4(), diphoCandidate->leadingPhoton()->p4()) < _JetDrPho[0] 
+ 	if( bbggTools::DeltaR(jet->p4(), diphoCandidate->leadingPhoton()->p4()) < _JetDrPho[0] 
              || bbggTools::DeltaR(jet->p4(), diphoCandidate->subLeadingPhoton()->p4()) < _JetDrPho[0] ) continue;
 
  	    Jets.push_back(jet);
