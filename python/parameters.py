@@ -35,7 +35,7 @@ _DiPhotonPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary
 _DiPhotonEta				=	cms.untracked.vdouble(100000)
 #0: DiPhoton mass window lower boundary, 1: upper boundary
-_DiPhotonMassWindow			=	cms.untracked.vdouble(100., 200.)
+_DiPhotonMassWindow			=	cms.untracked.vdouble(100., 180.)
 #If you only want to look at first diphoton pair: 1; if all: 0
 _DiPhotonOnlyFirst			=	cms.untracked.uint32(0)
 

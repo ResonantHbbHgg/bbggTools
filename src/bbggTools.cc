@@ -16,7 +16,7 @@ using namespace std;
 bool DEBUG = 0;
 
 std::vector<edm::Ptr<flashgg::DiPhotonCandidate>>
-    DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
+    bbggTools::DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
         std::vector<std::string> myTriggers, std::vector<int> myTriggersResults)
 {
     std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> selDiPhos;

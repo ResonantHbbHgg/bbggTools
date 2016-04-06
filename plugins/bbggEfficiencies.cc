@@ -101,6 +101,7 @@ private:
     int isSignal, isPhotonCR;
 //    int nvtx;
     int passed0, passed1, passed2, passed3, passed4, passed5, passed6, passed7, passed8, passed9, passed10, passed11, passed12, passed13, passed14;
+    float evWeight;
 
     vector<LorentzVector> leadingjets, subleadingjets, dijets;
     vector<double> leadingjets_bDiscriminant, subleadingjets_bDiscriminant;
@@ -347,25 +348,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     phoISOtight[0] = phoISOtightEB;
     phoISOtight[1] = phoISOtightEE;
     tools_.SetCut_phoISOtight(phoISOtight);
-        
-    /*
-    tools_.SetCut_phoIDlooseEB(phoIDlooseEB);
-    tools_.SetCut_phoIDlooseEE(phoIDlooseEE);
-    tools_.SetCut_phoIDmediumEB(phoIDmediumEB);
-    tools_.SetCut_phoIDmediumEE(phoIDmediumEE);
-    tools_.SetCut_phoIDtightEB(phoIDtightEB);
-    tools_.SetCut_phoIDtightEE(phoIDtightEE);
-    */
-    
-    /*        
-    tools_.SetCut_phoISOlooseEB(phoISOlooseEB);
-    tools_.SetCut_phoISOlooseEE(phoISOlooseEE);
-    tools_.SetCut_phoISOmediumEB(phoISOmediumEB);
-    tools_.SetCut_phoISOmediumEE(phoISOmediumEE);
-    tools_.SetCut_phoISOtightEB(phoISOtightEB);
-    tools_.SetCut_phoISOtightEE(phoISOtightEE);
-    */
-    
+            
     std::map<int, vector<double> > nhCorr;
     nhCorr[0] = nhCorrEB;
     nhCorr[1] = nhCorrEE;
@@ -375,13 +358,6 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     phCorr[0] = phCorrEB;
     phCorr[1] = phCorrEE;
     tools_.SetCut_phCorr(phCorr);
-    
-    /*
-    tools_.SetCut_nhCorrEB(nhCorrEB);
-    tools_.SetCut_nhCorrEE(nhCorrEE);
-    tools_.SetCut_phCorrEB(phCorrEB);
-    tools_.SetCut_phCorrEE(phCorrEE);
-    */
     
     tools_.SetCut_phoWhichID(ph_whichID);
     tools_.SetCut_phoWhichISO(ph_whichISO);
@@ -422,7 +398,7 @@ void
     JetCollectionVector theJetsCols( inputTagJets_.size() );
     for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
         iEvent.getByToken( tokenJets_[j], theJetsCols[j] );
-	totalNumberofJets += theJetsCols[j]->size();
+        totalNumberofJets += theJetsCols[j]->size();
     }
 
     if (DEBUG) std::cout << "Number of jet collections!!!! " << theJetsCols.size() << std::endl;
@@ -435,12 +411,6 @@ void
 
     int totalNumberofPhotons = BeforeSeldiPhotons->size();
 
-/*
-    Handle<double> rhoHandle;        // the old way for now...move to getbytoken?
-    iEvent.getByLabel( rhoFixedGrid_, rhoHandle );
-    const double rhoFixedGrd = *( rhoHandle.product() );
-    tools_.setRho(rhoFixedGrd);
-*/
     const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
     tools_.setRho(rhoFixedGrd);
 
@@ -458,6 +428,8 @@ void
         genTotalWeight = 1;
     }
 
+    evWeight = genTotalWeight;
+
     //PreLoop
     vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoVec;
     for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
@@ -473,7 +445,7 @@ void
             if (nPromptPhotons > 0 && nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
             if (nPromptPhotons == 0) {
                 if (nPrompt == 0) diphoVec.push_back(dipho);
-//                else if (nPrompt == 1) diphoVec.push_back(dipho);
+                //                else if (nPrompt == 1) diphoVec.push_back(dipho);
             }
         } else {
             diphoVec.push_back(dipho);
@@ -481,100 +453,108 @@ void
     }
 
 
-passed0 = 0;
-passed1 = 0;
-passed2 = 0;
-passed3 = 0;
-passed4 = 0;
-passed5 = 0;
-passed6 = 0;
-passed7 = 0;
-passed8 = 0;
-passed9 = 0;
-passed10 = 0;
-passed11 = 0;
-passed12 = 0;
-passed13 = 0;
-passed14 = 0;
+    passed0 = 0;
+    passed1 = 0;
+    passed2 = 0;
+    passed3 = 0;
+    passed4 = 0;
+    passed5 = 0;
+    passed6 = 0;
+    passed7 = 0;
+    passed8 = 0;
+    passed9 = 0;
+    passed10 = 0;
+    passed11 = 0;
+    passed12 = 0;
+    passed13 = 0;
+    passed14 = 0;
 
 
-//Start efficiencies filling
-Efficiencies->Fill(0);
-passed0 = 1;
+    //Start efficiencies filling
+    Efficiencies->Fill(0);
+    passed0 = 1;
 
-//Check number of diphotons and jets before any sel
-if( totalNumberofJets < 2 || totalNumberofPhotons < 1) {tree->Fill(); return;}
-Efficiencies->Fill(1);
-passed1 = 1;
+    //Check number of diphotons and jets before any sel
+    if( totalNumberofJets < 2 || totalNumberofPhotons < 1) {tree->Fill(); return;}
+    Efficiencies->Fill(1);
+    passed1 = 1;
 
-//Check number of diphotons after presel:
-//76x: Check trigger results
-//Trigger
-std::vector<int> myTriggerResults;
-bool triggerAccepted = false;
-if(myTriggers.size() > 0){
-    Handle<edm::TriggerResults> trigResults;
-    iEvent.getByToken(triggerToken_, trigResults);
-    const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
-    myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
-    for( unsigned int tr = 0; tr < myTriggerResults.size(); tr++){
-        if(myTriggerResults[tr] == 1){
-            triggerAccepted = true;
-            break;
-        }
+    //Check number of diphotons after presel:
+    //76x: Check trigger results
+    //Trigger
+    std::vector<int> myTriggerResults;
+    bool triggerAccepted = false;
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = diphoVec;
+    if(myTriggers.size() > 0){
+        Handle<edm::TriggerResults> trigResults;
+        iEvent.getByToken(triggerToken_, trigResults);
+        const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);        
+        myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
+        
+        PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggers, myTriggerResults);
+        //If no diphoton passed presel, skip event
+        if ( PreSelDipho.size() < 1 ) return;
+        
+        // for( unsigned int tr = 0; tr < myTriggerResults.size(); tr++){
+        //     if(myTriggerResults[tr] == 1){
+        //         triggerAccepted = true;
+        //         break;
+        //     }
+        // }
+        
     }
-}
-if( !triggerAccepted ) {tree->Fill(); return;}
-Efficiencies->Fill(2);
-passed2 = 1;
 
-//Check photon kinematic selection:
-std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDiPhos = tools_.DiPhotonKinematicSelection(diphoVec);
-if(PreSelDiPhos.size() < 1 ) {tree->Fill(); return;}
-Efficiencies->Fill(3);
-passed3 = 1;
+    if( !triggerAccepted ) {tree->Fill(); return;}
+    Efficiencies->Fill(2);
+    passed2 = 1;
 
-//Check photon ID:
-std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> SelDiPhos = tools_.DiPhotonIDSelection(PreSelDiPhos);
-if(SelDiPhos.size() < 1) {tree->Fill(); return;}
-Efficiencies->Fill(4);
-passed4 = 1;
+    //Check photon kinematic selection:
+    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDiPhos = tools_.DiPhotonKinematicSelection(diphoVec);
+    if(PreSelDiPhos.size() < 1 ) {tree->Fill(); return;}
+    Efficiencies->Fill(3);
+    passed3 = 1;
 
-//Check jet presel:
-edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = SelDiPhos[0];
-std::vector<edm::Ptr<flashgg::Jet>> PreSelJets = tools_.JetPreSelection(theJetsCols, diphoCand);
-if(PreSelJets.size() < 2) {tree->Fill(); return;}
-Efficiencies->Fill(5);
-passed5 = 1;
+    //Check photon ID:
+    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> SelDiPhos = tools_.DiPhotonIDSelection(PreSelDiPhos);
+    if(SelDiPhos.size() < 1) {tree->Fill(); return;}
+    Efficiencies->Fill(4);
+    passed4 = 1;
 
-//Check jet selection:
-std::vector<edm::Ptr<flashgg::Jet>> SelJets = tools_.DiJetSelection(PreSelJets);
-if(SelJets.size() < 2) {tree->Fill(); return;}
-Efficiencies->Fill(6);
-passed6 = 1;
+    //Check jet presel:
+    edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = SelDiPhos[0];
+    std::vector<edm::Ptr<flashgg::Jet>> PreSelJets = tools_.JetPreSelection(theJetsCols, diphoCand);
+    if(PreSelJets.size() < 2) {tree->Fill(); return;}
+    Efficiencies->Fill(5);
+    passed5 = 1;
 
-// b-tagging
-edm::Ptr<flashgg::Jet> leadingJet = SelJets[0];
-edm::Ptr<flashgg::Jet> subleadingJet = SelJets[1];
-double lbdis = leadingJet->bDiscriminator(bTagType);
-double sbdis = subleadingJet->bDiscriminator(bTagType);
-if(lbdis < 0.89 && sbdis < 0.89) {tree->Fill(); return;}
-Efficiencies->Fill(7);
-passed7 = 1;
+    //Check jet selection:
+    std::vector<edm::Ptr<flashgg::Jet>> SelJets = tools_.DiJetSelection(PreSelJets);
+    if(SelJets.size() < 2) {tree->Fill(); return;}
+    Efficiencies->Fill(6);
+    passed6 = 1;
 
-//Mass cut
-LorentzVector BB = leadingJet->p4() + subleadingJet->p4();
-if(BB.mass() < 60 || BB.mass() > 180) {tree->Fill(); return;}
-if(diphoCand->mass() < 100 || diphoCand->mass() > 180) {tree->Fill(); return;}
-Efficiencies->Fill(8);
-passed8 = 1;
+    // b-tagging
+    edm::Ptr<flashgg::Jet> leadingJet = SelJets[0];
+    edm::Ptr<flashgg::Jet> subleadingJet = SelJets[1];
+    double lbdis = leadingJet->bDiscriminator(bTagType);
+    double sbdis = subleadingJet->bDiscriminator(bTagType);
+    if(lbdis < 0.89 && sbdis < 0.89) {tree->Fill(); return;}
+    Efficiencies->Fill(7);
+    passed7 = 1;
 
-LorentzVector HH = BB+diphoCand->p4();
+    //Mass cut
+    LorentzVector BB = leadingJet->p4() + subleadingJet->p4();
+    if(BB.mass() < 60 || BB.mass() > 180) {tree->Fill(); return;}
+    if(diphoCand->mass() < 100 || diphoCand->mass() > 180) {tree->Fill(); return;}
+    Efficiencies->Fill(8);
+    passed8 = 1;
 
-Mjj->Fill(BB.mass());
-Mgg->Fill(diphoCand->mass());
-Mggjj->Fill(HH.mass());
-tree->Fill();
+    LorentzVector HH = BB+diphoCand->p4();
+
+    Mjj->Fill(BB.mass());
+    Mgg->Fill(diphoCand->mass());
+    Mggjj->Fill(HH.mass());
+    tree->Fill();
 }
 
 
@@ -601,6 +581,7 @@ void
     tree->Branch("passed12", &passed12);
     tree->Branch("passed13", &passed13);
     tree->Branch("passed14", &passed14);
+    tree->Branch("evWeight", &evWeight);
     Efficiencies = new TH1F("Efficiencies", "Efficiencies", 10, 0, 10);
     Mjj = new TH1F("Mjj", "Mjj", 100, 60, 200);
     Mgg = new TH1F("Mgg", "Mgg", 100, 100, 150);
