@@ -165,7 +165,7 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
 
     //now do what ever initialization is needed
     tools_ = bbggTools();
-    globVar_ = new flashgg::GlobalVariablesDumper(iConfig);
+    globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
     double lumiWeight_ = ( iConfig.getParameter<double>( "lumiWeight" ) );
     globVar_->dumpLumiFactor(lumiWeight_);
@@ -390,6 +390,7 @@ bbggEfficiencies::~bbggEfficiencies()
 void
     bbggEfficiencies::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+    globVar_->fill(iEvent);
 
     using namespace edm;
 
@@ -445,7 +446,7 @@ void
             if (nPromptPhotons > 0 && nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
             if (nPromptPhotons == 0) {
                 if (nPrompt == 0) diphoVec.push_back(dipho);
-                //                else if (nPrompt == 1) diphoVec.push_back(dipho);
+                else if (nPrompt == 1) diphoVec.push_back(dipho);
             }
         } else {
             diphoVec.push_back(dipho);
@@ -482,7 +483,7 @@ void
     //Check number of diphotons after presel:
     //76x: Check trigger results
     //Trigger
-    std::vector<int> myTriggerResults;
+    std::map<std::string, int> myTriggerResults;
     bool triggerAccepted = false;
     vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = diphoVec;
     if(myTriggers.size() > 0){
@@ -491,9 +492,9 @@ void
         const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);        
         myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
         
-        PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggers, myTriggerResults);
+        PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
         //If no diphoton passed presel, skip event
-        if ( PreSelDipho.size() < 1 ) return;
+        if ( PreSelDipho.size() > 0 ) triggerAccepted = 1;
         
         // for( unsigned int tr = 0; tr < myTriggerResults.size(); tr++){
         //     if(myTriggerResults[tr] == 1){
@@ -509,7 +510,7 @@ void
     passed2 = 1;
 
     //Check photon kinematic selection:
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDiPhos = tools_.DiPhotonKinematicSelection(diphoVec);
+    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDiPhos = tools_.DiPhotonKinematicSelection(PreSelDipho, 1);
     if(PreSelDiPhos.size() < 1 ) {tree->Fill(); return;}
     Efficiencies->Fill(3);
     passed3 = 1;
@@ -528,7 +529,7 @@ void
     passed5 = 1;
 
     //Check jet selection:
-    std::vector<edm::Ptr<flashgg::Jet>> SelJets = tools_.DiJetSelection(PreSelJets);
+    std::vector<edm::Ptr<flashgg::Jet>> SelJets = tools_.DiJetSelection(PreSelJets, 1);
     if(SelJets.size() < 2) {tree->Fill(); return;}
     Efficiencies->Fill(6);
     passed6 = 1;
@@ -586,6 +587,9 @@ void
     Mjj = new TH1F("Mjj", "Mjj", 100, 60, 200);
     Mgg = new TH1F("Mgg", "Mgg", 100, 100, 150);
     Mggjj = new TH1F("Mggjj", "Mggjj", 100, 0, 1000);
+    
+    std::map<std::string, std::string> replacements;
+    globVar_->bookTreeVariables(tree, replacements);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

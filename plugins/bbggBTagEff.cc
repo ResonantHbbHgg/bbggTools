@@ -515,26 +515,34 @@ passed1 = 1;
 //Check number of diphotons after presel:
 //76x: Check trigger results
 //Trigger
-std::vector<int> myTriggerResults;
+std::map<std::string, int> myTriggerResults;
 bool triggerAccepted = false;
+vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = diphoVec;
 if(myTriggers.size() > 0){
     Handle<edm::TriggerResults> trigResults;
     iEvent.getByToken(triggerToken_, trigResults);
-    const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
+    const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);        
     myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
-    for( unsigned int tr = 0; tr < myTriggerResults.size(); tr++){
-        if(myTriggerResults[tr] == 1){
-            triggerAccepted = true;
-            break;
-        }
-    }
+    
+    PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
+    //If no diphoton passed presel, skip event
+    if ( PreSelDipho.size() > 0 ) triggerAccepted = 1;
+    
+    // for( unsigned int tr = 0; tr < myTriggerResults.size(); tr++){
+    //     if(myTriggerResults[tr] == 1){
+    //         triggerAccepted = true;
+    //         break;
+    //     }
+    // }
+    
 }
+
 if( !triggerAccepted ) {return;}
 Efficiencies->Fill(2);
 passed2 = 1;
 
 //Check photon kinematic selection:
-std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDiPhos = tools_.DiPhotonKinematicSelection(diphoVec);
+std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDiPhos = tools_.DiPhotonKinematicSelection(PreSelDipho);
 if(PreSelDiPhos.size() < 1 ) {return;}
 Efficiencies->Fill(3);
 passed3 = 1;

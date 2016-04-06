@@ -108,7 +108,7 @@ private:
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
     float CosThetaStar, leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR_2, DiJetDiPho_DR_1, PhoJetMinDr;
-    vector<int> myTriggerResults;
+    std::map<std::string, int> myTriggerResults;
     
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -531,7 +531,7 @@ void
     if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
         
     //Trigger preselection on diphoton candidates:
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggers, myTriggerResults);
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() < 1 ) return;
 
@@ -546,7 +546,7 @@ void
     //     if(!triggerAccepted) return;
     // }
 
-    bool passedSelection = tools_.AnalysisSelection(diphoVec, theJetsCols);
+    bool passedSelection = tools_.AnalysisSelection(PreSelDipho, theJetsCols);
     isSignal = tools_.IsSignal();
     isPhotonCR = tools_.IsPhotonCR();
     bool hasLJet = tools_.HasLeadJet();
