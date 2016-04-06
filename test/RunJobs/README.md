@@ -1,6 +1,6 @@
 ```
 mkdir NonResSignal
-fggRunJobs.py --load RunJobs_Signal.json -H -D -P -n 500 -d NonResSignal -x cmsRun MakeTrees_FLASHgg.py  maxEvents=-1 -q 1nh --no-use-tarball
+fggRunJobs.py --load <RunJobs_Signal.json> -H -D -P -n 500 -d <NonResSignal> -x cmsRun MakeTrees_FLASHgg_bkg.py  maxEvents=-1 -q 1nh --no-use-tarball
 ```   
 
 Hadd all backgrounds:   
