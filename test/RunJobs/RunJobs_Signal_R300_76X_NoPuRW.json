@@ -1,7 +1,7 @@
 {
     "processes" : {
-		"GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph" : [ 
-            "/GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph"
+        "GluGluToRadionToHHTo2B2G_M-300_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-300_narrow_13TeV-madgraph"
         ]
    },
 	"cmdLine" : "campaign=rateixei-SignalFall15DR76 doDoubleCountingMitigation=0 targetLumi=2.63e+3 doSelection=1 PURW=0"

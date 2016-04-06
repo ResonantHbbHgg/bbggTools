@@ -4,7 +4,6 @@ import flashgg.Taggers.flashggTags_cff as flashggTags
 
 
 _doPhotonCR				=	cms.untracked.uint32(1)
-#_triggerTag				=	cms.InputTag("TriggerResults", "", "FLASHggMicroAOD")
 _triggerTag				=	cms.InputTag("TriggerResults", "", "HLT")
 _myTriggers				=	cms.untracked.vstring(
 						"HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95_v",
@@ -36,12 +35,13 @@ _DiPhotonPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary
 _DiPhotonEta				=	cms.untracked.vdouble(100000)
 #0: DiPhoton mass window lower boundary, 1: upper boundary
-_DiPhotonMassWindow			=	cms.untracked.vdouble(100., 180.)
+_DiPhotonMassWindow			=	cms.untracked.vdouble(100., 200.)
 #If you only want to look at first diphoton pair: 1; if all: 0
 _DiPhotonOnlyFirst			=	cms.untracked.uint32(0)
-#0: jet1, 1: jet2
-_JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 25.)
-#_JetPtOverDiJetMass			=	cms.untracked.vdouble(0.4, 0.3)
+
+#0: both jets have to pass [0] requirement. at least one jet has to pass [1] requirement
+_JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 0.0)
+
 #0: jet1, 1: jet2
 _JetEta						=	cms.untracked.vdouble(2.4, 2.4)
 #0: lowest b-tag requirement for any jet (default 0), standard b-tag cut (loose, medium, tight) 
@@ -55,7 +55,7 @@ _DiJetPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary for dijet pt
 _DiJetEta					=	cms.untracked.vdouble(20.)
 #0: DiJet mass window lower boundary, 1: upper boundary
-_DiJetMassWindow			=	cms.untracked.vdouble(60., 180.)
+_DiJetMassWindow			=	cms.untracked.vdouble(80., 200.)
 #0: 4-candidate mass window lower boundary, 1: upper boundary
 _CandidateMassWindow		=	cms.untracked.vdouble(0., 2500.)
 #0 4-candidate pt lower bound
@@ -113,3 +113,7 @@ _DoMVAPhotonID				=	cms.untracked.uint32(1)
 _MVAPhotonID				=	cms.untracked.vdouble(0.374, 0.472)
 #MVA user float
 _PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
+
+_doJetRegression			=	cms.untracked.uint32(0)
+
+_bRegFile					=	cms.untracked.string("/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")

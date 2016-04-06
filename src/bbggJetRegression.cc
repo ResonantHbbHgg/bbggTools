@@ -88,7 +88,7 @@ bbggJetRegression::LorentzVector bbggJetRegression::GetRegression(edm::Ptr<flash
     Jet_vtxPt = sqrt( jt->userFloat("vtxPx")*jt->userFloat("vtxPx") + jt->userFloat("vtxPy")*jt->userFloat("vtxPy"));
     Jet_vtxMass = jt->userFloat("vtxMass");
     Jet_vtx3dL = jt->userFloat("vtx3DVal");
-    Jet_vtxNtrk = jt->userFloat("vtxNtracks");
+    Jet_vtxNtrk = jt->userFloat("vtxNTracks");
     Jet_vtx3deL = jt->userFloat("vtx3DSig");
     
     const std::vector< Float_t > & RegressedValues = RegressionReader->EvaluateRegression("BDTG method");

@@ -96,6 +96,8 @@ customize.register('PURW',
 customize(process)
 
 process.bbggtree.puReWeight=cms.bool( customize.PURW )
+if customize.PURW == False:
+	process.bbggtree.puTarget = cms.vdouble()
 print "I'M HERE 2"
 
 maxEvents = 5

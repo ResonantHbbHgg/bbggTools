@@ -146,7 +146,8 @@ private:
     unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR, doJetRegression;
     std::vector<std::string> myTriggers;
     std::string bTagType, PhotonMVAEstimator;
-    unsigned int doSelection, DoMVAPhotonID; 
+    unsigned int doSelection, DoMVAPhotonID;
+    std::string bRegFile;
 
     //OutFile & Hists
     TFile* outFile;
@@ -169,7 +170,6 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     //now do what ever initialization is needed
     tools_ = bbggTools();
     jetReg_ = bbggJetRegression();
-    jetReg_.SetupRegression("BDTG method", "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml");
 //    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
@@ -189,6 +189,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     std::vector<std::string> def_ph_whichID, def_ph_whichISO;
     unsigned int def_diph_onlyfirst;
     unsigned int def_n_bJets;
+    std::string def_bRegFile;
 
     def_ph_pt.push_back(10.);           def_ph_pt.push_back(10.);
     def_ph_eta.push_back(20.);          def_ph_eta.push_back(20.);
@@ -232,7 +233,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
     def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
     def_fileName =  "out.root";
-
+    
+    def_bRegFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml";
+        
     //Get thresholds from config file
     phoIDlooseEB = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEB");
     phoIDlooseEE = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEE");
@@ -295,6 +298,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     DoMVAPhotonID = iConfig.getUntrackedParameter<unsigned int>("DoMVAPhotonID", def_DoMVAPhotonID);
     MVAPhotonID = iConfig.getUntrackedParameter<std::vector<double>>("MVAPhotonID", def_MVAPhotonID);
     PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
+    
+    bRegFile = iConfig.getUntrackedParameter<std::string>("bRegFile", def_bRegFile);
     
     tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
     tools_.SetCut_MVAPhotonID(MVAPhotonID);
@@ -383,6 +388,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 	auto token = consumes<edm::View<flashgg::Jet> >(inputTagJets_[i]);
 	tokenJets_.push_back(token);
     }
+    
+    jetReg_.SetupRegression("BDTG method", bRegFile);
 
     std::cout << "Parameters initialized... \n ############ Doing selection tree or before selection tree? : " << (doSelection ? "Selection!":"Before selection!") <<  std::endl;
 
@@ -552,6 +559,21 @@ void
         edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
         edm::Ptr<flashgg::Jet> LeadingJet = tools_.GetSelected_leadingJetCandidate();
         edm::Ptr<flashgg::Jet> SubLeadingJet = tools_.GetSelected_subleadingJetCandidate();
+
+	if(DEBUG && doJetRegression){
+	    std::cout << "Userflots of leading jet: " << std::endl;
+	    std::cout << "\t nSecVertices: " << LeadingJet->userFloat("nSecVertices") << std::endl;
+	    std::cout << "\t vtxNTracks: " << LeadingJet->userFloat("vtxNTracks") << std::endl;
+	    std::cout << "\t vtxMass: " << LeadingJet->userFloat("vtxMass") << std::endl;
+	    std::cout << "\t vtxPx: " << LeadingJet->userFloat("vtxPx") << std::endl;
+	    std::cout << "\t vtxPy: " << LeadingJet->userFloat("vtxPy") << std::endl;
+	    std::cout << "\t vtx3DVal: " << LeadingJet->userFloat("vtx3DVal") << std::endl;
+	    std::cout << "\t vtx3DSig: " << LeadingJet->userFloat("vtx3DSig") << std::endl;
+	    std::cout << "\t leadTrackPt: " << LeadingJet->userFloat("leadTrackPt") << std::endl;
+	    std::cout << "\t softLepPt: " << LeadingJet->userFloat("softLepPt") << std::endl;
+	    std::cout << "\t softLepRatio: " << LeadingJet->userFloat("softLepRatio") << std::endl;
+	    std::cout << "\t softLepDr: " << LeadingJet->userFloat("softLepDr") << std::endl;
+	}
         
         if (DEBUG) std::cout << "Jet collection picked: " << diphoCand->jetCollectionIndex() << std::endl;
 		
@@ -608,7 +630,7 @@ void
         BoostedHgg.SetPtEtaPhiE( diphoCand->pt(), diphoCand->eta(), diphoCand->phi(), diphoCand->energy());
         TLorentzVector HHforBoost(0,0,0,0);
         HHforBoost.SetPtEtaPhiE( diHiggsCandidate.pt(), diHiggsCandidate.eta(), diHiggsCandidate.phi(), diHiggsCandidate.energy());
-        TVector3 HHBoostVector = -HHforBoost.BoostVector();
+        TVector3 HHBoostVector = HHforBoost.BoostVector();
         BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
 //        BoostedHgg.Boost( -HHBoostVector );
         CosThetaStar = BoostedHgg.CosTheta();

@@ -7,6 +7,7 @@
 	    "legend" : "Graviton M_{X} = 300 GeV",
             "color" : 2,
             "style" : 0,
+	    "nevents" : 50000,
             "file" : "output_GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph.root"
         },
         {
@@ -15,6 +16,7 @@
 	    "legend" : "Radion M_{X} = 600 GeV",
             "color" : 3,
             "style" : 0,
+	    "nevents" : 50000,
             "file" : "output_GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph.root"
         },
         {
@@ -23,6 +25,7 @@
 	    "legend" : "Graviton M_{X} = 900 GeV",
             "color" : 4,
             "style" : 0,
+	    "nevents" : 50000,
             "file" : "output_GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph.root"
         }
     ],

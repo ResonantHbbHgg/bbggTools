@@ -96,6 +96,7 @@ def doPull(bkg, data, stack):
 		n_bkg = bkg.GetBinContent(x+1)
 		bin_center = data.GetBinCenter(x+1)
 		bWidth = data.GetBinWidth(x+1)*0.5
+#		bWidth = data.GetBinWidth(x+1)*1
 		px.append(bin_center)
 		pey.append(1)
 		pex.append(bWidth)
@@ -166,6 +167,7 @@ def SaveNoPull(data, bkg, fileName):
 	c0.Delete()
 
 def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM, ControlRegion, hideData):
+	gStyle.SetHatchesLineWidth(1)
 	data.SetStats(0)
 	Font = 43
 	labelSize = 20
@@ -211,6 +213,9 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	pullE.GetXaxis().SetTitleSize(titleSize)
 	pullE.GetXaxis().SetTitleOffset(5)
 	pullE.GetXaxis().SetLabelOffset(0.05)
+	pullE.GetXaxis().SetNdivisions(515)
+	pullE.GetXaxis().SetTickLength(0.15)
+	bkg.GetXaxis().SetNdivisions(515)
 
 	pullE.GetYaxis().SetTitle("Data/MC")
 	pullE.GetYaxis().SetTitleFont(Font)
@@ -220,12 +225,12 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	pullE.GetYaxis().SetLabelFont(Font)
 	pullE.GetYaxis().SetLabelSize(15)
 
-	pullE.GetYaxis().SetNdivisions(6)
+	pullE.GetYaxis().SetNdivisions(504)
 
 
 	ratio = 0.2
 	epsilon = 0.0
-	c1 = TCanvas("c1", "c1", 900, 800)
+	c1 = TCanvas("c1", "c1", 1100, 950)
 	SetOwnership(c1,False) #If I don't put this, I get memory leak problems...
 	p1 = TPad("pad1","pad1", 0, float(ratio - epsilon), 1, 1)
 	SetOwnership(p1,False)
@@ -240,11 +245,13 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	p1.cd()
 	bkg.Draw('hist')
 	bkg.SetMinimum(0.001)
+	bkg.GetXaxis().SetNdivisions(515)
 	p1.Update()
 	gStyle.SetHatchesLineWidth(2)
-	SUM.Draw("E2same")
+	SUM.Draw("E2 same")
+#	SUM.Draw("a3 same")
 	if(hideData == False):
-		data.Draw('Esame')
+		data.Draw('E same')
 	tlatex = TLatex()
 	baseSize = 25
 	tlatex.SetNDC()
@@ -277,7 +284,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	p2.cd()
 #	pullE.GetYaxis().SetNdivisions(4, False)
 	if(hideData==False):
-		pullE.Draw("A5")
+		pullE.Draw("AF2")
 	if(hideData):
 		pullE.Draw("A")
 	Line = TLine(pullE.GetXaxis().GetXmin(), 1., pullE.GetXaxis().GetXmax(), 1.)
@@ -343,14 +350,14 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 	nMaxPerBox = (len(newList)+len(Signals)+2)/2
 	if (2*nMaxPerBox < len(newList)+len(Signals)+2):
 		nMaxPerBox += 1
-	lenPerHist = 0.24/float(nMaxPerBox)
+	lenPerHist = 0.27/float(nMaxPerBox)
 
 	legends = []
 #	leg1 = TLegend(0.65, 0.65, 0.71, 0.65+lenPerHist*float(nMaxPerBox))
-	leg1 = TLegend(0.65, 0.89-lenPerHist*float(nMaxPerBox), 0.71, 0.89)
+	leg1 = TLegend(0.68, 0.89-lenPerHist*float(nMaxPerBox), 0.74, 0.89)
 	if (2*nMaxPerBox > len(newList)+len(Signals)+2):
 		nMaxPerBox -= 1
-	leg2 = TLegend(0.40, 0.89-lenPerHist*float(nMaxPerBox), 0.46, 0.89)
+	leg2 = TLegend(0.43, 0.89-lenPerHist*float(nMaxPerBox), 0.49, 0.89)
 	
 	legends.append(leg1)
 	legends.append(leg2)
@@ -376,12 +383,12 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 		if 'Data' in l[1]:
 			Type = 'lep'
 		if 'Stat' in l[1]:
-			Type = 'lf'
+			Type = 'f'
 		iLeg = i//nMaxPerBox
 		legends[iLeg].AddEntry(l[0], ' '+l[1], Type)
 
-        textFont = 63
-        textSize = 18
+        textFont = 43
+        textSize = 20
 	for leg in legends:
 		leg.SetFillStyle(0)
 		leg.SetLineWidth(0)

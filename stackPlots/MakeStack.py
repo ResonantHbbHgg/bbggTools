@@ -53,7 +53,8 @@ for i,bkg in enumerate(data['signal']):
 	fLocation = signalLocation
 	tempfile = TFile.Open(fLocation+bkg['file'])
 	temptree = tempfile.Get('bbggSelectionTree')
-	normalization = 50
+	xsec = 0.10
+	normalization = xsec*lumi/float(bkg['nevents'])
 	arr = ["signal_"+str(i), bkg['legend'], bkg['file'], normalization, bkg['color']]
 	dataset = [tempfile, temptree, arr]
 	signals.append(dataset)
@@ -76,12 +77,14 @@ if isPhoCR == False:
 	Cut += " && (isSignal == 1)"
 	CutSignal += " && (isSignal == 1)"
 if doSignalRegion == True:
-	CutSignal += " && ( leadingJet_bDis > 0.8 || subleadingJet_bDis > 0.8 ) "
-	Cut += " && ( leadingJet_bDis > 0.8 || subleadingJet_bDis > 0.8 ) "
+	CutSignal += " && ( leadingJet_bDis > "+ str(BTAG) + " || subleadingJet_bDis > "+str(BTAG)+" ) "
+	Cut += " && ( leadingJet_bDis > "+ str(BTAG) + " || subleadingJet_bDis > "+ str(BTAG) + " ) "
 if doJetCR == True:
-	Cut += " && leadingJet_bDis < 0.80 && subleadingJet_bDis < 0.8 "
+	Cut += " && leadingJet_bDis < "+ str(BTAG) + " && subleadingJet_bDis < "+ str(BTAG) + " "
 weight = ""
 weight += "( genTotalWeight )*"
+if (doPUweight):
+	weight += "( puweight )*"
 cut_data = TCut(Cut)
 
 yieldsFile.write("Extra cuts on selection tree:\n")
@@ -120,8 +123,8 @@ for i,plot in enumerate(plots):
 			bhists[bkg[2][0]].Sumw2()
 			bhists[bkg[2][0]].Scale(bkg[2][3])
 			bhists[bkg[2][0]].SetFillColor(bkg[2][4])
-	#		bhists[bkg[2][0]].SetLineColor(bkg[2][4])
-			bhists[bkg[2][0]].SetLineColor(1)
+			bhists[bkg[2][0]].SetLineColor(bkg[2][4])
+#			bhists[bkg[2][0]].SetLineColor(1)
 			print bkg[2][1]
 			bhists[bkg[2][0]].SetLineWidth(0)
 			if(bbhist == 0):
@@ -154,7 +157,8 @@ for i,plot in enumerate(plots):
 				bhists[ BK[0] ].Reset()
 				bhists[ BK[0] ].Sumw2()
 				bhists[ BK[0] ].SetFillColor(bkg[2][4])
-				bhists[ BK[0] ].SetLineColor(1)
+				bhists[ BK[0] ].SetLineColor(bkg[2][4])
+#				bhists[ BK[0] ].SetLineColor(1)
 				bhists[ BK[0] ].SetLineWidth(0)
 			tempHist = bhists[BK[0]].Clone(BK[0] + "_Temp")
 			tempHist.Reset()
@@ -179,7 +183,8 @@ for i,plot in enumerate(plots):
 		scale = 1.
 		if bkg[2][3] > 0 and total > 0:
 			scale = bkg[2][3]/total
-		bhists[bkg[2][0]].Scale(scale)
+#		bhists[bkg[2][0]].Scale(scale)
+		bhists[bkg[2][0]].Scale(bkg[2][3])
 		bhists[bkg[2][0]].SetLineColor(bkg[2][4])
 		bhists[bkg[2][0]].SetLineWidth(2)
 		stack.addSignal(bhists[bkg[2][0]], bkg[2][1], bkg[2][3])

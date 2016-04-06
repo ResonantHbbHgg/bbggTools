@@ -133,6 +133,9 @@ enum EColor { kWhite =0,   kBlack =1,   kGray=920,
       w->var( sVar.c_str() )->SetTitle(varNames[i].c_str());
       w->var( sVar.c_str() )->setUnit("GeV");
 
+      // Initialize weight variable
+      w->factory( "evWeight[-10, 10]" );
+
       //Make plot frame
       RooPlot* frame = w->var(sVar.c_str())->frame(Bins(TString( nbins[i] ).Atoi() ));
 
@@ -150,7 +153,11 @@ enum EColor { kWhite =0,   kBlack =1,   kGray=920,
       TTree* tree = (TTree*) treeTemp->CopyTree( categoriesCuts[cat].c_str() );
       std::cout << "Reading file: " << rootName << "\n\t with " << tree->GetEntries() << " entries \n\t Making the following cut: " << categoriesCuts[cat] << std::endl;
 
-      RooDataSet* data = new RooDataSet( "data", "data", tree, *(w->var(sVar.c_str())) );
+//      RooDataSet* data = new RooDataSet( "data", "data", tree, *(w->var(sVar.c_str())) );
+//      RooDataSet* data = new RooDataSet( "data", "data", tree, *(w->var(sVar.c_str())), WeightVar( *( w->var( "evWeight" ) ) ) );
+      RooDataSet* data = new RooDataSet( "data", "data", RooArgSet( *(w->var(sVar.c_str())), *( w->var( "evWeight" ) )) , WeightVar( *( w->var( "evWeight" ) ) ), Import(*tree) );
+//      data->setWeightVar( ( w->var( "evWeight" ) ) );
+
       w->import(*data);
 
       //Plot data on frame
@@ -159,7 +166,7 @@ enum EColor { kWhite =0,   kBlack =1,   kGray=920,
       TH1F* dataHist = (TH1F*) data->createHistogram("dataHist", *(w->var(sVar.c_str())) );
 
       //TLegend
-      TLegend* leg = new TLegend(0.6, 0.7, 0.9, 0.9);
+      TLegend* leg = new TLegend(0.75, 0.65, 0.9, 0.9);
 
       //Start fitting businness - fit for each fit function
       std::vector<double> kolmos;
@@ -204,9 +211,12 @@ enum EColor { kWhite =0,   kBlack =1,   kGray=920,
 	  w->pdf( modelName )->plotOn(frame, Components( components[comp] ), LineColor( colors[ff] ), LineStyle( styles[comp] ), MoveToBack());
 	}
 
-	if(error == "1")
-	  w->pdf( modelName )->plotOn(frame, FillColor( kGray ), VisualizeError(*fitResult, 2), MoveToBack());
-
+	if(error == "1"){
+	  w->pdf( modelName )->plotOn(frame, FillColor( kBlue-9 ), VisualizeError(*fitResult, 2, kFALSE));
+	  w->pdf( modelName )->plotOn(frame, FillColor( kCyan ), VisualizeError(*fitResult, 1, kFALSE));
+	  w->pdf( modelName )->plotOn(frame, LineColor( colors[ff] ), Name(modelName));
+	  data->plotOn(frame);
+	}
 	int nParams = w->pdf( modelName )->getParameters(data)->getSize();
 //	double chi2 = frame->chiSquare(modelName, "data", nParams);
 	double chi2 = frame->chiSquare(0);
@@ -221,7 +231,8 @@ enum EColor { kWhite =0,   kBlack =1,   kGray=920,
 	std::cout << "############## chi2: " <<  chi2 << "\t <<<< Nparams: " << nParams << std::endl;
 
 //	leg->AddEntry( frame->findObject(modelName), TString::Format("%s | KS Test = %.4f | #chi^{2}/ndof = %.4f | minNLL = %.4f", modelName, kolmo, finalchi2_val, minNLL), "l" );
-	leg->AddEntry( frame->findObject(modelName), TString::Format("%s | KS Test = %.4f | #chi^{2}/ndof = %.4f", modelName, kolmo, finalchi2_val), "l" );
+//	leg->AddEntry( frame->findObject(modelName), TString::Format("%s | KS Test = %.4f | #chi^{2}/ndof = %.4f", modelName, kolmo, finalchi2_val), "l" );
+	leg->AddEntry( frame->findObject(modelName), TString::Format("%s", modelName), "l" );
 
 	delete nll;
 	delete histo;
