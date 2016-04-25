@@ -1,3 +1,4 @@
+
 import FWCore.ParameterSet.Config as cms
 from flashgg.bbggTools.microAOD_RadFiles import *
 from flashgg.bbggTools.microAOD_GravFiles import *
@@ -89,6 +90,14 @@ if options.doDoubleCountingMitigation is False:
 	process.bbggtree.doDoubleCountingMitigation = cms.untracked.uint32(0)
 
 #process.p = cms.Path(process.bbggtree)
-
+process.bbggtree.rho = cms.InputTag('fixedGridRhoAll')
+process.bbggtree.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
+process.bbggtree.puInfo=cms.InputTag("slimmedAddPileupInfo")
+process.bbggtree.lumiWeight = cms.double(1.0)
+process.bbggtree.intLumi = cms.double(1.0)
+process.bbggtree.puReWeight=cms.bool(True)
+process.bbggtree.puBins=cms.vdouble()
+process.bbggtree.dataPu=cms.vdouble()
+process.bbggtree.mcPu=cms.vdouble()
 
 process.p = cms.Path(flashggTags.flashggUnpackedJets*process.bbggtree)

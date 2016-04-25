@@ -1,0 +1,23 @@
+{
+    "processes" : {
+        "DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa" : [
+            ["/DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa",{"args" : ["doDoubleCountingMitigation=1", "nPromptPhotons=2"]}]
+        ],
+	"QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8" : [
+	    ["/QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : ["doDoubleCountingMitigation=1", "nPromptPhotons=0"]}]
+	],
+	"QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8" : [
+	    ["/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : ["doDoubleCountingMitigation=1", "nPromptPhotons=0"]}]
+	],
+	"GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8" : [
+	    ["/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : ["doDoubleCountingMitigation=1", "nPromptPhotons=1"]}]
+	],
+	"GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8" : [
+	    ["/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : ["doDoubleCountingMitigation=1", "nPromptPhotons=1"]}]
+	],
+	"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8" : [
+	    ["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",{"args" : ["doDoubleCountingMitigation=0"]}]
+	]
+   },
+	"cmdLine" : "campaign=RunIIFall15DR76-1_3_0-25ns_ext1 targetLumi=2.63e+3 doSelection=1 PURW=0"
+}

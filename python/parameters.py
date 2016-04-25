@@ -3,12 +3,18 @@ import FWCore.ParameterSet.Config as cms
 import flashgg.Taggers.flashggTags_cff as flashggTags
 
 
-
-#_DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
-_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
+_doPhotonCR				=	cms.untracked.uint32(1)
+_triggerTag				=	cms.InputTag("TriggerResults", "", "HLT")
+_myTriggers				=	cms.untracked.vstring(
+						"HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95_v",
+						"HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v",
+						"HLT_Diphoton30EB_18EB_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v"
+													)
+_DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
+#_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
 #_inputTagJets					=	flashggTags.UnpackedJetCollectionVInputTag,
-_rhoFixedGridCollection		=	cms.untracked.InputTag('fixedGridRhoAll')
+_rhoFixedGridCollection		=	cms.InputTag('fixedGridRhoAll')
 _GenTag						=	cms.untracked.InputTag('flashggGenPhotons')
 #0: Pho1, 1: Pho2
 _PhotonPtOverDiPhotonMass	=	cms.untracked.vdouble( 0.333, 0.25 )
@@ -27,18 +33,19 @@ _PhotonDoISO				=	cms.untracked.vint32(1 , 1)
 #0: lower boundary for dipho pt
 _DiPhotonPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary
-_DiPhotonEta				=	cms.untracked.vdouble(2.5)
+_DiPhotonEta				=	cms.untracked.vdouble(100000)
 #0: DiPhoton mass window lower boundary, 1: upper boundary
 _DiPhotonMassWindow			=	cms.untracked.vdouble(100., 180.)
 #If you only want to look at first diphoton pair: 1; if all: 0
-_DiPhotonOnlyFirst			=	cms.untracked.uint32(1)
-#0: jet1, 1: jet2
-_JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 25.)
-#_JetPtOverDiJetMass			=	cms.untracked.vdouble(0.4, 0.3)
+_DiPhotonOnlyFirst			=	cms.untracked.uint32(0)
+
+#0: both jets have to pass [0] requirement. at least one jet has to pass [1] requirement
+_JetPtOverDiJetMass			=	cms.untracked.vdouble(25., 0.0)
+
 #0: jet1, 1: jet2
 _JetEta						=	cms.untracked.vdouble(2.4, 2.4)
 #0: lowest b-tag requirement for any jet (default 0), standard b-tag cut (loose, medium, tight) 
-_JetBDiscriminant			=	cms.untracked.vdouble(-50., 0.87)
+_JetBDiscriminant			=	cms.untracked.vdouble(-50., 0.8)
 #0: jet1, 1: jet2
 _JetDoPUID					=	cms.untracked.vint32(1, 1)
 #Number of required jets passing requirements in JetBDiscriminant
@@ -48,7 +55,7 @@ _DiJetPt					=	cms.untracked.vdouble(0.)
 #0: upper boundary for dijet pt
 _DiJetEta					=	cms.untracked.vdouble(20.)
 #0: DiJet mass window lower boundary, 1: upper boundary
-_DiJetMassWindow			=	cms.untracked.vdouble(60., 180.)
+_DiJetMassWindow			=	cms.untracked.vdouble(80., 200.)
 #0: 4-candidate mass window lower boundary, 1: upper boundary
 _CandidateMassWindow		=	cms.untracked.vdouble(0., 2500.)
 #0 4-candidate pt lower bound
@@ -99,3 +106,14 @@ _PhotonWhichISO				=	cms.untracked.vstring("loose", "loose")
 
 #Do jet ID? 0: jet1, 1: jet2
 _JetDoID					=	cms.untracked.vint32(1, 1)
+
+#Do MVA photon ID instead of cut based
+_DoMVAPhotonID				=	cms.untracked.uint32(1)
+#MVA cut EB/EE
+_MVAPhotonID				=	cms.untracked.vdouble(0.374, 0.472)
+#MVA user float
+_PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
+
+_doJetRegression			=	cms.untracked.uint32(0)
+
+_bRegFile					=	cms.untracked.string("/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")

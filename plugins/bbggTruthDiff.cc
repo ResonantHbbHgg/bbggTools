@@ -442,12 +442,12 @@ bbggTruthDiff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         double pho2_r9 					=                diphoCand->subLeadingPhoton()->r9();
         double pho1_elveto 			=    diphoCand->leadingPhoton()->passElectronVeto();
         double pho2_elveto 			=    diphoCand->subLeadingPhoton()->passElectronVeto();
-        double pho1_chiso 			= tools_.getCHisoToCutValue( diphoCand, 0);
-        double pho2_chiso 			= tools_.getCHisoToCutValue( diphoCand, 1);
-        double pho1_nhiso 			= tools_.getNHisoToCutValue( diphoCand->leadingPhoton() );
-        double pho2_nhiso 			= tools_.getNHisoToCutValue( diphoCand->subLeadingPhoton() );
-        double pho1_phiso 			= tools_.getPHisoToCutValue( diphoCand->leadingPhoton() );
-        double pho2_phiso 			= tools_.getPHisoToCutValue( diphoCand->subLeadingPhoton() );
+        // double pho1_chiso             = tools_.getCHisoToCutValue( diphoCand, 0);
+        // double pho2_chiso             = tools_.getCHisoToCutValue( diphoCand, 1);
+        // double pho1_nhiso             = tools_.getNHisoToCutValue( diphoCand->leadingPhoton() );
+        // double pho2_nhiso             = tools_.getNHisoToCutValue( diphoCand->subLeadingPhoton() );
+        // double pho1_phiso             = tools_.getPHisoToCutValue( diphoCand->leadingPhoton() );
+        // double pho2_phiso             = tools_.getPHisoToCutValue( diphoCand->subLeadingPhoton() );
 
  double MCdipho_pt         =  diphoCandMC->pt();
  double MCdipho_eta        =  diphoCandMC->eta();
@@ -467,12 +467,12 @@ bbggTruthDiff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
  double MCpho2_r9 					=  diphoCandMC->subLeadingPhoton()->r9();
  double MCpho1_elveto 			=  diphoCandMC->leadingPhoton()->passElectronVeto();
  double MCpho2_elveto 			=  diphoCandMC->subLeadingPhoton()->passElectronVeto();
- double MCpho1_chiso 			=  tools_.getCHisoToCutValue( diphoCandMC, 0);
- double MCpho2_chiso 			=  tools_.getCHisoToCutValue( diphoCandMC, 1);
- double MCpho1_nhiso 			=  tools_.getNHisoToCutValue( diphoCandMC->leadingPhoton() );
- double MCpho2_nhiso 			=  tools_.getNHisoToCutValue( diphoCandMC->subLeadingPhoton() );
- double MCpho1_phiso 			=  tools_.getPHisoToCutValue( diphoCandMC->leadingPhoton() );
- double MCpho2_phiso 			=  tools_.getPHisoToCutValue( diphoCandMC->subLeadingPhoton() );
+ // double MCpho1_chiso             =  tools_.getCHisoToCutValue( diphoCandMC, 0);
+ // double MCpho2_chiso             =  tools_.getCHisoToCutValue( diphoCandMC, 1);
+ // double MCpho1_nhiso             =  tools_.getNHisoToCutValue( diphoCandMC->leadingPhoton() );
+ // double MCpho2_nhiso             =  tools_.getNHisoToCutValue( diphoCandMC->subLeadingPhoton() );
+ // double MCpho1_phiso             =  tools_.getPHisoToCutValue( diphoCandMC->leadingPhoton() );
+ // double MCpho2_phiso             =  tools_.getPHisoToCutValue( diphoCandMC->subLeadingPhoton() );
 
  	//END photon Variables
 	
@@ -614,9 +614,9 @@ double MCcand4_mass = HHCandidateMC.mass();
    hists2D["pho1_hoe"].Fill(pho1_hoe, MCpho1_hoe);
    hists2D["pho1_sieie"].Fill(pho1_sieie, MCpho1_sieie);
    hists2D["pho1_r9"].Fill(pho1_r9, MCpho1_r9);
-   hists2D["pho1_chiso"].Fill(pho1_chiso, MCpho1_chiso);
-   hists2D["pho1_nhiso"].Fill(pho1_nhiso, MCpho1_nhiso);
-   hists2D["pho1_phiso"].Fill(pho1_phiso, MCpho1_phiso);
+   // hists2D["pho1_chiso"].Fill(pho1_chiso, MCpho1_chiso);
+   // hists2D["pho1_nhiso"].Fill(pho1_nhiso, MCpho1_nhiso);
+   // hists2D["pho1_phiso"].Fill(pho1_phiso, MCpho1_phiso);
    hists2D["pho1_elveto"].Fill(pho1_elveto, MCpho1_elveto);
    hists2D["pho2_pt"].Fill(pho2_pt, MCpho2_pt);
    hists2D["pho2_eta"].Fill(pho2_eta, MCpho2_eta);
@@ -624,9 +624,9 @@ double MCcand4_mass = HHCandidateMC.mass();
    hists2D["pho2_hoe"].Fill(pho2_hoe, MCpho2_hoe);
    hists2D["pho2_sieie"].Fill(pho2_sieie, MCpho2_sieie);
    hists2D["pho2_r9"].Fill(pho2_r9, MCpho2_r9);
-   hists2D["pho2_chiso"].Fill(pho2_chiso, MCpho2_chiso);
-   hists2D["pho2_nhiso"].Fill(pho2_nhiso, MCpho2_nhiso);
-   hists2D["pho2_phiso"].Fill(pho2_phiso, MCpho2_phiso);
+   // hists2D["pho2_chiso"].Fill(pho2_chiso, MCpho2_chiso);
+   // hists2D["pho2_nhiso"].Fill(pho2_nhiso, MCpho2_nhiso);
+   // hists2D["pho2_phiso"].Fill(pho2_phiso, MCpho2_phiso);
    hists2D["pho2_elveto"].Fill(pho2_elveto, MCpho2_elveto);
    hists2D["jet1_pt"].Fill(jet1_pt, MCjet1_pt);
    hists2D["jet1_eta"].Fill(jet1_eta, MCjet1_eta);
