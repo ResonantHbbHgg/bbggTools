@@ -1,5 +1,5 @@
 {
-    "data" : "/data/bbggSelectionTree_data.root",
+    "data" : "/data/bbggSelectionTree_All_PhotonCR_DoubleEG.root",
     "signal" : [
         {
             "type" : "Radion",
@@ -29,7 +29,7 @@
     "background" : [
         {
             "name" : "DYJets",
-            "legend" : "Z/#gamma^{*}+Jets",
+            "legend" : "Z/#gamma*+Jets",
             "file" : "/bkg/bbggSelectionTree_DYJetsToLL.root",
             "color" : 401,
             "xsec" : 6025.2,
@@ -38,28 +38,8 @@
             "sfactor" : 1
         },
         {
-            "name" : "DiPhoJets",
-            "legend" : "#gamma#gamma+Jets",
-            "file" : "/bkg/bbggSelectionTree_DiPhotonJetsBox.root",
-            "color" : 417,
-            "xsec" : 84.0,
-	    "nevents" : 14346942,
-	    "weight" : 6787334.835731506,
-            "sfactor" : 2
-        },
-        {
-            "name" : "GJets_20to40",
-            "legend" : "#gamma+Jets (20to40)",
-            "file" : "/bkg/bbggSelectionTree_GJet_Pt-20to40.root",
-            "color" : 633,
-            "xsec" : 137751,
-	    "nevents" : 5749794,
-	    "weight" : 5749794,
-            "sfactor" : 0.001587
-        },
-        {
             "name" : "GJets_40toInf",
-            "legend" : "#gamma+Jets (40toInf)",
+            "legend" : "#gamma+Jets",
             "file" : "/bkg/bbggSelectionTree_GJet_Pt-40toInf.root",
             "color" : 635,
             "xsec" : 16792,
@@ -68,18 +48,18 @@
             "sfactor" : 0.0514
         },
         {
-            "name" : "QCD_30to40",
-            "legend" : "QCD (30to40)",
-            "file" : "/bkg/bbggSelectionTree_QCD_Pt-30to40.root",
-            "color" : 601,
-            "xsec" : 108000000,
-	    "nevents" : 4543901,
-	    "weight" : 4543901,
-            "sfactor" : 0.000225 
+            "name" : "DiPhoJets",
+            "legend" : "#gamma#gamma+Jets",
+            "file" : "/afs/cern.ch/work/r/rateixei/work/DiHiggs/Dec27_PUTest/CMSSW_7_4_15/src/flashgg/bbggTools/test/fggRunJobDir/output_DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa.root",
+            "color" : 417,
+            "xsec" : 84.0,
+	    "nevents" : 14346942,
+	    "weight" : 6787334.835731506,
+            "sfactor" : 2
         },
         {
             "name" : "QCD_40toInf",
-            "legend" : "QCD (40toInf)",
+            "legend" : "QCD",
             "file" : "/bkg/bbggSelectionTree_QCD_Pt-40toInf.root",
             "color" : 433,
             "xsec" : 54120000,

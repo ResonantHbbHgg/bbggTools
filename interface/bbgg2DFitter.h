@@ -69,11 +69,21 @@ public :
    bool _addHiggs;
    float _lumi;
    TString _cut;
+   float _minMgg;
+   float _maxMgg;
+   float _minMjj;
+   float _maxMjj;
+   float _minMggHig;
+   float _maxMggHig;
+   float _minMjjHig;
+   float _maxMjjHig;
+   std::string _lumiStr;
+   std::string _energyStr;
    
    //Workspace
    RooWorkspace* _w;
 
-   bbgg2DFitter(RooWorkspace* workspace, Int_t SigMass, float Lumi, Bool_t doBlinding, Int_t nCat, bool AddHiggs );// { doblinding = false; NCAT = 0; addHiggs = true; cardName = cardname; Init();}
+   bbgg2DFitter(Int_t SigMass, float Lumi, Bool_t doBlinding, Int_t nCat, bool AddHiggs );// { doblinding = false; NCAT = 0; addHiggs = true; cardName = cardname; Init();}
    virtual ~bbgg2DFitter() { }
    void SetCut(TString cut) {_cut = cut;}
    RooArgSet* defineVariables(); //DONE
@@ -88,15 +98,18 @@ public :
    void MakeSigWS(const char* filename); //DONE
    void MakeHigWS(const char* filename, int higgschannel); //DONE
    void MakeBkgWS(const char* filename); //DONE
-   // const char* filenameh0, const char* filenameh1, const char* filenameh2, const char* filenameh4);
    void MakeDataCard(const char* filename, const char* filename1,
                      const char* fileHiggsNameggh, const char* fileHiggsNametth, 
                      const char* fileHiggsNamevbf, const char* fileHiggsNamevh, 
                      const char* fileHiggsNamebbh, Bool_t); //DONE
    void MakeDataCardonecatnohiggs(const char* filename1, const char* filename2, Bool_t useSigTheoryUnc); //DONE
-//   void SetParamNames(); //NOTUSED
    void SetConstantParams(const RooArgSet* params); //DONE
    void PrintWorkspace() {_w->Print("v");}
+   void SetMinMaxMggMjj(float minmgg, float maxmgg, float minmjj, float maxmjj) { _minMgg = minmgg; _maxMgg = maxmgg; _minMjj = minmjj; _maxMjj = maxmjj;}
+   void SetMinMaxMggMjjHig(float minmgg, float maxmgg, float minmjj, float maxmjj) { _minMggHig = minmgg; _maxMggHig = maxmgg; _minMjjHig = minmjj; _maxMjjHig = maxmjj;}
+   void SetWorkspace( RooWorkspace* workspace ) { _w = new RooWorkspace(*workspace); }
+   std::string MakeModelCard( std::string file );
+   void SetEnergyAndLumi( std::string energy, std::string lumi) { _lumiStr = lumi; _energyStr = energy;}
    TStyle * style(); //DONE
    
    ClassDef(bbgg2DFitter,0);
@@ -105,16 +118,23 @@ public :
 #endif
 
 #ifdef bbgg2DFitter_cxx
-bbgg2DFitter::bbgg2DFitter(RooWorkspace* workspace, Int_t SigMass, float Lumi, Bool_t doBlinding = false, 
+bbgg2DFitter::bbgg2DFitter(Int_t SigMass, float Lumi, Bool_t doBlinding = false, 
                                 Int_t nCat = 0, bool AddHiggs = true)
 {
     _doblinding = doBlinding;
     _NCAT = nCat;
     _sigMass = SigMass;
     _addHiggs = AddHiggs;
-    _w = new RooWorkspace(*workspace);
     _lumi = Lumi;
     _cut = "1";
+   _minMgg = 100.;
+   _maxMgg = 180.;
+   _minMjj = 60.;
+   _maxMjj = 180.;
+   _minMggHig = 115.;
+   _maxMggHig = 135.;
+   _minMjjHig = 60.;
+   _maxMjjHig = 180.;
     
 }
 

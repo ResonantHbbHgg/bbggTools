@@ -37,6 +37,9 @@ public :
    double mtotMin;
    double mtotMax;
    double normalization;
+   int photonCR;
+   int doKinFit;
+   int doMX;
 
 //   Input tree
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -45,24 +48,30 @@ public :
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
    // Declaration of leaf types
-   vector<double>  *genWeights;
-   Double_t        genTotalWeight;
-   LorentzVector *leadingPhoton;
-   vector<int>     *leadingPhotonID;
-   vector<int>     *leadingPhotonISO;
-   Int_t           leadingPhotonEVeto;
-   LorentzVector *subleadingPhoton;
-   vector<int>     *subleadingPhotonID;
-   vector<int>     *subleadingPhotonISO;
-   Int_t           subleadingPhotonEVeto;
-   LorentzVector *diphotonCandidate;
-   Int_t           nPromptInDiPhoton;
-   LorentzVector *leadingJet;
-   Float_t         leadingJet_bDis;
-   LorentzVector *subleadingJet;
-   Float_t         subleadingJet_bDis;
-   LorentzVector *dijetCandidate;
-   LorentzVector *diHiggsCandidate;   
+   vector<double>   *genWeights;
+   Double_t         genTotalWeight;
+   LorentzVector    *leadingPhoton;
+   vector<int>      *leadingPhotonID;
+   vector<int>      *leadingPhotonISO;
+   Int_t            leadingPhotonEVeto;
+   LorentzVector    *subleadingPhoton;
+   vector<int>      *subleadingPhotonID;
+   vector<int>      *subleadingPhotonISO;
+   Int_t            subleadingPhotonEVeto;
+   LorentzVector    *diphotonCandidate;
+   Int_t            nPromptInDiPhoton;
+   LorentzVector    *leadingJet;
+   LorentzVector    *leadingJet_KF;
+   Float_t          leadingJet_bDis;
+   LorentzVector    *subleadingJet;
+   LorentzVector    *subleadingJet_KF;
+   Float_t          subleadingJet_bDis;
+   LorentzVector    *dijetCandidate;
+   LorentzVector    *dijetCandidate_KF;
+   LorentzVector    *diHiggsCandidate;
+   LorentzVector    *diHiggsCandidate_KF;
+   Int_t	isSignal;
+   Int_t	isPhotonCR;
 
    // List of branches
    TBranch        *b_genWeights;   //!
@@ -78,11 +87,17 @@ public :
    TBranch        *b_diphotonCandidate;   //!
    TBranch        *b_nPromptInDiPhoton;   //!
    TBranch        *b_leadingJet;   //!
+   TBranch        *b_leadingJet_KF;   //!
    TBranch        *b_leadingJet_bDis;   //!
    TBranch        *b_subleadingJet;   //!
+   TBranch        *b_subleadingJet_KF;   //!
    TBranch        *b_subleadingJet_bDis;   //!
    TBranch        *b_dijetCandidate;   //!
+   TBranch        *b_dijetCandidate_KF;   //!
    TBranch        *b_diHiggsCandidate;   //!
+   TBranch        *b_diHiggsCandidate_KF;   //!
+   TBranch	  *b_isSignal;	//!
+   TBranch	  *b_isPhotonCR;  //!
 
 
    bbggLTMaker(TTree * /*tree*/ =0) : fChain(0) { }
@@ -109,6 +124,8 @@ public :
 #ifdef bbggLTMaker_cxx
 void bbggLTMaker::Init(TTree *tree)
 {
+   std::cout << "[bbggLTMaker::Init] Initializing tree!" << std::endl;
+
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
    // pointers of the tree will be set.
@@ -125,6 +142,10 @@ void bbggLTMaker::Init(TTree *tree)
    subleadingJet = 0;
    dijetCandidate = 0;
    diHiggsCandidate = 0;
+   leadingJet_KF = 0;
+   subleadingJet_KF = 0;
+   dijetCandidate_KF = 0;
+   diHiggsCandidate_KF = 0;
    genWeights = 0;
    leadingPhotonID = 0;
    leadingPhotonISO = 0;
@@ -148,11 +169,17 @@ void bbggLTMaker::Init(TTree *tree)
    fChain->SetBranchAddress("diphotonCandidate", &diphotonCandidate, &b_diphotonCandidate);
    fChain->SetBranchAddress("nPromptInDiPhoton", &nPromptInDiPhoton, &b_nPromptInDiPhoton);
    fChain->SetBranchAddress("leadingJet", &leadingJet, &b_leadingJet);
+   fChain->SetBranchAddress("leadingJet_KF", &leadingJet_KF, &b_leadingJet_KF);
    fChain->SetBranchAddress("leadingJet_bDis", &leadingJet_bDis, &b_leadingJet_bDis);
    fChain->SetBranchAddress("subleadingJet", &subleadingJet, &b_subleadingJet);
+   fChain->SetBranchAddress("subleadingJet_KF", &subleadingJet_KF, &b_subleadingJet_KF);
    fChain->SetBranchAddress("subleadingJet_bDis", &subleadingJet_bDis, &b_subleadingJet_bDis);
    fChain->SetBranchAddress("dijetCandidate", &dijetCandidate, &b_dijetCandidate);
+   fChain->SetBranchAddress("dijetCandidate_KF", &dijetCandidate_KF, &b_dijetCandidate_KF);
    fChain->SetBranchAddress("diHiggsCandidate", &diHiggsCandidate, &b_diHiggsCandidate);
+   fChain->SetBranchAddress("diHiggsCandidate_KF", &diHiggsCandidate_KF, &b_diHiggsCandidate_KF);
+   fChain->SetBranchAddress("isSignal", &isSignal, &b_isSignal);
+   fChain->SetBranchAddress("isPhotonCR", &isPhotonCR, &b_isPhotonCR);
 }
 
 Bool_t bbggLTMaker::Notify()

@@ -3,15 +3,20 @@ from ROOT import *
 import json, os
 import shutil
 
-data_file = open("datasets_NoQCD.json")
+doBlind = False
+
+data_file = open("datasets_NoQCD_weights.json")
 data = json.load(data_file)
 
-fLocation = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/S15V7_All2015Data/Hadd/"
+version = "S15V7_All2015Data"
+
+fLocation = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/" + version + "/Hadd/"
 
 prefix = "PhoIDloose_"
-dirSuffix = "25ns_2600pb_presel"
+dirSuffix = "25ns_2600pb_photonCR_pureweight"
 dirPrefix = "/afs/cern.ch/user/r/rateixei/www/HHBBGG/"
 dirName = dirPrefix + dirSuffix
+isPhoCR = 0
 
 if not os.path.exists(dirName):
 	print dirName, "doesn't exist, creating it..."
@@ -21,14 +26,17 @@ if not os.path.exists(dirName):
 		print dirName, "now exists!"
 
 
-lumi = 800.0 #in pb
+lumi = 1580.0 #in pb
 
 datasets = []
 signals = []
 
 for bkg in data['background']:
-	if "QCD" in bkg['name']:
-		continue
+	fLocation = "/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/" + version + "/Hadd/"
+#	if "QCD" in bkg['name']:
+#		continue
+	if "DiPho" in bkg['name']:
+		fLocation = ''
 	tempfile = TFile(fLocation+bkg['file'], "READ")
 	temptree = tempfile.Get('bbggSelectionTree')
 	normalization = (lumi*bkg['xsec']*bkg['sfactor'])/(bkg['weight'])
@@ -69,11 +77,15 @@ Cut += " && dijetCandidate.M() > 60 && dijetCandidate.M() < 180"
 #Cut += " && subleadingPhotonISO[0] == 1 "
 #Cut += " && leadingJet.pt() > 45 && subleadingJet.pt() > 45 "
 #Cut += " && leadingJet_bDis > 0.9 && subleadingJet_bDis > 0.9"
+if doBlind == True:
+	Cut += " && !((diphotonCandidate.M() > 120 && diphotonCandidate.M() < 130))"
+if isPhoCR == 1:
+	Cut += " && (isPhotonCR == 1)"
 weight = ""
 weight += "( genTotalWeight )*"
 #weight += "( genTotalWeight/fabs(genTotalWeight) )*"
 
-cut = TCut(weight+"("+Cut+")")
+#cut = TCut(weight+"("+Cut+")")
 cut_data = TCut(Cut)
 
 #variable = "diHiggsCandidate.Pt()"
@@ -112,8 +124,13 @@ for plot in plots:
 	variable = plot[1]
 	varName = plot[2]
 	stack = myStack('test'+plot[0], varName, varName, dirName, lumi)
+	if isPhoCR == 1:
+		stack.makePhoCR()
 
 	for bkg in datasets:
+		cut = TCut(weight+"("+Cut+")")
+		if 'DiPho' in bkg[2][0]:
+			cut = TCut("puweight*"+weight+"("+Cut+")")
 		print "Adding", bkg[0], 'to stack!'
 	#	bfiles[bkg[0]] = TFile(bkg[2])
 	#	btrees[bkg[0]] = bfiles[bkg[0]].Get('bbggSelectionTree')

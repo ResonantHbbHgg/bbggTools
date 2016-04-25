@@ -1,0 +1,146 @@
+{
+    "processes" : {
+        "GluGluToBulkGravitonToHHTo2B2G_M-1000_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-1000_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-340_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-340_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-400_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-400_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-450_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-450_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-650_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-650_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-700_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-700_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-800_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-800_narrow_13TeV-madgraph"
+        ],
+        "GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph" : [
+            "/GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_10_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_10_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_11_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_11_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_12_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_12_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_13_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_13_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_3_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_3_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_4_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_4_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_5_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_5_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_6_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_6_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_7_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_7_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_8_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_8_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_9_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_9_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_SM_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_SM_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_box_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_box_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-250_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-250_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-260_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-260_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-270_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-270_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-280_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-280_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-300_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-300_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-320_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-320_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-350_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-350_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-400_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-400_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-450_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-450_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-500_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-500_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-700_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-700_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-750_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-750_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-800_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-800_narrow_13TeV-madgraph"
+        ],
+        "GluGluToRadionToHHTo2B2G_M-900_narrow_13TeV-madgraph" : [
+            "/GluGluToRadionToHHTo2B2G_M-900_narrow_13TeV-madgraph"
+        ]
+   },
+	"cmdLine" : "campaign=rateixei-SignalFall15DR76 doDoubleCountingMitigation=0 targetLumi=2.63e+3 doSelection=1 PURW=0"
+}

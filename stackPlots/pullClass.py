@@ -15,6 +15,7 @@ class myStack:
 	varName = ''
 	dirName = ''
 	lumi = ''
+	isPhoCR = 0
 	def __init__(self, name, title, varName, dirName, lumi):
 		self.myHistograms = []
 		self.mySignals = []
@@ -28,13 +29,29 @@ class myStack:
 		self.dirName = dirName
 		self.lumi = lumi
 		self.SUM = ''
+		self.isPhoCR = 0
+		self.isJetCR = 0
+		self.legends = []
+		self.hideData_ = 0
+	def hideData(self):
+		self.hideData_ = 1
+	def makeJetCR(self):
+		self.isJetCR = 1
+	def makePhoCR(self):
+		self.isPhoCR = 1
 	def addHist(self, hist, legend, norm):
 		self.myHistograms.append([deepcopy(hist), str(legend), norm])
+		self.legends.append(legend)
 	def addSignal(self, hist, legend, norm):
 		self.mySignals.append([deepcopy(hist), str(legend), norm])
 	def addData(self, hist, legend):
 		self.myData = deepcopy(hist)
 		self.dataLegend = legend
+	def alreadyHas(self, legend):
+		if legend in self.legends:
+			return 1
+		else:
+			return 0
 	def drawStack(self, fileName):
 		if len(self.myHistograms) < 1:
 			print 'Your list of histograms is empty!'
@@ -48,7 +65,7 @@ class myStack:
 #		legend.AddEntry(self.myData, self.dataLegend, "lep")
 		for Hist in self.myHistograms:
 			hist = Hist[0]
-#			hist.Sumw2()
+			hist.Sumw2()
 			self.tStack.Add(hist)
 			mySumHists.Add(hist,1)
 #			legend.AddEntry(hist, Hist[1], 'f')
@@ -62,10 +79,20 @@ class myStack:
 		UpEdge = pullHandE[3]
 		self.SUM = self.tStack.GetStack().Last().Clone("SUM")
 		self.SUM.SetLineWidth(0)
+		self.SUM.SetMarkerStyle(10)
+		self.SUM.SetMarkerSize(0)
 		self.SUM.SetFillColor(15)
-		self.SUM.SetFillStyle(3254)
+		self.SUM.SetLineColor(15)
+		self.SUM.SetMarkerColor(15)
+#		self.SUM.SetFillStyle(3254)
+		self.SUM.SetFillStyle(3001)
 		legend = MakeLegend(self.myHistograms, self.myData, self.lumi, self.mySignals, self.SUM)
 		SavePull(pullH, pullE, LowEdge, UpEdge, self.dirName)
 		SaveNoPull(self.myData, self.tStack, fileName)
-		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM)
+		ControlRegion = ""
+		if self.isPhoCR == 1:
+			ControlRegion = "Fake Photon CR"
+		if self.isJetCR == 1:
+			ControlRegion = "Light Jets CR"
+		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM, ControlRegion, self.hideData_)
 

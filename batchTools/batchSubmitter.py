@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import json, os
 from flashgg.bbggTools.pColors import *
 from AvailableSamples import *
@@ -76,6 +78,7 @@ def main(argv):
 		outJson.write("{\n")
 	jRuns = {}
 	
+	totEvents = 0
 	for sName in data:
 		if sample not in sName.split('/')[1]:
 			continue
@@ -121,7 +124,11 @@ def main(argv):
 
 		for files in dataFiles:
 			if int(files['nevents']) == 0: continue
+			totEvents += int(files['nevents'])
 			print files['name'], files['nevents']
+			if "data" in Type:
+				thisprefix = prefix + files['name'].split("/")[10] + "_"
+				fileNameBase = "/tmp/bbggSelectionTree_" + thisprefix + sample
 			fileNumber_temp = files['name'].split(divisor)[1]
 			fileNumber = fileNumber_temp.split(".")[0]
 			print fileNumber
@@ -138,7 +145,7 @@ def main(argv):
 			batchFile.write(batchFinish)
 			batchFile.close()
 			os.system("chmod +x "+batchName)
-#			os.system("bsub -q 1nh -J t"+str(sample) + '_' +fileNumber+" < "+batchName)
+			os.system("bsub -q 1nh -J t"+str(sample) + '_' +fileNumber+" < "+batchName)
 			os.system("rm "+batchName)
 			print ''
 	
@@ -148,6 +155,7 @@ def main(argv):
 	
 	print "########################################################"
 	print "Done submitting all jobs to batch! Now wait patiently :)"
+	print "Total number of events running on:", str(totEvents)
 	print "########################################################"
 
 	if "data" in Type:
