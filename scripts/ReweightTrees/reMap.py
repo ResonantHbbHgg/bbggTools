@@ -16,8 +16,10 @@ from ROOT import TTree, TFile, AddressOf, gROOT
 
 
 
-inputLM = "NRDir_LM_350/"
-inputHM = "NRDir_HM_350/"
+#inputLM = "NRDir_LM_350/"
+#inputHM = "NRDir_HM_350/"
+inputLM = "/afs/cern.ch/work/z/zghiche/public/ForXanda/NRDir_LM_350/"
+inputHM = "/afs/cern.ch/work/z/zghiche/public/ForXanda/NRDir_HM_350/"
 os.system('mkdir V3benchmarks')
 os.system('mkdir V3outliers')
 os.system('mkdir lambdaonly')

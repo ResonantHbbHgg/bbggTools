@@ -1,3 +1,8 @@
+
+The input files in lxplus are in
+inputLM = "/afs/cern.ch/work/z/zghiche/public/ForXanda/NRDir_LM_350/"
+inputHM = "/afs/cern.ch/work/z/zghiche/public/ForXanda/NRDir_HM_350/"
+
 We have 13 samples, to each one we have two limit-trees, one for each category (LOWMASS/HIGHMASS). 
 We do the new samples in 3 steps
 
