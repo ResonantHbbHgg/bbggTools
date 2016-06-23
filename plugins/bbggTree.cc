@@ -148,6 +148,7 @@ private:
     std::string bTagType, PhotonMVAEstimator;
     unsigned int doSelection, DoMVAPhotonID;
     std::string bRegFile;
+    unsigned int is2016;
 
     //OutFile & Hists
     TFile* outFile;
@@ -226,6 +227,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     unsigned int def_doPhotonCR = 0;
     unsigned int def_doJetRegression = 0;
     unsigned int def_DoMVAPhotonID = 0;
+    unsigned int def_is2016 = 1;
     
     std::vector<std::string> def_myTriggers;	  
 
@@ -300,6 +302,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
     
     bRegFile = iConfig.getUntrackedParameter<std::string>("bRegFile", def_bRegFile);
+    
+    is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
     
     tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
     tools_.SetCut_MVAPhotonID(MVAPhotonID);
@@ -531,7 +535,10 @@ void
     if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
         
     //Trigger preselection on diphoton candidates:
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho;
+    if(!is2016) PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
+    if(is2016) PreSelDipho = tools_.DiPhoton80XPreselection( diphoVec, myTriggerResults);
+        
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() < 1 ) return;
 
@@ -714,9 +721,6 @@ void
     leadingPhotonEVeto = diphoCand->leadingPhoton()->passElectronVeto();
     subleadingPhotonEVeto = diphoCand->subLeadingPhoton()->passElectronVeto();
 		
-    if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
-    tree->Fill();
-
     if(DEBUG) std::cout << "Histograms filled!" << std::endl;
 		
 

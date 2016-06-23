@@ -58,6 +58,7 @@ bbggefficiencies = cms.EDAnalyzer('bbggEfficiencies',
 	doPhotonCR=param._doPhotonCR,
 	DoMVAPhotonID=param._DoMVAPhotonID,
 	MVAPhotonID=param._MVAPhotonID,
-	PhotonMVAEstimator=param._PhotonMVAEstimator
+	PhotonMVAEstimator=param._PhotonMVAEstimator,
+	is2016=param._is2016
 #	doSelectionTree=param._doSelectionTree
 )

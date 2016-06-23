@@ -39,7 +39,8 @@ public:
 	std::vector<edm::Ptr<flashgg::Jet>> DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets, bool DoMassCut = 0);
 	std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
     std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults);
-
+    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhoton80XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults);
+    
 	edm::Ptr<flashgg::DiPhotonCandidate> MVAIDDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons);
 	edm::Ptr<flashgg::DiPhotonCandidate> PtSumDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons);
     

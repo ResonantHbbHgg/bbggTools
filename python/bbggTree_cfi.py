@@ -64,6 +64,7 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	MVAPhotonID=param._MVAPhotonID,
 	PhotonMVAEstimator=param._PhotonMVAEstimator,
 	doJetRegression=param._doJetRegression,
-	bRegFile=param._bRegFile
+	bRegFile=param._bRegFile,
+	is2016=param._is2016
 #	doSelectionTree=param._doSelectionTree
 )

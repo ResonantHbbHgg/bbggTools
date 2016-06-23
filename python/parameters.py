@@ -109,11 +109,13 @@ _JetDoID					=	cms.untracked.vint32(1, 1)
 
 #Do MVA photon ID instead of cut based
 _DoMVAPhotonID				=	cms.untracked.uint32(1)
-#MVA cut EB/EE
-_MVAPhotonID				=	cms.untracked.vdouble(0.374, 0.472)
+#MVA cut EB/EE, values from Ming: (0.374, 0.472), EGM values: (0.374, 0.336)
+_MVAPhotonID                            =       cms.untracked.vdouble(0.374, 0.336)
 #MVA user float
 _PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
 
 _doJetRegression			=	cms.untracked.uint32(0)
 
 _bRegFile					=	cms.untracked.string("/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")
+
+_is2016						=	cms.untracked.uint32(1)
