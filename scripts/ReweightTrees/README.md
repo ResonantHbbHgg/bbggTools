@@ -1,4 +1,5 @@
 
+## Producing the weights (by Alexandra)
 The input files in lxplus are in
 inputLM = "/afs/cern.ch/work/z/zghiche/public/ForXanda/NRDir_LM_350/"
 inputHM = "/afs/cern.ch/work/z/zghiche/public/ForXanda/NRDir_HM_350/"
