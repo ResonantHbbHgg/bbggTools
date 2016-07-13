@@ -782,8 +782,6 @@ bbggTree::beginJob()
     tree->Branch("DiJetDiPho_DR_2", &DiJetDiPho_DR_2, "DiJetDiPho_DR_2/F");
     tree->Branch("PhoJetMinDr", &PhoJetMinDr, "PhoJetMinDr/F");
 
-    tree->Branch("evt", &evt, "evt/D");
-
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);
 
