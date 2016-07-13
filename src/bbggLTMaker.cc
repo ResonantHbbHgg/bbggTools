@@ -135,11 +135,11 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    // The return value is currently not used.
 
    bbggLTMaker::GetEntry(entry);
-   if( entry%1000 == 0 ) std::cout << "[bbggLTMaker::Process] Reading entry #" << entry << endl;   
-   
+   if( entry%1000 == 0 ) std::cout << "[bbggLTMaker::Process] Reading entry #" << entry 
+				   << "\t Event = "<<event<<"  Run = "<<run<<endl;   
    o_evt = event;
-   o_evt = run;
-
+   o_run = run;
+   
    o_weight = genTotalWeight*normalization;
    o_bbMass = dijetCandidate->M();
    o_ggMass = diphotonCandidate->M();

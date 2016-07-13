@@ -51,9 +51,6 @@ public :
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
    // Declaration of leaf types
-   ULong64_t         event;
-   UInt_t  run;
-
    vector<double>   *genWeights;
    Double_t         genTotalWeight;
    LorentzVector    *leadingPhoton;
@@ -78,6 +75,10 @@ public :
    LorentzVector    *diHiggsCandidate_KF;
    Int_t	isSignal;
    Int_t	isPhotonCR;
+
+   ULong64_t event;
+   UInt_t    run;
+
 
    // List of branches
    TBranch        *b_event;   //!
