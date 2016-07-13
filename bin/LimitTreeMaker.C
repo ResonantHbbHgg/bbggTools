@@ -25,8 +25,9 @@ int Process(string file, string outFile, string mtotMin, string mtotMax,string s
     option.append(doKinFit);
     option.append(";");
     option.append(doMX);
+    gROOT->SetMacroPath(".:./src/");
     cout << "[LimitTreeMaker:Process] Option parsing: " << option << endl;
-    iTree->Process("flashgg/bbggTools/src/bbggLTMaker.cc+", TString(option)); 
+    iTree->Process("bbggLTMaker.cc+", TString(option)); 
     delete iFile;
     return 1;
 }
