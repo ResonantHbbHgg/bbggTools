@@ -28,6 +28,9 @@ public :
 //   Output file and tree
    TTree *outTree;
    TFile *outFile;
+
+   ULong64_t o_evt;
+   UInt_t o_run;
    Int_t           o_category;
    Double_t        o_normalization;
    Double_t        o_weight;
@@ -48,6 +51,9 @@ public :
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
    // Declaration of leaf types
+   ULong64_t         event;
+   UInt_t  run;
+
    vector<double>   *genWeights;
    Double_t         genTotalWeight;
    LorentzVector    *leadingPhoton;
@@ -74,6 +80,9 @@ public :
    Int_t	isPhotonCR;
 
    // List of branches
+   TBranch        *b_event;   //!
+   TBranch        *b_run;   //!
+
    TBranch        *b_genWeights;   //!
    TBranch        *b_genTotalWeight;   //!
    TBranch        *b_leadingPhoton;   //!
@@ -155,6 +164,9 @@ void bbggLTMaker::Init(TTree *tree)
    if (!tree) return;
    fChain = tree;
 //   fChain->SetMakeClass(1);
+
+   fChain->SetBranchAddress("event", &event, &b_event);
+   fChain->SetBranchAddress("run", &run, &b_run);
 
    fChain->SetBranchAddress("genWeights", &genWeights, &b_genWeights);
    fChain->SetBranchAddress("genTotalWeight", &genTotalWeight, &b_genTotalWeight);
