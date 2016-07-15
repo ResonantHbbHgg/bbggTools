@@ -42,7 +42,7 @@ for b in xrange(1,13):
         
 
 
-# Manually cross check some weights from dew events
+# Manually cross check some weights from few events
 for a in xrange(46000, 46020):
     print a, e_wBox.GetBinContent(12*50000+a)
 t.Scan('file:evt:wBox','file==12&&evt>46000&&evt<46020')
