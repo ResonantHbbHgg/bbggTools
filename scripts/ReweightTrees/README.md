@@ -1,3 +1,23 @@
+## Aplying the weights (Andrey)
+
+1. Use *weightTest.py* script first. It will read the input tree form Alexandra and create
+large Histograms which map the (file number, event number) to a single weight.  Such
+histogram is created for each weight in the input tree.  
+2. Run *addWeights.py*. It will insert the weights into the Limits trees. The output is a
+new file which contains weights in a separate leaves of a tree.
+3. Then, you would want to *hadd* all new files together - this is your new input for the
+Limit code.  The limit code itself of course needs to be modified in order to use those
+weights.
+
+PS. For script (1), I think a better way to do this would be to use TTree::BuildIndex
+method. So, instead of creating histograms one can have a tree indexed by (file,evt)
+combination. I have not tried to implement it though, not sure if it will work.
+https://root.cern.ch/doc/master/classTTree.html#a3f6b5bb591ff7a5bd0b06eea6c12b998
+
+PPS. The reason for creating TH1 histograam is to not have to loop over the tree every
+time for each event - that would take ages. Geting BinContent() of a histogram is much
+faster.
+
 
 ## Producing the weights (by Alexandra)
 The input files in lxplus are in
