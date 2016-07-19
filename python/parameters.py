@@ -114,9 +114,9 @@ _MVAPhotonID                            =       cms.untracked.vdouble(0.374, 0.3
 #MVA user float
 _PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
 
-_doJetRegression			=	cms.untracked.uint32(0)
+_doJetRegression			=	cms.untracked.uint32(1)
 
-_bRegFile=cms.untracked.string("/afs/cern.ch/user/a/andrey/work/hh/CMSSW_8_0_8_patch1/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")
-#_bRegFile=cms.FileInPath("flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")
+#_bRegFile=cms.untracked.string("/afs/cern.ch/user/a/andrey/work/hh/CMSSW_8_0_8_patch1/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")
+_bRegFile      =  cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/TMVARegression_BDTG.weights.xml")
 
 _is2016						=	cms.untracked.uint32(1)

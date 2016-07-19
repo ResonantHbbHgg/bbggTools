@@ -83,6 +83,7 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
        outTree->Branch("cut_based_ct", &o_category, "o_category/I"); //0: 2btag, 1: 1btag
        outTree->Branch("evWeight", &o_weight, "o_weight/D");
        outTree->Branch("mjj", &o_bbMass, "o_bbMass/D");
+       outTree->Branch("mjjReg", &o_bbMass_Reg, "o_bbMass_Reg/D");
        outTree->Branch("mgg", &o_ggMass, "o_ggMass/D");
        outTree->Branch("mtot", &o_bbggMass, "o_bbggMass/D"); //
 
@@ -142,6 +143,7 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    
    o_weight = genTotalWeight*normalization;
    o_bbMass = dijetCandidate->M();
+   o_bbMass_Reg = dijetCandidate_Reg->M();
    o_ggMass = diphotonCandidate->M();
    o_bbggMass = diHiggsCandidate->M();
    if(doKinFit)
