@@ -1,0 +1,47 @@
+{
+    "processes" : {
+        "GluGluToHHTo2B2G_node_10_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_10_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_11_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_11_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_12_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_12_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_13_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_13_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_2_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_2_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_3_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_3_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_4_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_4_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_5_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_5_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_6_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_6_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_7_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_7_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_8_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_8_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_9_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_9_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_SM_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_SM_13TeV-madgraph"
+        ],
+        "GluGluToHHTo2B2G_node_box_13TeV-madgraph" : [
+            "/GluGluToHHTo2B2G_node_box_13TeV-madgraph"
+        ]
+   },
+	"cmdLine" : "campaign=HHbbgg_Signal76X_RegVars doDoubleCountingMitigation=0 targetLumi=2.63e+3 doSelection=1 PURW=0"
+}

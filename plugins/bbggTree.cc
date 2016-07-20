@@ -92,6 +92,8 @@ private:
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > genToken_;
+    edm::EDGetTokenT<edm::View<reco::GenParticle> > genToken2_;
+
     std::vector<edm::InputTag> inputTagJets_;
     std::vector<edm::EDGetTokenT<edm::View<flashgg::Jet> > > tokenJets_;
     edm::InputTag genInfo_;
@@ -159,6 +161,12 @@ private:
 
     //Event counter for cout's
     long unsigned int EvtCount;
+
+  Bool_t doNonResWeights;
+  TFile * NRwFile;
+  TH2F * NR_Wei_Hists[1507];
+  Float_t NRWeights[1507];
+
 };
 
 //
@@ -166,7 +174,8 @@ private:
 //
 bbggTree::bbggTree(const edm::ParameterSet& iConfig) :
 diPhotonToken_( consumes<edm::View<flashgg::DiPhotonCandidate> >( iConfig.getUntrackedParameter<edm::InputTag> ( "DiPhotonTag", edm::InputTag( "flashggDiPhotons" ) ) ) ),
-genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) ),
+genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "flashggPrunedGenParticles" ) ) ) ),
+genToken2_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>("GenTag2", edm::InputTag( "flashggPrunedGenParticles" ) ) ) ),
 //rhoFixedGrid_(consumes<double>(iConfig.getParameter<edm::InputTag>( "rhoFixedGridCollection" ) ) ),
 inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) )
 {
@@ -308,6 +317,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
     is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
 
+    doNonResWeights = iConfig.getUntrackedParameter<bool>("doNonResWeights", false);
+
+
     tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
     tools_.SetCut_MVAPhotonID(MVAPhotonID);
     tools_.SetCut_PhotonMVAEstimator(PhotonMVAEstimator);
@@ -399,6 +411,21 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     if (doJetRegression)
       jetReg_.SetupRegression("BDTG method", bRegFile.fullPath().data());
 
+
+    if (doNonResWeights){
+      std::string fileNameWei = edm::FileInPath("flashgg/bbggTools/data/weights_v1_1507_points.root").fullPath();
+      NRwFile = new TFile(fileNameWei.c_str(), "OPEN");
+      NRwFile->Print();
+
+      TList *histList = NRwFile->GetListOfKeys();
+      for (UInt_t n=0; n<1507; n++)
+	if (histList->Contains(Form("point_%i_weights",n)))
+	  NR_Wei_Hists[n] = (TH2F*)NRwFile->Get(Form("point_%i_weights",n));
+	else
+	  cout<<"This one does not existe pas: "<<n<<endl;
+    }
+
+
     std::cout << "Parameters initialized... \n ############ Doing selection tree!" <<  std::endl;
 
 }
@@ -465,6 +492,7 @@ void
     dijetCandidate.SetPxPyPzE(0,0,0,0);// = leadingJet + subleadingJet;
     diHiggsCandidate.SetPxPyPzE(0,0,0,0);// = diphotonCandidate + dijetCandidate;
 
+
     //Get Jets collections!
     JetCollectionVector theJetsCols( inputTagJets_.size() );
     for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
@@ -484,6 +512,7 @@ void
     tools_.setRho(rhoFixedGrd);
 
     Handle<View<pat::PackedGenParticle> > genParticles;
+    Handle<View<reco::GenParticle> > genParticles2;
 
     //Trigger
     if(myTriggers.size() > 0){
@@ -499,10 +528,65 @@ void
         iEvent.getByToken(genInfoToken_, genInfo);
         genTotalWeight = genInfo->weight();
         iEvent.getByToken( genToken_, genParticles);
+        iEvent.getByToken( genToken2_, genParticles2);
     } else {
         genTotalWeight = 1;
     }
 
+
+    // ----------------
+    // -- Weights for Non-Res samples are added here
+    //------------------------------
+    
+    if (doNonResWeights){
+      //std::cout << "Doing Non-Resonant Signal weights " << std::endl;
+
+      TLorentzVector H1, H2;
+      UInt_t Hcount=0;
+      for( unsigned int iGen = 0; iGen < genParticles2->size(); iGen++)
+	{
+	  //edm::Ptr<pat::PackedGenParticle> genPar = genParticles2->ptrAt(iGen);
+	  edm::Ptr<reco::GenParticle> genPar = genParticles2->ptrAt(iGen);
+
+	  if (genPar->pdgId()==25){
+	    if (genPar->daughter(0)->pdgId()==22){
+	      H1.SetXYZM(genPar->px(), genPar->py(), genPar->pz(), genPar->mass());
+	      Hcount++;
+	    }
+	    if (abs(genPar->daughter(0)->pdgId())==5){
+	      Hcount++;
+	      H2.SetXYZM(genPar->px(), genPar->py(), genPar->pz(), genPar->mass());
+	    }
+	  }
+	}
+
+
+      //if (Hcount!=2) cout<<"\t WARNING: Need TWO Higgses exact. Got Hcount="<<Hcount<<endl;
+      //else cout<<"Pt H1 = "<<H1.Pt()<<"   Pt H2 = "<<H2.Pt()<<endl;
+      Float_t gen_mHH  = (H1+H2).M();
+      Float_t gen_cosTheta = tools_.getCosThetaStar_CS(H1,H2,3500);
+
+
+      for (UInt_t n=0; n<1507; n++){
+	if (n==324 || n==910 || n==985 || n==990){
+	  // The points above do not exist in the input file provided by Olivier
+
+	  //cout<<"This one was not existing in the input file: "<<n<<endl;
+	  NRWeights[n]=1;
+	}
+	else {
+	  UInt_t binNum = NR_Wei_Hists[n]->FindBin(gen_mHH, fabs(gen_cosTheta));
+	  NRWeights[n] = NR_Wei_Hists[n]->GetBinContent(binNum);
+	  // Just print out for one n:
+	  if (DEBUG && n==100) cout<<n<<" **  mHH = "<<gen_mHH<<"   cosT*="<<fabs(gen_cosTheta)<<"  bin="<<binNum<<" wei="<<NRWeights[n]<<endl;
+
+	}
+      }
+    }
+    // ---------------------------
+    // Finished with Non-Res weights
+    // ---------------------------
+    
     //PreLoop
     vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoVec;
     for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
@@ -744,7 +828,8 @@ bbggTree::beginJob()
 
     outFile = new TFile(fileName.c_str(), "RECREATE");
     tree = new TTree("bbggSelectionTree", "Flat tree for HH->bbgg analyses (after pre selection)");
-    tree->Branch("genWeights", &genWeights);
+    if (doNonResWeights)
+      tree->Branch("NRWeights", NRWeights, "NRWeights[1507]/F");
     tree->Branch("genTotalWeight", &genTotalWeight, "genTotalWeight/D");
     tree->Branch("leadingPhoton", &leadingPhoton);
     tree->Branch("leadingPhotonID", &leadingPhotonID);
