@@ -143,15 +143,47 @@ private:
     long unsigned int EvtCount;
 
    //Histogram
-   TH2F* pass2d;
-   TH2F* fail2d;
    TH2F* all2d;
-   TH2F* passEff;
-   TH2F* failEff;
-   TH1F* Efficiencies;
    TH1F* Mjj;
    TH1F* Mgg;
    TH1F* Mggjj;
+
+    TH2F* b_all2d;
+    TH2F* b_pass2d_medium;
+    TH2F* b_fail2d_medium;
+    TH2F* b_pass2d_loose;
+    TH2F* b_fail2d_loose;
+    TH2F* b_pass2d_tight;
+    TH2F* b_fail2d_tight;
+    TH2F* b_pass2d_medium_nottight;
+    TH2F* b_fail2d_medium_nottight;
+    TH2F* b_pass2d_loose_notmedium;
+    TH2F* b_fail2d_loose_notmedium;
+
+    TH2F* c_all2d;
+    TH2F* c_pass2d_medium;
+    TH2F* c_fail2d_medium;
+    TH2F* c_pass2d_loose;
+    TH2F* c_fail2d_loose;
+    TH2F* c_pass2d_tight;
+    TH2F* c_fail2d_tight;
+    TH2F* c_pass2d_medium_nottight;
+    TH2F* c_fail2d_medium_nottight;
+    TH2F* c_pass2d_loose_notmedium;
+    TH2F* c_fail2d_loose_notmedium;
+
+    TH2F* l_all2d;
+    TH2F* l_pass2d_medium;
+    TH2F* l_fail2d_medium;
+    TH2F* l_pass2d_loose;
+    TH2F* l_fail2d_loose;
+    TH2F* l_pass2d_tight;
+    TH2F* l_fail2d_tight;
+    TH2F* l_pass2d_medium_nottight;
+    TH2F* l_fail2d_medium_nottight;
+    TH2F* l_pass2d_loose_notmedium;
+    TH2F* l_fail2d_loose_notmedium;
+
 };
 
 //
@@ -504,12 +536,12 @@ passed14 = 0;
 
 
 //Start efficiencies filling
-Efficiencies->Fill(0);
+////Efficiencies->Fill(0);
 passed0 = 1;
 
 //Check number of diphotons and jets before any sel
 if( totalNumberofJets < 2 || totalNumberofPhotons < 1) { return;}
-Efficiencies->Fill(1);
+//Efficiencies->Fill(1);
 passed1 = 1;
 
 //Check number of diphotons after presel:
@@ -538,37 +570,104 @@ if(myTriggers.size() > 0){
 }
 
 if( !triggerAccepted ) {return;}
-Efficiencies->Fill(2);
+//Efficiencies->Fill(2);
 passed2 = 1;
 
 //Check photon kinematic selection:
 std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDiPhos = tools_.DiPhotonKinematicSelection(PreSelDipho);
 if(PreSelDiPhos.size() < 1 ) {return;}
-Efficiencies->Fill(3);
+//Efficiencies->Fill(3);
 passed3 = 1;
 
 //Check photon ID:
 std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> SelDiPhos = tools_.DiPhotonIDSelection(PreSelDiPhos);
 if(SelDiPhos.size() < 1) {return;}
-Efficiencies->Fill(4);
+//Efficiencies->Fill(4);
 passed4 = 1;
 
 //Check jet presel:
 edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = SelDiPhos[0];
 std::vector<edm::Ptr<flashgg::Jet>> PreSelJets = tools_.JetPreSelection(theJetsCols, diphoCand);
+if(PreSelJets.size() < 2) {return;}
+std::vector<edm::Ptr<flashgg::Jet>> SelJets = tools_.DiJetSelection(PreSelJets, 1);
+if(SelJets.size() < 2) {return;}
 //Loop over jets
-for(unsigned int j = 0; j < PreSelJets.size(); j++)
+for(unsigned int j = 0; j < 2; j++)
 {
-  if(j>4) break;
-  edm::Ptr<flashgg::Jet> thisJet = PreSelJets[j];
+  edm::Ptr<flashgg::Jet> thisJet = SelJets[j];
   float thisEta = fabs(thisJet->eta());
   float thisPt = thisJet->pt();
   float bdis = thisJet->bDiscriminator(bTagType);
-  all2d->Fill(thisEta, thisPt, 1.);
-  if(bdis > 0.8)
-     pass2d->Fill(thisEta, thisPt, 1.);
-  else
-     fail2d->Fill(thisEta, thisPt, 1.);
+  int flavor = abs(thisJet->hadronFlavour());
+  if(flavor == 5){
+     b_all2d->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.8)
+        b_pass2d_medium->Fill(thisEta, thisPt, 1.);
+     else
+        b_fail2d_medium->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.46)
+        b_pass2d_loose->Fill(thisEta, thisPt, 1.);
+     else
+        b_fail2d_loose->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.935)
+        b_pass2d_tight->Fill(thisEta, thisPt, 1.);
+     else
+        b_fail2d_tight->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.8 && bdis < 0.935)
+        b_pass2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+     else
+        b_fail2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.46 && bdis < 0.8)
+        b_pass2d_loose_notmedium->Fill(thisEta, thisPt, 1.0);
+     else
+        b_fail2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+   }
+  if(flavor == 4){
+     c_all2d->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.8)
+        c_pass2d_medium->Fill(thisEta, thisPt, 1.);
+     else
+        c_fail2d_medium->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.46)
+        c_pass2d_loose->Fill(thisEta, thisPt, 1.);
+     else
+        c_fail2d_loose->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.935)
+        c_pass2d_tight->Fill(thisEta, thisPt, 1.);
+     else
+        c_fail2d_tight->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.8 && bdis < 0.935)
+        c_pass2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+     else
+        c_fail2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.46 && bdis < 0.8)
+        c_pass2d_loose_notmedium->Fill(thisEta, thisPt, 1.0);
+     else
+        c_fail2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+   }
+  if(flavor < 4){
+     l_all2d->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.8)
+        l_pass2d_medium->Fill(thisEta, thisPt, 1.);
+     else
+        l_fail2d_medium->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.46)
+        l_pass2d_loose->Fill(thisEta, thisPt, 1.);
+     else
+        l_fail2d_loose->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.935)
+        l_pass2d_tight->Fill(thisEta, thisPt, 1.);
+     else
+        l_fail2d_tight->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.8 && bdis < 0.935)
+        l_pass2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+     else
+        l_fail2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+     if(bdis > 0.46 && bdis < 0.8)
+        l_pass2d_loose_notmedium->Fill(thisEta, thisPt, 1.0);
+     else
+        l_fail2d_medium_nottight->Fill(thisEta, thisPt, 1.);
+   }
 }
 
 return;
@@ -582,16 +681,47 @@ void
     if(DEBUG) std::cout << "[bbggBTagEff::beginJob] Setting up output tree..." << std::endl;
 
     outFile = new TFile(fileName.c_str(), "RECREATE");
-    Float_t ptbins[] = {25, 40, 60, 100, 150, 200, 300, 400, 500};
-    int nptbins = 8;
-    Float_t etabins[] = {0, 0.5, 1, 1.5, 2, 2.5};
-    int netabins = 5;
+    Float_t b_ptbins[] = {0, 40, 60, 80, 100, 150, 200, 300, 1000};
+    Float_t c_ptbins[] = {0, 40, 60, 80, 100, 150, 200, 1000};
+    int b_nptbins = 8;
+    int c_nptbins = 7;
+    Float_t etabins[] = {0, 0.6, 1.2, 2.4};
+    int netabins = 3;
 
-    all2d = new TH2F("all2d", "All jets in PtxEta;Eta;Pt", netabins, etabins, nptbins, ptbins);
-    pass2d = new TH2F("pass2d", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, nptbins, ptbins);
-    fail2d = new TH2F("fail2d", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, nptbins, ptbins);
+    b_all2d = new TH2F("b_all2d", "All jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_pass2d_medium = new TH2F("b_pass2d_medium", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_fail2d_medium = new TH2F("b_fail2d_medium", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_pass2d_loose = new TH2F("b_pass2d_loose", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_fail2d_loose = new TH2F("b_fail2d_loose", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_pass2d_tight = new TH2F("b_pass2d_tight", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_fail2d_tight = new TH2F("b_fail2d_tight", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_pass2d_medium_nottight = new TH2F("b_pass2d_medium_nottight", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_fail2d_medium_nottight = new TH2F("b_fail2d_medium_nottight", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_pass2d_loose_notmedium = new TH2F("b_pass2d_loose_notmedium", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    b_fail2d_loose_notmedium = new TH2F("b_fail2d_loose_notmedium", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, b_nptbins, b_ptbins);
+    c_all2d = new TH2F("c_all2d", "All jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_pass2d_medium = new TH2F("c_pass2d_medium", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_fail2d_medium = new TH2F("c_fail2d_medium", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_pass2d_loose = new TH2F("c_pass2d_loose", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_fail2d_loose = new TH2F("c_fail2d_loose", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_pass2d_tight = new TH2F("c_pass2d_tight", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_fail2d_tight = new TH2F("c_fail2d_tight", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_pass2d_medium_nottight = new TH2F("c_pass2d_medium_nottight", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_fail2d_medium_nottight = new TH2F("c_fail2d_medium_nottight", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_pass2d_loose_notmedium = new TH2F("c_pass2d_loose_notmedium", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    c_fail2d_loose_notmedium = new TH2F("c_fail2d_loose_notmedium", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_all2d = new TH2F("l_all2d", "All jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_pass2d_medium = new TH2F("l_pass2d_medium", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_fail2d_medium = new TH2F("l_fail2d_medium", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_pass2d_loose = new TH2F("l_pass2d_loose", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_fail2d_loose = new TH2F("l_fail2d_loose", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_pass2d_tight = new TH2F("l_pass2d_tight", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_fail2d_tight = new TH2F("l_fail2d_tight", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_pass2d_medium_nottight = new TH2F("l_pass2d_medium_nottight", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_fail2d_medium_nottight = new TH2F("l_fail2d_medium_nottight", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_pass2d_loose_notmedium = new TH2F("l_pass2d_loose_notmedium", "Btagged jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
+    l_fail2d_loose_notmedium = new TH2F("l_fail2d_loose_notmedium", "Bvetoed jets in PtxEta;Eta;Pt", netabins, etabins, c_nptbins, c_ptbins);
 
-    Efficiencies = new TH1F("Efficiencies", "Efficiencies", 10, 0, 10);
     Mjj = new TH1F("Mjj", "Mjj", 100, 60, 200);
     Mgg = new TH1F("Mgg", "Mgg", 100, 100, 150);
     Mggjj = new TH1F("Mggjj", "Mggjj", 100, 0, 1000);
@@ -601,27 +731,104 @@ void
 void 
     bbggBTagEff::endJob() 
 {
-    passEff = (TH2F*) pass2d->Clone("passEff");
-    failEff = (TH2F*) fail2d->Clone("failEff");
-    passEff->Sumw2();
-    failEff->Sumw2();
-    TH2F* all = (TH2F*) all2d->Clone("all");
-    all->Sumw2();
-    passEff->Divide(all);
-    failEff->Divide(all);
 
     outFile->cd();
 //    tree->Write();
-    Efficiencies->Write();
     Mgg->Write();
     Mjj->Write();
     Mggjj->Write();
-    all2d->Write();
-    pass2d->Write();
-    fail2d->Write();
-    passEff->Write();
-    failEff->Write();
-    outFile->Write();
+
+
+
+
+    b_all2d->Write();
+    b_pass2d_medium->Write();
+    b_fail2d_medium->Write();
+    b_pass2d_loose->Write();
+    b_fail2d_loose->Write();
+    b_pass2d_tight->Write();
+    b_fail2d_tight->Write();
+    b_pass2d_medium_nottight->Write();
+    b_fail2d_medium_nottight->Write();
+    b_pass2d_loose_notmedium->Write();
+    b_fail2d_loose_notmedium->Write();
+
+    c_all2d->Write();
+    c_pass2d_medium->Write();
+    c_fail2d_medium->Write();
+    c_pass2d_loose->Write();
+    c_fail2d_loose->Write();
+    c_pass2d_tight->Write();
+    c_fail2d_tight->Write();
+    c_pass2d_medium_nottight->Write();
+    c_fail2d_medium_nottight->Write();
+    c_pass2d_loose_notmedium->Write();
+    c_fail2d_loose_notmedium->Write();
+
+    l_all2d->Write();
+    l_pass2d_medium->Write();
+    l_fail2d_medium->Write();
+    l_pass2d_loose->Write();
+    l_fail2d_loose->Write();
+    l_pass2d_tight->Write();
+    l_fail2d_tight->Write();
+    l_pass2d_medium_nottight->Write();
+    l_fail2d_medium_nottight->Write();
+    l_pass2d_loose_notmedium->Write();
+    l_fail2d_loose_notmedium->Write();
+
+   TH2F* b_eff_medium = (TH2F*) b_pass2d_medium->Clone("b_eff_medium");
+   TH2F* b_eff_tight = (TH2F*) b_pass2d_tight->Clone("b_eff_tight");
+   TH2F* b_eff_loose = (TH2F*) b_pass2d_loose->Clone("b_eff_loose");
+   TH2F* c_eff_medium = (TH2F*) c_pass2d_medium->Clone("c_eff_medium");
+   TH2F* c_eff_tight = (TH2F*) c_pass2d_tight->Clone("c_eff_tight");
+   TH2F* c_eff_loose = (TH2F*) c_pass2d_loose->Clone("c_eff_loose");
+   TH2F* l_eff_medium = (TH2F*) l_pass2d_medium->Clone("l_eff_medium");
+   TH2F* l_eff_tight = (TH2F*) l_pass2d_tight->Clone("l_eff_tight");
+   TH2F* l_eff_loose = (TH2F*) l_pass2d_loose->Clone("l_eff_loose");
+   
+   b_eff_medium->Sumw2();
+   b_eff_tight->Sumw2();
+   b_eff_loose->Sumw2();
+   c_eff_medium->Sumw2();
+   c_eff_tight->Sumw2();
+   c_eff_loose->Sumw2();
+   l_eff_medium->Sumw2();
+   l_eff_tight->Sumw2();
+   l_eff_loose->Sumw2();
+  /* 
+   b_all2d->Sumw2();
+   b_all2d->Sumw2();
+   b_all2d->Sumw2();
+   c_all2d->Sumw2();
+   c_all2d->Sumw2();
+   c_all2d->Sumw2();
+   l_all2d->Sumw2();
+   l_all2d->Sumw2();
+   l_all2d->Sumw2();
+   */
+   b_eff_medium->Divide(b_all2d);
+   b_eff_tight->Divide(b_all2d);
+   b_eff_loose->Divide(b_all2d);
+   c_eff_medium->Divide(c_all2d);
+   c_eff_tight->Divide(c_all2d);
+   c_eff_loose->Divide(c_all2d);
+   l_eff_medium->Divide(l_all2d);
+   l_eff_tight->Divide(l_all2d);
+   l_eff_loose->Divide(l_all2d);
+   
+   b_eff_medium->Write();
+   b_eff_tight->Write();
+   b_eff_loose->Write();
+   c_eff_medium->Write();
+   c_eff_tight->Write();
+   c_eff_loose->Write();
+   l_eff_medium->Write();
+   l_eff_tight->Write();
+   l_eff_loose->Write();
+   
+
+
     outFile->Close();
 }
 

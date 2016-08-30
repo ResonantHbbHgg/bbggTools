@@ -22,11 +22,11 @@
         {
             "type" : "Radion",
             "mpoint" : 900,
-	    "legend" : "SM Nonresonant HH",
+	    "legend" : "Graviton M_{X} = 900 GeV",
             "color" : 4,
             "style" : 0,
 	    "nevents" : 50000,
-            "file" : "output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph.root"
+            "file" : "output_GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph.root"
         }
     ],
     "background" : [
@@ -36,8 +36,8 @@
             "file" : "output_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8.root",
             "color" : 1110,
             "xsec" : 6025.2,
-	    "nevents" : 1719818,
-            "weight" : 9709247493.0,
+	    "nevents" : 28730591,
+            "weight" : 451200807040.0,
             "sfactor" : 1
         },
         {
@@ -45,40 +45,40 @@
             "legend" : "QCD",
             "file" : "output_QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
             "color" : 1113,
-            "xsec" : 54120000,
-	    "nevents" : 19958876,
-	    "weight" : 19958876,
-            "sfactor" : 0.002
+            "xsec" : 113400.0,
+	    "nevents" : 20245720,
+	    "weight" : 20245720,
+            "sfactor" : 1
         },
         {
             "name" : "QCD_30to40",
             "legend" : "QCD",
             "file" : "output_QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
             "color" : 1113,
-            "xsec" : 108000000.0,
-	    "nevents" : 17831367,
-	    "weight" : 17831367,
-            "sfactor" : 0.000225
+            "xsec" : 22110.0,
+	    "nevents" : 17834698,
+	    "weight" : 17834717.6796875,
+            "sfactor" : 1
         },
         {
             "name" : "GJets_40toInf",
-            "legend" : "j#gamma+Jets/jj+Jets",
+            "legend" : "#gamma+Jets",
             "file" : "output_GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
             "color" : 1111,
-            "xsec" : 16792.0,
-	    "nevents" : 71613298,
-	    "weight" : 71613298,
-            "sfactor" : 0.0514
+            "xsec" : 850.8,
+	    "nevents" : 69193739,
+	    "weight" : 69193739,
+            "sfactor" : 1
         },
         {
             "name" : "GJets_20to40",
-            "legend" : "j#gamma+Jets/jj+Jets",
+            "legend" : "#gamma+Jets",
             "file" : "output_GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
             "color" : 1111,
-            "xsec" : 137751.0,
-	    "nevents" : 24739909,
-	    "weight" : 24739909,
-            "sfactor" : 0.04087
+            "xsec" : 220.0,
+	    "nevents" : 24505740,
+	    "weight" : 24505740,
+            "sfactor" : 1
         },
         {
             "name" : "DiPhoJets",
@@ -86,9 +86,9 @@
             "file" : "output_DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa.root",
             "color" : 1112,
             "xsec" : 84.0,
-	    "nevents" : 58532906,
-	    "weight" : 27682531.263671875,
-            "sfactor" : 1.2
+	    "nevents" : 57795322,
+	    "weight" : 27333742.830078125,
+            "sfactor" : 1.5
         }
      ],
      "higgs" : [

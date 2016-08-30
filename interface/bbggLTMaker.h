@@ -28,13 +28,10 @@ public :
 //   Output file and tree
    TTree *outTree;
    TFile *outFile;
-
-   ULong64_t o_evt;
-   UInt_t o_run;
    Int_t           o_category;
    Double_t        o_normalization;
    Double_t        o_weight;
-   Double_t        o_bbMass, o_bbMass_Reg;
+   Double_t        o_bbMass;
    Double_t        o_ggMass;
    Double_t        o_bbggMass;
    double mtotMin;
@@ -70,21 +67,13 @@ public :
    LorentzVector    *subleadingJet_KF;
    Float_t          subleadingJet_bDis;
    LorentzVector    *dijetCandidate;
-   LorentzVector    *dijetCandidate_Reg;
    LorentzVector    *dijetCandidate_KF;
    LorentzVector    *diHiggsCandidate;
    LorentzVector    *diHiggsCandidate_KF;
    Int_t	isSignal;
    Int_t	isPhotonCR;
 
-   ULong64_t event;
-   UInt_t    run;
-
-
    // List of branches
-   TBranch        *b_event;   //!
-   TBranch        *b_run;   //!
-
    TBranch        *b_genWeights;   //!
    TBranch        *b_genTotalWeight;   //!
    TBranch        *b_leadingPhoton;   //!
@@ -104,7 +93,6 @@ public :
    TBranch        *b_subleadingJet_KF;   //!
    TBranch        *b_subleadingJet_bDis;   //!
    TBranch        *b_dijetCandidate;   //!
-   TBranch        *b_dijetCandidate_Reg;   //!
    TBranch        *b_dijetCandidate_KF;   //!
    TBranch        *b_diHiggsCandidate;   //!
    TBranch        *b_diHiggsCandidate_KF;   //!
@@ -153,7 +141,6 @@ void bbggLTMaker::Init(TTree *tree)
    leadingJet = 0;
    subleadingJet = 0;
    dijetCandidate = 0;
-   dijetCandidate_Reg = 0;
    diHiggsCandidate = 0;
    leadingJet_KF = 0;
    subleadingJet_KF = 0;
@@ -168,9 +155,6 @@ void bbggLTMaker::Init(TTree *tree)
    if (!tree) return;
    fChain = tree;
 //   fChain->SetMakeClass(1);
-
-   fChain->SetBranchAddress("event", &event, &b_event);
-   fChain->SetBranchAddress("run", &run, &b_run);
 
    fChain->SetBranchAddress("genWeights", &genWeights, &b_genWeights);
    fChain->SetBranchAddress("genTotalWeight", &genTotalWeight, &b_genTotalWeight);
@@ -191,7 +175,6 @@ void bbggLTMaker::Init(TTree *tree)
    fChain->SetBranchAddress("subleadingJet_KF", &subleadingJet_KF, &b_subleadingJet_KF);
    fChain->SetBranchAddress("subleadingJet_bDis", &subleadingJet_bDis, &b_subleadingJet_bDis);
    fChain->SetBranchAddress("dijetCandidate", &dijetCandidate, &b_dijetCandidate);
-   fChain->SetBranchAddress("dijetCandidate_Reg", &dijetCandidate_Reg, &b_dijetCandidate_Reg);
    fChain->SetBranchAddress("dijetCandidate_KF", &dijetCandidate_KF, &b_dijetCandidate_KF);
    fChain->SetBranchAddress("diHiggsCandidate", &diHiggsCandidate, &b_diHiggsCandidate);
    fChain->SetBranchAddress("diHiggsCandidate_KF", &diHiggsCandidate_KF, &b_diHiggsCandidate_KF);

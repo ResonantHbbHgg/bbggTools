@@ -2,7 +2,7 @@
 //
 // Package:    flashgg/bbggTree
 // Class:      bbggTree
-//
+// 
 /**\class bbggTree bbggTree.cc flashgg/bbggTree/plugins/bbggTree.cc
 
 Description: [one line class summary]
@@ -55,13 +55,14 @@ Implementation:
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
-
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
 #include "flashgg/bbggTools/interface/bbggMC.h"
 #include "flashgg/bbggTools/interface/bbggKinFit.h"
 #include "flashgg/bbggTools/interface/bbggJetRegression.h"
+#include "flashgg/bbggTools/interface/bbggJetSystematics.h"
 
 //
 // class declaration
@@ -88,6 +89,7 @@ private:
     bbggTools tools_;
     bbggKinFit kinFit_;
     bbggJetRegression jetReg_;
+    bbggJetSystematics jetSys_;
     flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
@@ -97,7 +99,8 @@ private:
     edm::InputTag genInfo_;
     edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
-
+    edm::EDGetTokenT<edm::View<pat::MET> > METToken_;
+	  
     //Tree objects
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
@@ -110,11 +113,12 @@ private:
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
     float CosThetaStar, leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR_2, DiJetDiPho_DR_1, PhoJetMinDr;
     std::map<std::string, int> myTriggerResults;
-
+    
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
     int leadingPhotonEVeto, subleadingPhotonEVeto;
     int leadingJet_flavour, subleadingJet_flavour;
+    int leadingJet_hadFlavour, subleadingJet_hadFlavour;
     int isSignal, isPhotonCR;
     //    int nvtx;
 
@@ -148,15 +152,16 @@ private:
     std::vector<std::string> myTriggers;
     std::string bTagType, PhotonMVAEstimator;
     unsigned int doSelection, DoMVAPhotonID;
-    //std::string bRegFile;
-    edm::FileInPath bRegFile;
-    unsigned int is2016;
+    std::string bRegFile;
+    int jetSmear;
+    int jetScale;
+    std::string randomLabel, resFile, sfFile, scaleFile;
 
     //OutFile & Hists
     TFile* outFile;
     TTree* tree;
     std::string fileName;
-
+	  
     //Event counter for cout's
     long unsigned int EvtCount;
 };
@@ -173,6 +178,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     //now do what ever initialization is needed
     tools_ = bbggTools();
     jetReg_ = bbggJetRegression();
+    jetSys_ = bbggJetSystematics();
     //    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
@@ -192,7 +198,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     std::vector<std::string> def_ph_whichID, def_ph_whichISO;
     unsigned int def_diph_onlyfirst;
     unsigned int def_n_bJets;
-    edm::FileInPath def_bRegFile;
+    std::string def_bRegFile;
 
     def_ph_pt.push_back(10.);           def_ph_pt.push_back(10.);
     def_ph_eta.push_back(20.);          def_ph_eta.push_back(20.);
@@ -221,25 +227,30 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     def_cand_pt.push_back(0.);
     def_cand_eta.push_back(20.);
     def_cand_mass.push_back(0.);		def_cand_mass.push_back(2000.);
-
+	 
     def_dr_cands.push_back(0.11);
-
+	  
     unsigned int def_nPromptPhotons = 0;
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
     unsigned int def_doJetRegression = 0;
     unsigned int def_DoMVAPhotonID = 0;
-    unsigned int def_is2016 = 1;
-
-    std::vector<std::string> def_myTriggers;
+    int def_jetSmear = 0;
+    int def_jetScale = 0;
+    std::string def_randomLabel = "";
+    std::string def_resFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/Weights/JetSystematics/Fall15_25nsV2_MC_PtResolution_AK4PFchs.txt";
+    std::string def_sfFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/Weights/JetSystematics/Fall15_25nsV2_MC_SF_AK4PFchs.txt";
+    std::string def_scaleFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/Weights/JetSystematics/Fall15_25nsV2_MC_Uncertainty_AK4PFchs.txt";
+        
+    std::vector<std::string> def_myTriggers;	  
 
     std::string def_fileName;
 
     def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
     def_fileName =  "out.root";
-
-    def_bRegFile = edm::FileInPath("flashgg/bbggTools/data/BRegression/TMVARegression_BDTG.weights.xml");
-
+    
+    def_bRegFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml";
+        
     //Get thresholds from config file
     phoIDlooseEB = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEB");
     phoIDlooseEE = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEE");
@@ -257,7 +268,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     nhCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("nhCorrEE");
     phCorrEB = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEB");
     phCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEE");
-
+    
     doSelection = iConfig.getUntrackedParameter<unsigned int>("doSelectionTree", def_doSelection);
     ph_pt     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonPtOverDiPhotonMass", def_ph_pt);
     ph_eta    = iConfig.getUntrackedParameter<std::vector<double > >("PhotonEta", def_ph_eta);
@@ -294,24 +305,32 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
     genInfoToken_ = consumes<GenEventInfoProduct>( genInfo_ );
-
+	
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
 
+    //MET
+    METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
+    
     //MVA Photon ID
     DoMVAPhotonID = iConfig.getUntrackedParameter<unsigned int>("DoMVAPhotonID", def_DoMVAPhotonID);
     MVAPhotonID = iConfig.getUntrackedParameter<std::vector<double>>("MVAPhotonID", def_MVAPhotonID);
     PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
-
-    bRegFile = iConfig.getUntrackedParameter<edm::FileInPath>("bRegFile", def_bRegFile);
-    //bRegFile = iConfig.getUntrackedParameter<std::string>("bRegFile", def_bRegFile);
-
-    is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
-
+    
+    bRegFile = iConfig.getUntrackedParameter<std::string>("bRegFile", def_bRegFile);
+    
+    jetSmear = iConfig.getUntrackedParameter<int>("jetSmear", def_jetSmear);
+    jetScale = iConfig.getUntrackedParameter<int>("jetScale", def_jetScale);
+        
+    randomLabel = iConfig.getUntrackedParameter<std::string>("randomLabel", def_randomLabel);
+    resFile = iConfig.getUntrackedParameter<std::string>("resFile", def_resFile);
+    sfFile = iConfig.getUntrackedParameter<std::string>("sfFile", def_sfFile);
+    scaleFile = iConfig.getUntrackedParameter<std::string>("scaleFile", def_scaleFile);
+        
     tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
     tools_.SetCut_MVAPhotonID(MVAPhotonID);
     tools_.SetCut_PhotonMVAEstimator(PhotonMVAEstimator);
-
+    
     tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
     tools_.SetCut_PhotonEta( ph_eta );
@@ -339,65 +358,65 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     tools_.SetCut_CandidateEta( cand_eta );
     tools_.SetCut_bTagType( bTagType );
     tools_.SetCut_CandidatesDeltaR( dr_cands );
-
+    
     std::map<int, vector<double> > phoIDloose;
     phoIDloose[0] = phoIDlooseEB;
     phoIDloose[1] = phoIDlooseEE;
     tools_.SetCut_phoIDloose(phoIDloose);
-
+    
     std::map<int, vector<double> > phoIDmedium;
     phoIDmedium[0] = phoIDmediumEB;
     phoIDmedium[1] = phoIDmediumEE;
     tools_.SetCut_phoIDmedium(phoIDmedium);
-
+    
     std::map<int, vector<double> > phoIDtight;
     phoIDtight[0] = phoIDtightEB;
     phoIDtight[1] = phoIDtightEE;
     tools_.SetCut_phoIDtight(phoIDtight);
-
+    
     std::map<int, vector<double> > phoISOloose;
     phoISOloose[0] = phoISOlooseEB;
     phoISOloose[1] = phoISOlooseEE;
     tools_.SetCut_phoISOloose(phoISOloose);
-
+    
     std::map<int, vector<double> > phoISOmedium;
     phoISOmedium[0] = phoISOmediumEB;
     phoISOmedium[1] = phoISOmediumEE;
     tools_.SetCut_phoISOmedium(phoISOmedium);
-
+    
     std::map<int, vector<double> > phoISOtight;
     phoISOtight[0] = phoISOtightEB;
     phoISOtight[1] = phoISOtightEE;
     tools_.SetCut_phoISOtight(phoISOtight);
-
+            
     std::map<int, vector<double> > nhCorr;
     nhCorr[0] = nhCorrEB;
     nhCorr[1] = nhCorrEE;
     tools_.SetCut_nhCorr(nhCorr);
-
+    
     std::map<int, vector<double> > phCorr;
     phCorr[0] = phCorrEB;
     phCorr[1] = phCorrEE;
     tools_.SetCut_phCorr(phCorr);
-
+    
     tools_.SetCut_phoWhichID(ph_whichID);
     tools_.SetCut_phoWhichISO(ph_whichISO);
-
+    
     std::vector<double> ptRes = iConfig.getUntrackedParameter<std::vector<double>>( "ptRes");
     std::vector<double> etaRes = iConfig.getUntrackedParameter<std::vector<double>>( "etaRes");
-    std::vector<double> phiRes = iConfig.getUntrackedParameter<std::vector<double>>( "phiRes");
+    std::vector<double> phiRes = iConfig.getUntrackedParameter<std::vector<double>>( "phiRes");   
     std::vector<double> etaBins = iConfig.getUntrackedParameter<std::vector<double>>("etaBins");
-
+ 
     kinFit_ = bbggKinFit();
     kinFit_.SetJetResolutionParameters(etaBins, ptRes, etaRes, phiRes);
+    jetSys_.SetupScale(scaleFile);
 
     for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
         auto token = consumes<edm::View<flashgg::Jet> >(inputTagJets_[i]);
         tokenJets_.push_back(token);
     }
-
-    if (doJetRegression)
-      jetReg_.SetupRegression("BDTG method", bRegFile.fullPath().data());
+    
+    jetReg_.SetupRegression("BDTG method", bRegFile);
 
     std::cout << "Parameters initialized... \n ############ Doing selection tree!" <<  std::endl;
 
@@ -406,7 +425,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
 bbggTree::~bbggTree()
 {
-
+ 
     // do anything here that needs to be done at desctruction time
     // (e.g. close files, deallocate resources etc.)
 
@@ -424,9 +443,9 @@ void
 
     globVar_->fill(iEvent);
 
-    if( EvtCount%10000 == 0 && !DEBUG) std::cout << "[bbggTree::analyze] Analyzing event number: " << EvtCount << std::endl;
+    if( EvtCount%100 == 0 && !DEBUG) std::cout << "[bbggTree::analyze] Analyzing event number: " << EvtCount << std::endl;
     if (DEBUG) std::cout << "[bbggTree::analyze] Analyzing event number: " << EvtCount << std::endl;
-
+	
     EvtCount++;
     using namespace edm;
     leadingPhotonID.clear();
@@ -472,7 +491,7 @@ void
     }
 
     if (DEBUG) std::cout << "Number of jet collections!!!! " << theJetsCols.size() << std::endl;
-
+	 
     Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
     iEvent.getByToken( diPhotonToken_, diPhotons );
 
@@ -482,9 +501,10 @@ void
     // const double rhoFixedGrd = *( rhoHandle.product() );
     const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
     tools_.setRho(rhoFixedGrd);
+    const double nPVs = globVar_->valueOf(globVar_->indexOf("nvtx"));
 
     Handle<View<pat::PackedGenParticle> > genParticles;
-
+    
     //Trigger
     if(myTriggers.size() > 0){
         Handle<edm::TriggerResults> trigResults;
@@ -524,9 +544,9 @@ void
             diphoVec.push_back(dipho);
         }
     }
-
+    
     if(DEBUG) std::cout << "Number of diphoton candidates: " << diphoVec.size() << std::endl;
-
+	
     if (diphoVec.size() < 1) return;
     if (theJetsCols.size() < 1) return;
 
@@ -537,85 +557,160 @@ void
     }
 
     if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
-
+        
     //Trigger preselection on diphoton candidates:
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho;
-    if(!is2016) PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
-    if(is2016) PreSelDipho = tools_.DiPhoton80XPreselection( diphoVec, myTriggerResults);
-
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
+    if(DEBUG) std::cout << "[bbggTree::analyze] Number of pre-selected diphtoons: "<< PreSelDipho.size() << std::endl;
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() < 1 ) return;
-
-    // if(myTriggers.size() > 0){
-    //     bool triggerAccepted = false;
-    //     for( unsigned int tr = 0; tr < myTriggerResults.size(); tr++){
-    //         if(myTriggerResults[tr] == 1){
-    //             triggerAccepted = true;
-    //             break;
-    //         }
-    //     }
-    //     if(!triggerAccepted) return;
-    // }
-
-    bool passedSelection = tools_.AnalysisSelection(PreSelDipho, theJetsCols);
-    isSignal = tools_.IsSignal();
-    isPhotonCR = tools_.IsPhotonCR();
-    bool hasLJet = tools_.HasLeadJet();
-    bool hasSJet = tools_.HasSubJet();
-
+ 
+    /////////////////////////////////////////////////////
+    /// DOING SELECTION HERE NOW ////////////////////////
+    /////////////////////////////////////////////////////   
+    edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate; 
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> KinDiPhoton = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
+    if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: "<< KinDiPhoton.size() << std::endl;
+    if( KinDiPhoton.size() < 1) return;
+    vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton );
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
+    if(SignalDiPhotons.size() > 0) {
+        diphoCandidate = tools_.PtSumDiPhotonSelection(SignalDiPhotons);//SignalDiPhotons[0];
+        isSignal = 1;
+        isPhotonCR = 0;
+    }
+    if(SignalDiPhotons.size() < 1 && doPhotonCR && CRDiPhotons.size() > 0) {
+        diphoCandidate = tools_.PtSumDiPhotonSelection(CRDiPhotons);//CRDiPhotons[0];
+        isSignal = 0;
+        isPhotonCR = 1;
+    }
     if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
     if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
-    if(!passedSelection) return;
-    if(!hasLJet || !hasSJet) return;
 
-    if(DEBUG) std::cout << "[bbggTree::analyze] tools_.AnalysisSelection returned " << passedSelection << std::endl;
+    if(DEBUG) std::cout << "[bbggTree::analyze] Is signal region: " << isSignal << "; Is control region: " << isPhotonCR << std::endl;
 
-    edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = tools_.GetSelected_diphoCandidate();
-    edm::Ptr<flashgg::Jet> LeadingJet = tools_.GetSelected_leadingJetCandidate();
-    edm::Ptr<flashgg::Jet> SubLeadingJet = tools_.GetSelected_subleadingJetCandidate();
+    ///////////// JETS
+    bool hasLeadJet = 0;
+    bool hasSubJet = 0;
+    flashgg::Jet LeadingJet, SubLeadingJet;
+    unsigned int jetCollectionIndex = diphoCandidate->jetCollectionIndex();
+    std::vector<flashgg::Jet> testCollection;
+    for( unsigned int jetIndex = 0; jetIndex < theJetsCols[jetCollectionIndex]->size(); jetIndex++ )
+    {
+        edm::Ptr<flashgg::Jet> thisJetPtr = theJetsCols[jetCollectionIndex]->ptrAt( jetIndex );
+        flashgg::Jet * thisJetPointer = const_cast<flashgg::Jet *>(thisJetPtr.get());
+        testCollection.push_back(*thisJetPointer);
+    }
+    std::vector<edm::Ptr<flashgg::Jet>> KinJets;
+    std::vector<flashgg::Jet> KinJets_Smear;
+    std::vector<edm::Ptr<flashgg::Jet>> SelJets;
+    std::vector<flashgg::Jet> SelJets_Smear;
+    //Here I can apply smearing to my jets
+    if(jetSmear!=0){
+        jetSys_.SetupSmear(resFile, sfFile);
+        jetSys_.SmearJets(testCollection, rhoFixedGrd, jetSmear, randomLabel);
+    }
+    if(jetScale!=0){
+        jetSys_.ScaleJets(testCollection, jetScale);
+    }
+    if(doJetRegression!=0) {
+        Handle<View<pat::MET> > METs;
+        iEvent.getByToken( METToken_, METs );
+	if( METs->size() != 1 )
+        { std::cout << "WARNING number of MET is not equal to 1" << std::endl; }
+        Ptr<pat::MET> theMET = METs->ptrAt( 0 );
+	
+        if(DEBUG) std::cout << "DOING REGRESSION! JetCol before: " << testCollection.size() << std::endl;
+        jetReg_.RegressedJets(testCollection, nPVs, theMET->p4() );
+        if(DEBUG) std::cout << "DOING REGRESSION! JetCol after: " << testCollection.size() << std::endl;
+    }
+    
+    if(jetSmear!=0 || jetScale!=0 || doJetRegression!=0){
+        if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION" << std::endl;
+        KinJets_Smear = tools_.JetPreSelection(testCollection, diphoCandidate);
+        if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - KinSel" << KinJets_Smear.size() << std::endl;
+        if( KinJets_Smear.size() < 2 ) return;
+        SelJets_Smear = tools_.DiJetSelection(KinJets_Smear, 1);
+        if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - DiJetSel" << SelJets_Smear.size() << std::endl;
+        if( SelJets_Smear.size() < 2 ) return;
+        if( SelJets_Smear.size() > 1 ) {
+            hasLeadJet = 1;
+            hasSubJet = 1;
+            LeadingJet = SelJets_Smear[0];
+            SubLeadingJet = SelJets_Smear[1];
+        }
+    }
+
+    if(jetScale == 0 && jetSmear == 0 && doJetRegression==0) {
+        KinJets = tools_.JetPreSelection(theJetsCols, diphoCandidate);
+        if( KinJets.size() < 2 ) return;
+        SelJets = tools_.DiJetSelection(KinJets, 1);
+        if( SelJets.size() < 2 ) return;
+        if( SelJets.size() > 1 ) {
+            hasLeadJet = 1;
+            hasSubJet = 1;
+            flashgg::Jet * thisLeadJetPointer = const_cast<flashgg::Jet *>( SelJets[0].get() );
+            LeadingJet = *thisLeadJetPointer;
+            flashgg::Jet * thisSubleadJetPointer = const_cast<flashgg::Jet *>( SelJets[1].get() );
+            SubLeadingJet = *thisSubleadJetPointer;
+        }
+    }
+    
+    /////////////////////////////////////////////////////
+    /// DOING SELECTION HERE NOW ////////////////////////
+    /////////////////////////////////////////////////////    
+    
+    
+    if(!hasLeadJet || !hasSubJet) return;
+		
+    edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = diphoCandidate;//tools_.GetSelected_diphoCandidate();
 
     if(DEBUG && doJetRegression){
         std::cout << "Userflots of leading jet: " << std::endl;
-        std::cout << "\t nSecVertices: " << LeadingJet->userFloat("nSecVertices") << std::endl;
-        std::cout << "\t vtxNTracks: " << LeadingJet->userFloat("vtxNTracks") << std::endl;
-        std::cout << "\t vtxMass: " << LeadingJet->userFloat("vtxMass") << std::endl;
-        std::cout << "\t vtxPx: " << LeadingJet->userFloat("vtxPx") << std::endl;
-        std::cout << "\t vtxPy: " << LeadingJet->userFloat("vtxPy") << std::endl;
-        std::cout << "\t vtx3DVal: " << LeadingJet->userFloat("vtx3DVal") << std::endl;
-        std::cout << "\t vtx3DSig: " << LeadingJet->userFloat("vtx3DSig") << std::endl;
-        std::cout << "\t leadTrackPt: " << LeadingJet->userFloat("leadTrackPt") << std::endl;
-        std::cout << "\t softLepPt: " << LeadingJet->userFloat("softLepPt") << std::endl;
-        std::cout << "\t softLepRatio: " << LeadingJet->userFloat("softLepRatio") << std::endl;
-        std::cout << "\t softLepDr: " << LeadingJet->userFloat("softLepDr") << std::endl;
+        std::cout << "\t nSecVertices: " << LeadingJet.userFloat("nSecVertices") << std::endl;
+        std::cout << "\t vtxNTracks: " << LeadingJet.userFloat("vtxNTracks") << std::endl;
+        std::cout << "\t vtxMass: " << LeadingJet.userFloat("vtxMass") << std::endl;
+        std::cout << "\t vtxPx: " << LeadingJet.userFloat("vtxPx") << std::endl;
+        std::cout << "\t vtxPy: " << LeadingJet.userFloat("vtxPy") << std::endl;
+        std::cout << "\t vtx3DVal: " << LeadingJet.userFloat("vtx3DVal") << std::endl;
+        std::cout << "\t vtx3DSig: " << LeadingJet.userFloat("vtx3DSig") << std::endl;
+        std::cout << "\t leadTrackPt: " << LeadingJet.userFloat("leadTrackPt") << std::endl;
+        std::cout << "\t softLepPt: " << LeadingJet.userFloat("softLepPt") << std::endl;
+        std::cout << "\t softLepRatio: " << LeadingJet.userFloat("softLepRatio") << std::endl;
+        std::cout << "\t softLepDr: " << LeadingJet.userFloat("softLepDr") << std::endl;
     }
-
+        
     if (DEBUG) std::cout << "Jet collection picked: " << diphoCand->jetCollectionIndex() << std::endl;
-
+		
     nPromptInDiPhoton = 999;
     if ( genInfo.isValid() ){
         bbggMC _mcTools = bbggMC();
         nPromptInDiPhoton = _mcTools.CheckNumberOfPromptPhotons(diphoCand, genParticles);
     }
-
+		
     diphotonCandidate = diphoCand->p4();
     leadingPhoton = diphoCand->leadingPhoton()->p4();
     subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
-    leadingJet = LeadingJet->p4();
-    leadingJet_bDis = LeadingJet->bDiscriminator(bTagType);
-    leadingJet_flavour = LeadingJet->partonFlavour();
-    subleadingJet = SubLeadingJet->p4();
-    subleadingJet_bDis = SubLeadingJet->bDiscriminator(bTagType);
-    subleadingJet_flavour = SubLeadingJet->partonFlavour();
+    
+    leadingJet = LeadingJet.p4();
+    leadingJet_bDis = LeadingJet.bDiscriminator(bTagType);
+    leadingJet_flavour = LeadingJet.partonFlavour();
+    leadingJet_hadFlavour = LeadingJet.hadronFlavour();
+    subleadingJet = SubLeadingJet.p4();
+    subleadingJet_bDis = SubLeadingJet.bDiscriminator(bTagType);
+    subleadingJet_flavour = SubLeadingJet.partonFlavour();
+    subleadingJet_hadFlavour = SubLeadingJet.hadronFlavour();
+    
     dijetCandidate = leadingJet + subleadingJet;
     diHiggsCandidate = diphotonCandidate + dijetCandidate;
 
 
     DiJetDiPho_DR_1 = tools_.DeltaR(diphotonCandidate, dijetCandidate);
     DiJetDiPho_DR_2 = tools_.DeltaR(diphotonCandidate,dijetCandidate);
-
+    
     PhoJetMinDr = min( min( tools_.DeltaR( leadingPhoton, leadingJet ), tools_.DeltaR( leadingPhoton, subleadingJet ) ),
                        min( tools_.DeltaR( subleadingPhoton, leadingJet ), tools_.DeltaR( subleadingPhoton, subleadingJet ) ) );
-
+        
     //Kinematic fit:
     if(DEBUG) std::cout << "[bbggTree::analyze] Doing kinematic fit!" << std::endl;
     kinFit_.KinematicFit(leadingJet, subleadingJet);
@@ -627,21 +722,6 @@ void
     jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
     jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
 
-    if(doJetRegression){
-        //Regression:
-        if(DEBUG) std::cout << "[bbggTree::analyze] Doing regression!" << std::endl;
-        leadingJet_Reg = jetReg_.GetRegression(LeadingJet, rhoFixedGrd);
-        subleadingJet_Reg = jetReg_.GetRegression(SubLeadingJet, rhoFixedGrd);
-        dijetCandidate_Reg = leadingJet_Reg + subleadingJet_Reg;
-        diHiggsCandidate_Reg = dijetCandidate_Reg + diphotonCandidate;
-        //Regression + Kinematic Fit:
-        kinFit_.KinematicFit(leadingJet_Reg, subleadingJet_Reg);
-        leadingJet_RegKF = kinFit_.GetJet1();
-        subleadingJet_RegKF = kinFit_.GetJet2();
-        dijetCandidate_RegKF = leadingJet_RegKF + subleadingJet_RegKF;
-        diHiggsCandidate_RegKF = dijetCandidate_RegKF + diphotonCandidate;
-    }
-
     //Calculating costheta star
     TLorentzVector BoostedHgg(0,0,0,0);
     BoostedHgg.SetPtEtaPhiE( diphoCand->pt(), diphoCand->eta(), diphoCand->phi(), diphoCand->energy());
@@ -649,12 +729,11 @@ void
     HHforBoost.SetPtEtaPhiE( diHiggsCandidate.pt(), diHiggsCandidate.eta(), diHiggsCandidate.phi(), diHiggsCandidate.energy());
     TVector3 HHBoostVector = HHforBoost.BoostVector();
     BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
-    //        BoostedHgg.Boost( -HHBoostVector );
     CosThetaStar = BoostedHgg.CosTheta();
-
-
+        
+        		
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
-
+				
     int lphoIDloose = 0;
     int lphoIDmedium = 0;
     int lphoIDtight = 0;
@@ -690,7 +769,7 @@ void
         lphoISOmedium 	= tools_.isPhoISO(diphoCand, 0, phoISOmediumEE, nhCorrEE, phCorrEE);
         lphoISOtight 	= tools_.isPhoISO(diphoCand, 0, phoISOtightEE,  nhCorrEE, phCorrEE);
     }
-
+	
     if(spho_eta_abs < 1.44){
         sphoIDloose 	= tools_.isPhoID(diphoCand->subLeadingPhoton(), phoIDlooseEB);
         sphoIDmedium 	= tools_.isPhoID(diphoCand->subLeadingPhoton(), phoIDmediumEB);
@@ -707,27 +786,24 @@ void
         sphoISOmedium 	= tools_.isPhoISO(diphoCand, 1, phoISOmediumEE, nhCorrEE, phCorrEE);
         sphoISOtight 	= tools_.isPhoISO(diphoCand, 1, phoISOtightEE,  nhCorrEE, phCorrEE);
     }
-
+	
     leadingPhotonID.push_back(lphoIDloose);
     leadingPhotonID.push_back(lphoIDmedium);
     leadingPhotonID.push_back(lphoIDtight);
     leadingPhotonISO.push_back(lphoISOloose);
     leadingPhotonISO.push_back(lphoISOmedium);
     leadingPhotonISO.push_back(lphoISOtight);
-
+	
     subleadingPhotonID.push_back(sphoIDloose);
     subleadingPhotonID.push_back(sphoIDmedium);
     subleadingPhotonID.push_back(sphoIDtight);
     subleadingPhotonISO.push_back(sphoISOloose);
     subleadingPhotonISO.push_back(sphoISOmedium);
     subleadingPhotonISO.push_back(sphoISOtight);
-
+		
     leadingPhotonEVeto = diphoCand->leadingPhoton()->passElectronVeto();
     subleadingPhotonEVeto = diphoCand->subLeadingPhoton()->passElectronVeto();
-
-    if(DEBUG) std::cout << "Histograms filled!" << std::endl;
-
-
+		
     if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
     tree->Fill();
 
@@ -737,7 +813,7 @@ void
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void
+void 
 bbggTree::beginJob()
 {
     if(DEBUG) std::cout << "[bbggTree::beginJob] Setting up output tree..." << std::endl;
@@ -764,12 +840,14 @@ bbggTree::beginJob()
     tree->Branch("leadingJet_RegKF", &leadingJet_RegKF);
     tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
     tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
+    tree->Branch("leadingJet_hadFlavour", &leadingJet_hadFlavour, "leadingJet_hadFlavour/I");
     tree->Branch("subleadingJet", &subleadingJet);
     tree->Branch("subleadingJet_KF", &subleadingJet_KF);
     tree->Branch("subleadingJet_Reg", &subleadingJet_Reg);
     tree->Branch("subleadingJet_RegKF", &subleadingJet_RegKF);
     tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/F");
     tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
+    tree->Branch("subleadingJet_hadFlavour", &subleadingJet_hadFlavour, "subleadingJet_hadFlavour/I");
     tree->Branch("dijetCandidate", &dijetCandidate);
     tree->Branch("dijetCandidate_KF", &dijetCandidate_KF);
     tree->Branch("dijetCandidate_Reg", &dijetCandidate_Reg);
@@ -794,8 +872,8 @@ bbggTree::beginJob()
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void
-bbggTree::endJob()
+void 
+bbggTree::endJob() 
 {
 outFile->cd();
 //    tree->Write();

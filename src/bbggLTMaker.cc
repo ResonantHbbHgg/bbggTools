@@ -69,9 +69,6 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
        std::cout << "[bbggLTMaker::Begin] Your input file name is not a root file!" << std::endl;
        TSelector::Abort("Wrong input!");
    } else {
-       o_evt = 0;
-       o_run = 0;
-
        o_weight = 0;
        o_bbMass = 0;
        o_ggMass = 0;
@@ -83,12 +80,8 @@ void bbggLTMaker::Begin(TTree * /*tree*/)
        outTree->Branch("cut_based_ct", &o_category, "o_category/I"); //0: 2btag, 1: 1btag
        outTree->Branch("evWeight", &o_weight, "o_weight/D");
        outTree->Branch("mjj", &o_bbMass, "o_bbMass/D");
-       outTree->Branch("mjjReg", &o_bbMass_Reg, "o_bbMass_Reg/D");
        outTree->Branch("mgg", &o_ggMass, "o_ggMass/D");
        outTree->Branch("mtot", &o_bbggMass, "o_bbggMass/D"); //
-
-       outTree->Branch("evt", &o_evt, "o_evt/l");
-       outTree->Branch("run", &o_run, "o_run/i");
    }
 /*
    std::cout << "[bbggLTMaker::Begin] Category chosen: " << cat << std::endl;
@@ -136,14 +129,10 @@ Bool_t bbggLTMaker::Process(Long64_t entry)
    // The return value is currently not used.
 
    bbggLTMaker::GetEntry(entry);
-   if( entry%1000 == 0 ) std::cout << "[bbggLTMaker::Process] Reading entry #" << entry 
-				   << "\t Event = "<<event<<"  Run = "<<run<<endl;   
-   o_evt = event;
-   o_run = run;
+   if( entry%1000 == 0 ) std::cout << "[bbggLTMaker::Process] Reading entry #" << entry << endl;   
    
    o_weight = genTotalWeight*normalization;
    o_bbMass = dijetCandidate->M();
-   o_bbMass_Reg = dijetCandidate_Reg->M();
    o_ggMass = diphotonCandidate->M();
    o_bbggMass = diHiggsCandidate->M();
    if(doKinFit)

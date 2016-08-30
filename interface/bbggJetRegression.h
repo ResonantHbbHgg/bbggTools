@@ -35,22 +35,23 @@ public:
 	void SetupRegression(std::string RegType, std::string RegFile);
 	~bbggJetRegression() {}
 	typedef math::XYZTLorentzVector LorentzVector;
-		
-	LorentzVector GetRegression(edm::Ptr<flashgg::Jet> jt, float Rho);
-					 
+
+	void RegressedJets(std::vector<flashgg::Jet> & jets, int npvs, bbggJetRegression::LorentzVector theMET);
+	void GetRegressedJet(flashgg::Jet & jt, int npvs, bbggJetRegression::LorentzVector theMET);		
+//	LorentzVector GetRegression(edm::Ptr<flashgg::Jet> jt, float Rho);
+//	LorentzVector GetRegression(flashgg::Jet jt, float Rho);
+    					 
 	//Other
 	double DeltaR(bbggJetRegression::LorentzVector vec1, bbggJetRegression::LorentzVector vec2);
-    	float PtRel(LorentzVector ClosestLep, LorentzVector Jet);
-    	edm::Ptr<flashgg::Electron> GetClosestElectron(edm::Ptr<flashgg::Jet> jt, std::vector<edm::Ptr<flashgg::Electron>> Electrons);
-    	edm::Ptr<flashgg::Muon> GetClosestMuon(edm::Ptr<flashgg::Jet> jt, std::vector<edm::Ptr<flashgg::Muon>> Muons);
-    	float GetLeadingTrackPt(edm::Ptr<flashgg::Jet> jt);
 
 private:
     	TMVA::Reader *RegressionReader;
 	bool TMVAReady;
     //Regression variables
-    	float Jet_pt, Jet_corr, rho, Jet_eta, Jet_mt, Jet_leadTrackPt, Jet_leptonPtRel, Jet_leptonPt, Jet_leptonDeltaR;
-    	float /*Jet_chEmEF, Jet_chHEF,*/ Jet_neHEF, Jet_neEmEF, Jet_chMult, Jet_vtxPt, Jet_vtxMass, Jet_vtx3dL, Jet_vtxNtrk, Jet_vtx3deL;
+    	float Jet_pt, Jet_corr, nPVs, Jet_eta, Jet_mt, Jet_leadTrackPt, Jet_leptonPtRel, Jet_leptonPt, Jet_leptonDeltaR;
+    	float Jet_chHEF_neHEF, Jet_neEmEF, Jet_vtxPt, Jet_vtxMass, Jet_vtx3dL, Jet_vtxNtrk, Jet_vtx3deL;
+        float Jet_PFMET, Jet_METDPhi;
+
 };
 
 #endif

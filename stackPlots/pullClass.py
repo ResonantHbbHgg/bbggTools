@@ -16,6 +16,7 @@ class myStack:
 	dirName = ''
 	lumi = ''
 	isPhoCR = 0
+	year = ""
 	def __init__(self, name, title, varName, dirName, lumi):
 		self.myHistograms = []
 		self.mySignals = []
@@ -35,6 +36,8 @@ class myStack:
 		self.hideData_ = 0
 	def hideData(self):
 		self.hideData_ = 1
+	def setYear(self, Year):
+		self.year = Year
 	def makeJetCR(self):
 		self.isJetCR = 1
 	def makePhoCR(self):
@@ -79,13 +82,16 @@ class myStack:
 		UpEdge = pullHandE[3]
 		self.SUM = self.tStack.GetStack().Last().Clone("SUM")
 		self.SUM.SetLineWidth(0)
-		self.SUM.SetMarkerStyle(10)
-		self.SUM.SetMarkerSize(0)
-		self.SUM.SetFillColor(15)
-		self.SUM.SetLineColor(15)
-		self.SUM.SetMarkerColor(15)
+#		self.SUM.SetMarkerStyle(10)
+#		self.SUM.SetMarkerSize(0)
+#		self.SUM.SetFillColorAlpha(kRed, 0.5)
+		self.SUM.SetFillColorAlpha(kGray+2, 0.5)
+		self.SUM.SetMarkerColorAlpha(0,0)
+#		self.SUM.SetLineColorAlpha(kRed,0.5)
+		self.SUM.SetLineColorAlpha(kGray+2,0.5)
+#		self.SUM.SetMarkerColor(15)
 #		self.SUM.SetFillStyle(3254)
-		self.SUM.SetFillStyle(3001)
+		self.SUM.SetFillStyle(1001)
 		legend = MakeLegend(self.myHistograms, self.myData, self.lumi, self.mySignals, self.SUM)
 		SavePull(pullH, pullE, LowEdge, UpEdge, self.dirName)
 		SaveNoPull(self.myData, self.tStack, fileName)
@@ -94,5 +100,5 @@ class myStack:
 			ControlRegion = "Fake Photon CR"
 		if self.isJetCR == 1:
 			ControlRegion = "Light Jets CR"
-		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM, ControlRegion, self.hideData_)
+		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM, ControlRegion, self.hideData_, self.year)
 
