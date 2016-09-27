@@ -7,6 +7,7 @@ import flashgg.bbggTools.KinFitParams as KinFit
 bbggtree = cms.EDAnalyzer('bbggTree',
 	triggerTag=param._triggerTag,
 	myTriggers=param._myTriggers,
+	metTag=param._metTag,
 	DiPhotonTag=param._DiPhotonTag,
 	JetTag=param._JetTag,
 	inputTagJets= flashggTags.UnpackedJetCollectionVInputTag, #param._inputTagJets,
@@ -65,6 +66,8 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	PhotonMVAEstimator=param._PhotonMVAEstimator,
 	doJetRegression=param._doJetRegression,
 	bRegFile=param._bRegFile,
-	is2016=param._is2016
+	jetSmear=param._jetSmear,
+	randomLabel=param._randomLabel,
+	jetScale=param._jetScale
 #	doSelectionTree=param._doSelectionTree
 )

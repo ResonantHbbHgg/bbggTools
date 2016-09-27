@@ -36,11 +36,16 @@ public:
 	std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotonIDSelection( std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
     std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> GetDiPhotonsInCategory( std::vector<std::pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > SelectedDiPhotons, int category );
     std::vector<std::pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > EvaluatePhotonIDs( std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
-	std::vector<edm::Ptr<flashgg::Jet>> DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets, bool DoMassCut = 0);
-	std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults);
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhoton80XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults);
     
+	std::vector<edm::Ptr<flashgg::Jet>> DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets, bool DoMassCut = 0);
+	std::vector<flashgg::Jet> DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut = 0);
+    
+	std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
+	std::vector<flashgg::Jet> JetPreSelection(std::vector<flashgg::Jet>, edm::Ptr<flashgg::DiPhotonCandidate> dCand);
+
+
+    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults);
+
 	edm::Ptr<flashgg::DiPhotonCandidate> MVAIDDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons);
 	edm::Ptr<flashgg::DiPhotonCandidate> PtSumDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons);
     
@@ -69,6 +74,7 @@ public:
 	bool isPhoISO(const flashgg::DiPhotonCandidate * pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
     
     bool isJetID(edm::Ptr<flashgg::Jet> jet);
+    bool isJetID(flashgg::Jet jet);
     
 	void setRho(double rho) {rho_ = rho;}
     
@@ -132,11 +138,14 @@ public:
 	bool AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, 
 							JetCollectionVector jetsCol );
 
-
+    void isJetSystematics(int cuts) {jetSysts = cuts;}
 	//Get selected objects
 	edm::Ptr<flashgg::DiPhotonCandidate> GetSelected_diphoCandidate();
-	edm::Ptr<flashgg::Jet> GetSelected_leadingJetCandidate();
-	edm::Ptr<flashgg::Jet> GetSelected_subleadingJetCandidate();
+    edm::Ptr<flashgg::Jet> GetSelected_leadingJetCandidate();
+    edm::Ptr<flashgg::Jet> GetSelected_subleadingJetCandidate();
+	flashgg::Jet GetSelected_leadingJetCandidate_Ref();
+	flashgg::Jet GetSelected_subleadingJetCandidate_Ref();
+
 	
 	//Check cuts
 	bool CheckCuts();
@@ -147,12 +156,15 @@ private:
 	//Selected objects
 	edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate;
 	bool hasDiPho;
-	edm::Ptr<flashgg::Jet> leadingJetCandidate;
+    edm::Ptr<flashgg::Jet> leadingJetCandidate;
+	flashgg::Jet leadingJetCandidate_Ref;
 	bool hasLeadJet;
-	edm::Ptr<flashgg::Jet> subleadingJetCandidate;
+    edm::Ptr<flashgg::Jet> subleadingJetCandidate;
+	flashgg::Jet subleadingJetCandidate_Ref;
 	bool hasSubJet;
 	bool _isSignal;
 	bool _isPhotonCR;
+    bool jetSysts;
 	
 	//Cut values
 	unsigned int _doPhotonCR;

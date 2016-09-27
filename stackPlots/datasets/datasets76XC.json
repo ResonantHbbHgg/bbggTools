@@ -22,11 +22,11 @@
         {
             "type" : "Radion",
             "mpoint" : 900,
-	    "legend" : "SM Nonresonant HH",
+	    "legend" : "Graviton M_{X} = 900 GeV",
             "color" : 4,
             "style" : 0,
 	    "nevents" : 50000,
-            "file" : "output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph.root"
+            "file" : "output_GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph.root"
         }
     ],
     "background" : [
@@ -44,7 +44,7 @@
             "name" : "QCD_40toInf",
             "legend" : "QCD",
             "file" : "output_QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-            "color" : 1113,
+            "color" : 2003,
             "xsec" : 54120000,
 	    "nevents" : 19958876,
 	    "weight" : 19958876,
@@ -54,7 +54,7 @@
             "name" : "QCD_30to40",
             "legend" : "QCD",
             "file" : "output_QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-            "color" : 1113,
+            "color" : 2003,
             "xsec" : 108000000.0,
 	    "nevents" : 17831367,
 	    "weight" : 17831367,
@@ -62,9 +62,9 @@
         },
         {
             "name" : "GJets_40toInf",
-            "legend" : "j#gamma+Jets/jj+Jets",
+            "legend" : "#gamma+Jets",
             "file" : "output_GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-            "color" : 1111,
+            "color" : 2001,
             "xsec" : 16792.0,
 	    "nevents" : 71613298,
 	    "weight" : 71613298,
@@ -72,23 +72,23 @@
         },
         {
             "name" : "GJets_20to40",
-            "legend" : "j#gamma+Jets/jj+Jets",
+            "legend" : "#gamma+Jets",
             "file" : "output_GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-            "color" : 1111,
+            "color" : 2001,
             "xsec" : 137751.0,
 	    "nevents" : 24739909,
 	    "weight" : 24739909,
-            "sfactor" : 0.04087
+            "sfactor" : 0.001587
         },
         {
             "name" : "DiPhoJets",
             "legend" : "#gamma#gamma+Jets",
             "file" : "output_DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa.root",
-            "color" : 1112,
+            "color" : 2002,
             "xsec" : 84.0,
 	    "nevents" : 58532906,
 	    "weight" : 27682531.263671875,
-            "sfactor" : 1.2
+            "sfactor" : 1.5
         }
      ],
      "higgs" : [

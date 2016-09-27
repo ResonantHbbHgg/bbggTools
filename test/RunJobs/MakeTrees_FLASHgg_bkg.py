@@ -48,7 +48,7 @@ process.bbggtree.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
 process.bbggtree.puInfo=cms.InputTag("slimmedAddPileupInfo")
 process.bbggtree.lumiWeight = cms.double(1.0)
 process.bbggtree.intLumi = cms.double(1.0)
-process.bbggtree.puReWeight=cms.bool(False)
+process.bbggtree.puReWeight=cms.bool(True)
 process.bbggtree.puBins=cms.vdouble()
 process.bbggtree.dataPu=cms.vdouble()
 process.bbggtree.mcPu=cms.vdouble()
@@ -70,8 +70,6 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 customize.setDefault("maxEvents",-1)
 customize.setDefault("targetLumi",2.58e+3)
 
-print "I'M HERE 1.2"
-
 customize.register('doSelection',
 					False,
 					VarParsing.VarParsing.multiplicity.singleton,
@@ -88,26 +86,18 @@ customize.register('nPromptPhotons',
 					VarParsing.VarParsing.varType.int,
 					'Number of prompt photons to be selected - to use this, set doDoubleCountingMitigation=1')
 customize.register('PURW',
-				0,
+				1,
 				VarParsing.VarParsing.multiplicity.singleton,
 				VarParsing.VarParsing.varType.bool,
 				"Do PU reweighting? Doesn't work on 76X")
 
 
-print "I'M HERE 1.3"
-
 # call the customization
 customize(process)
-print "I'M HERE 1.4"
 
-process.bbggtree.puReWeight=cms.bool( bool(customize.PURW) )
-print "I'M HERE 1.5"
-
+process.bbggtree.puReWeight=cms.bool( customize.PURW )
 if customize.PURW == False:
-        process.bbggtree.puTarget = cms.vdouble()
-        print "I'M HERE 1.6"
-
-
+	process.bbggtree.puTarget = cms.vdouble()
 print "I'M HERE 2"
 
 maxEvents = 5

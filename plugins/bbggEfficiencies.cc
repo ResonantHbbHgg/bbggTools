@@ -133,8 +133,6 @@ private:
     std::vector<std::string> myTriggers;
     std::string bTagType, PhotonMVAEstimator;
     unsigned int doSelection, DoMVAPhotonID; 
-    unsigned int is2016;
-    
     
 
     //OutFile & Hists
@@ -219,7 +217,6 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
     unsigned int def_DoMVAPhotonID = 0;
-    unsigned int def_is2016 = 1;
 
     std::vector<std::string> def_myTriggers;
 
@@ -289,8 +286,6 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
     DoMVAPhotonID = iConfig.getUntrackedParameter<unsigned int>("DoMVAPhotonID", def_DoMVAPhotonID);
     MVAPhotonID = iConfig.getUntrackedParameter<std::vector<double>>("MVAPhotonID", def_MVAPhotonID);
     PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
-    
-    is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
     
     tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
     tools_.SetCut_MVAPhotonID(MVAPhotonID);
@@ -497,9 +492,7 @@ void
         const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);        
         myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
         
-        if(!is2016) PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
-        if(is2016) PreSelDipho = tools_.DiPhoton80XPreselection( diphoVec, myTriggerResults);
-        
+        PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
         //If no diphoton passed presel, skip event
         if ( PreSelDipho.size() > 0 ) triggerAccepted = 1;
         

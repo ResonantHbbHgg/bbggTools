@@ -13,6 +13,8 @@ _myTriggers				=	cms.untracked.vstring(
 _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 #_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
+_metTag					=	cms.InputTag('slimmedMETs')
+
 #_inputTagJets					=	flashggTags.UnpackedJetCollectionVInputTag,
 _rhoFixedGridCollection		=	cms.InputTag('fixedGridRhoAll')
 _GenTag						=	cms.untracked.InputTag('flashggGenPhotons')
@@ -57,7 +59,7 @@ _DiJetEta					=	cms.untracked.vdouble(20.)
 #0: DiJet mass window lower boundary, 1: upper boundary
 _DiJetMassWindow			=	cms.untracked.vdouble(80., 200.)
 #0: 4-candidate mass window lower boundary, 1: upper boundary
-_CandidateMassWindow		=	cms.untracked.vdouble(0., 2500.)
+_CandidateMassWindow		=	cms.untracked.vdouble(0., 25000.)
 #0 4-candidate pt lower bound
 _CandidatePt				=	cms.untracked.vdouble(0.)
 #0 4-candidate eta upper bound
@@ -110,13 +112,18 @@ _JetDoID					=	cms.untracked.vint32(1, 1)
 #Do MVA photon ID instead of cut based
 _DoMVAPhotonID				=	cms.untracked.uint32(1)
 #MVA cut EB/EE, values from Ming: (0.374, 0.472), EGM values: (0.374, 0.336)
-_MVAPhotonID                            =       cms.untracked.vdouble(0.374, 0.336)
+_MVAPhotonID				=	cms.untracked.vdouble(0.374, 0.336)
 #MVA user float
 _PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
 
 _doJetRegression			=	cms.untracked.uint32(1)
 
-#_bRegFile=cms.untracked.string("/afs/cern.ch/user/a/andrey/work/hh/CMSSW_8_0_8_patch1/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")
-_bRegFile      =  cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/TMVARegression_BDTG.weights.xml")
+#_bRegFile					=	cms.untracked.string("/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")
+_bRegFile					=	 cms.untracked.string("/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/Weights/BRegression/BDTG_16plus2_jetGenJet_nu_7_6.weights.xml")
 
-_is2016						=	cms.untracked.uint32(1)
+_jetSmear					=	cms.untracked.int32(0)
+
+_randomLabel				=	cms.untracked.string("rnd_g_JER")
+
+_jetScale					=	cms.untracked.int32(0)
+

@@ -16,46 +16,6 @@ using namespace std;
 bool DEBUG = 0;
 
 std::vector<edm::Ptr<flashgg::DiPhotonCandidate>>
-    bbggTools::DiPhoton80XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults)
-{
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> selDiPhos;
-    for ( unsigned int dp = 0; dp < diphoCol.size(); dp++)
-    {
-        edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[dp];
-        bool isPreselected_trig1 = false;
-        if ( dipho->leadingPhoton()->full5x5_r9() > 0.8 
-            || dipho->leadingPhoton()->egChargedHadronIso() < 20 
-                || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
-        {
-            if ( dipho->subLeadingPhoton()->full5x5_r9() > 0.8 
-                || dipho->subLeadingPhoton()->egChargedHadronIso() < 20 
-                    || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3 )
-            {
-                if ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
-                {
-                    if ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
-                    {
-                        if ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 2.5 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 2.5 )
-                        {
-                            if( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->leadingPhoton()->superCluster()->eta()) > 1.566 )
-                            {
-                                if( fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->subLeadingPhoton()->superCluster()->eta()) > 1.566 )
-                                {
-                                    isPreselected_trig1 = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if(isPreselected_trig1) selDiPhos.push_back(dipho);
-    }
-    return selDiPhos;
-}
-
-
-std::vector<edm::Ptr<flashgg::DiPhotonCandidate>>
     bbggTools::DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults)
 {
     std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> selDiPhos;
@@ -187,6 +147,132 @@ std::vector<edm::Ptr<flashgg::DiPhotonCandidate>>
         }
     }
     
+    //
+    // //Do preselection based on trigger result
+    // for ( unsigned int tN = 0; tN < myTriggers.size(); tN++)
+    // {
+    //     std::string triggerName = myTriggers[tN];
+    //     if (myTriggersResults[tN] == 0)
+    //         continue;
+    //
+    //     if ( triggerName.find("m95") != std::string::npos )
+    //     {
+    //         //Standard Hgg selection on diphotons
+    //
+    //         for ( unsigned int dp = 0; dp < diphoCol.size(); dp++)
+    //         {
+    //             edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[dp];
+    //             bool isPreselected = false;
+    //             if ( dipho->leadingPhoton()->full5x5_r9() > 0.8
+    //                 || dipho->leadingPhoton()->egChargedHadronIso() < 20
+    //                 || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+    //             {
+    //                 if ( dipho->subLeadingPhoton()->full5x5_r9() > 0.8
+    //                     || dipho->subLeadingPhoton()->egChargedHadronIso() < 20
+    //                     || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3 )
+    //                 {
+    //                     if ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
+    //                     {
+    //                         if ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
+    //                         {
+    //                             if ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 2.5 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 2.5 )
+    //                             {
+    //                                 if( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->leadingPhoton()->superCluster()->eta()) > 1.566 )
+    //                                 {
+    //                                     if( fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->subLeadingPhoton()->superCluster()->eta()) > 1.566 )
+    //                                     {
+    //                                         isPreselected = true;
+    //                                     }
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             if(isPreselected)
+    //                 selDiPhos.push_back(dipho);
+    //         }
+    //
+    //         break;
+    //     } else if ( triggerName.find("Diphoton30PV_18PV_R9Id_AND") != std::string::npos )
+    //     {
+    //         //HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55 preselection
+    //
+    //         for ( unsigned int dp = 0; dp < diphoCol.size(); dp++)
+    //         {
+    //             edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[dp];
+    //             bool isPreselected = false;
+    //             if ( dipho->leadingPhoton()->full5x5_r9() > 0.8 && dipho->subLeadingPhoton()->full5x5_r9() > 0.8)
+    //             {
+    //                 if ( dipho->leadingPhoton()->egChargedHadronIso() < 20 || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+    //                 {
+    //                     if ( dipho->subLeadingPhoton()->egChargedHadronIso() < 20 || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+    //                     {
+    //                         if ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
+    //                         {
+    //                             if ( dipho->leadingPhoton()->hasPixelSeed() == 0 && dipho->subLeadingPhoton()->hasPixelSeed() == 0)
+    //                             {
+    //                                 if ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
+    //                                 {
+    //                                     if ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 2.5 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 2.5 )
+    //                                     {
+    //                                         if( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->leadingPhoton()->superCluster()->eta()) > 1.566 )
+    //                                         {
+    //                                             if( fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->subLeadingPhoton()->superCluster()->eta()) > 1.566 )
+    //                                             {
+    //                                                 isPreselected = true;
+    //                                             }
+    //                                         }
+    //                                     }
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             if(isPreselected)
+    //                 selDiPhos.push_back(dipho);
+    //         }
+    //
+    //         break;
+    //     } else if ( triggerName.find("Diphoton30EB_18EB_R9Id_OR") != std::string::npos )
+    //     {
+    //         //HLT_Diphoton30EB_18EB_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55 preselection
+    //
+    //         for ( unsigned int dp = 0; dp < diphoCol.size(); dp++)
+    //         {
+    //             edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[dp];
+    //             bool isPreselected = false;
+    //             if ( dipho->leadingPhoton()->full5x5_r9() > 0.8
+    //                 || dipho->leadingPhoton()->egChargedHadronIso() < 20
+    //                 || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+    //             {
+    //                 if ( dipho->subLeadingPhoton()->full5x5_r9() > 0.8
+    //                     || dipho->subLeadingPhoton()->egChargedHadronIso() < 20
+    //                     || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3 )
+    //                 {
+    //                     if ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
+    //                     {
+    //                         if ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
+    //                         {
+    //                             if ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.442 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.442 )
+    //                             {
+    //                                 if ( dipho->leadingPhoton()->hasPixelSeed() == 0 && dipho->subLeadingPhoton()->hasPixelSeed() == 0)
+    //                                 {
+    //                                     isPreselected = true;
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             if(isPreselected)
+    //                 selDiPhos.push_back(dipho);
+    //         }
+    //
+    //         break;
+    //     }
+    // }
     
     return selDiPhos;
 }
@@ -243,6 +329,37 @@ bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet)
     
     return 1;
 }
+
+bool bbggTools::isJetID(flashgg::Jet jet)
+{
+    double NHF = jet.neutralHadronEnergyFraction();
+    double NEMF = jet.neutralEmEnergyFraction();
+    double NumConst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
+    double CHF = jet.chargedHadronEnergyFraction();
+    double CHM = jet.chargedMultiplicity();
+    double CEMF = jet.chargedEmEnergyFraction();
+    double NNP = jet.neutralMultiplicity();
+    
+    if( fabs(jet.eta()) < 3.0 )
+    {
+        if(NHF > 0.99) return 0;
+        if(NEMF > 0.99) return 0;
+        if(NumConst < 2) return 0;
+        if( fabs(jet.eta()) < 2.4 ){
+            if(CHF < 0) return 0;
+            if(CHM < 0) return 0;
+            if(CEMF > 0.99) return 0;
+        }    
+    }
+    if ( fabs(jet.eta()) > 3.0 )
+    {
+        if(NEMF > 0.90) return 0;
+        if(NNP < 10) return 0;
+    }
+    
+    return 1;
+}
+
 
 std::map<int, vector<double> > bbggTools::getWhichID (std::string wpoint)
 {
@@ -495,11 +612,31 @@ edm::Ptr<flashgg::Jet> bbggTools::GetSelected_leadingJetCandidate()
 
 edm::Ptr<flashgg::Jet> bbggTools::GetSelected_subleadingJetCandidate()
 {
-	if(!hasSubJet){
-		std::cout << "[bbggTools::GetSelected_subleadingJetCandidate] ERROR: subleadingJetCandidate has not been set yet. Run bbggTools::AnalysisSelection. If you did, then the event failed the selection requirements." << std::endl;
+	if(!hasLeadJet){
+		std::cout << "[bbggTools::GetSelected_leadingJetCandidate] ERROR: leadingJetCandidate has not been set yet. Run bbggTools::AnalysisSelection. If you did, then the event failed the selection requirements." << std::endl;
 		return subleadingJetCandidate;
 	}
 	return subleadingJetCandidate;
+}
+
+
+flashgg::Jet bbggTools::GetSelected_leadingJetCandidate_Ref()
+{
+	if(!hasLeadJet){
+		std::cout << "[bbggTools::GetSelected_leadingJetCandidate] ERROR: leadingJetCandidate has not been set yet. Run bbggTools::AnalysisSelection. If you did, then the event failed the selection requirements." << std::endl;
+		return leadingJetCandidate_Ref;
+	}
+	return leadingJetCandidate_Ref;
+}
+
+
+flashgg::Jet bbggTools::GetSelected_subleadingJetCandidate_Ref()
+{
+	if(!hasSubJet){
+		std::cout << "[bbggTools::GetSelected_subleadingJetCandidate] ERROR: subleadingJetCandidate has not been set yet. Run bbggTools::AnalysisSelection. If you did, then the event failed the selection requirements." << std::endl;
+		return subleadingJetCandidate_Ref;
+	}
+	return subleadingJetCandidate_Ref;
 }
 
 vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonKinematicSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, bool DoMassCut)
@@ -668,27 +805,29 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::DiJetSelection(std::vector<edm::P
     for(unsigned int iJet = 0; iJet < Jets.size(); iJet++)
     {
  		unsigned int isbjet = 0;
- 		if( Jets[iJet]->bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet = 1;
+        if( Jets[iJet]->bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet = 1;
  		for(unsigned int jJet = iJet+1; jJet < Jets.size(); jJet++)
  		{
  	  	 	unsigned int isbjet2 = 0;
- 	  		if( Jets[jJet]->bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet2 = 1;
+            if( Jets[jJet]->bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet2 = 1;
  	  		unsigned int totalbjet = isbjet + isbjet2;
  	  		if(_n_bJets && totalbjet != _n_bJets) continue;
 
- 	  		bbggTools::LorentzVector dijet = Jets[iJet]->p4() + Jets[jJet]->p4();
+            bbggTools::LorentzVector dijet = Jets[iJet]->p4() + Jets[jJet]->p4();
             		if(DoMassCut){
 		                if(dijet.mass() < _DiJetMassWindow[0] || dijet.mass() > _DiJetMassWindow[1]) continue;
 		        }
-						
-			double sumbtag = Jets[iJet]->bDiscriminator(_bTagType) + Jets[jJet]->bDiscriminator(_bTagType);
+
+			double sumbtag = Jets[iJet]->bDiscriminator(_bTagType) + Jets[jJet]->bDiscriminator(_bTagType);						
+
 
 //			if( bbggTools::DeltaR(Jets[iJet]->p4(), Jets[jJet]->p4()) < 0.5)
 //				continue;
 
-			if( Jets[iJet]->pt() < _JetPt[1]*dijet.mass() && Jets[jJet]->pt() < _JetPt[1]*dijet.mass()) continue;
-
-			double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
+//			if( Jets[iJet]->pt() < _JetPt[1]*dijet.mass() && Jets[jJet]->pt() < _JetPt[1]*dijet.mass()) continue;
+//			if( Jets[iJet]->pt() < _JetPt[1]*dijet.mass() && Jets[jJet]->pt() < _JetPt[1]*dijet.mass()) continue;
+            
+            double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
 // 	  		if(dijet.pt() > dijetPt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
  	  		if(sumbtag > sumbtag_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
 // 	  		if(sumpt > sumpt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
@@ -697,7 +836,7 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::DiJetSelection(std::vector<edm::P
 //				dijetPt_ref = dijet.pt();
 				sumbtag_ref = sumbtag;
 				sumpt_ref = sumpt;
-				if( Jets[iJet]->pt() > Jets[jJet]->pt() ) {
+                if( Jets[iJet]->pt() > Jets[jJet]->pt() ) {
 					jet1 = Jets.at(iJet);
 					jet2 = Jets.at(jJet);
 				} else {
@@ -715,6 +854,74 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::DiJetSelection(std::vector<edm::P
 	return SelDijet;
 
 }
+
+std::vector<flashgg::Jet> bbggTools::DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut)
+{
+
+
+    flashgg::Jet jet1, jet2;
+    std::vector<flashgg::Jet> SelDijet;
+    bbggTools::LorentzVector DiJet(0,0,0,0);
+    double sumbtag_ref = 0;
+    double sumpt_ref = 0;
+    bool hasDiJet = false;
+    sumbtag_ref = sumbtag_ref;
+    sumpt_ref = sumpt_ref;
+
+    if(DEBUG) std::cout << "Jet sorting... " << std::endl;
+    for(unsigned int iJet = 0; iJet < Jets.size(); iJet++)
+    {
+ 		unsigned int isbjet = 0;
+ 		if( Jets[iJet].bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet = 1;
+ 		for(unsigned int jJet = iJet+1; jJet < Jets.size(); jJet++)
+ 		{
+ 	  	 	unsigned int isbjet2 = 0;
+ 	  		if( Jets[jJet].bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet2 = 1;
+ 	  		unsigned int totalbjet = isbjet + isbjet2;
+ 	  		if(_n_bJets && totalbjet != _n_bJets) continue;
+
+ 	  		bbggTools::LorentzVector dijet = Jets[iJet].p4() + Jets[jJet].p4();
+            		if(DoMassCut){
+		                if(dijet.mass() < _DiJetMassWindow[0] || dijet.mass() > _DiJetMassWindow[1]) continue;
+		        }
+
+			double sumbtag = Jets[iJet].bDiscriminator(_bTagType) + Jets[jJet].bDiscriminator(_bTagType);
+
+//			if( bbggTools::DeltaR(Jets[iJet]->p4(), Jets[jJet]->p4()) < 0.5)
+//				continue;
+
+//			if( Jets[iJet]->pt() < _JetPt[1]*dijet.mass() && Jets[jJet]->pt() < _JetPt[1]*dijet.mass()) continue;
+//			if( Jets[iJet]->pt() < _JetPt[1]*dijet.mass() && Jets[jJet]->pt() < _JetPt[1]*dijet.mass()) continue;
+            
+//			double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
+			double sumpt = Jets[iJet].pt() + Jets[jJet].pt();
+// 	  		if(dijet.pt() > dijetPt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
+ 	  		if(sumbtag > sumbtag_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
+// 	  		if(sumpt > sumpt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
+ 	  		{
+				hasDiJet = true;
+//				dijetPt_ref = dijet.pt();
+				sumbtag_ref = sumbtag;
+				sumpt_ref = sumpt;
+				if( Jets[iJet].pt() > Jets[jJet].pt() ) {
+					jet1 = Jets.at(iJet);
+					jet2 = Jets.at(jJet);
+				} else {
+					jet2 = Jets.at(iJet);
+					jet1 = Jets.at(jJet);
+				} 
+			}
+		}
+	}
+
+	if(hasDiJet){
+		SelDijet.push_back(jet1);
+		SelDijet.push_back(jet2);
+	}
+	return SelDijet;
+
+}
+
 
 std::vector<edm::Ptr<flashgg::Jet>> bbggTools::JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate)
 {
@@ -737,18 +944,52 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::JetPreSelection(JetCollectionVect
         //            isJet = false;
     	if(jet->pt() < _JetPt[0])
             isJet = false;
- 	if(jet->bDiscriminator(_bTagType) < _JetBDiscriminant[0])
+ 	    if(jet->bDiscriminator(_bTagType) < _JetBDiscriminant[0])
             isJet = false;
- 	if( !isJet )
+ 	    if( !isJet )
             continue;
- 	if( bbggTools::DeltaR(jet->p4(), diphoCandidate->leadingPhoton()->p4()) < _JetDrPho[0] 
+ 	    if( bbggTools::DeltaR(jet->p4(), diphoCandidate->leadingPhoton()->p4()) < _JetDrPho[0] 
              || bbggTools::DeltaR(jet->p4(), diphoCandidate->subLeadingPhoton()->p4()) < _JetDrPho[0] ) continue;
 
- 	    Jets.push_back(jet);
+        Jets.push_back(jet);
      }
 
 return Jets;
 }
+
+std::vector<flashgg::Jet> bbggTools::JetPreSelection(std::vector<flashgg::Jet> jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> dCand)
+{
+
+    //Begin Jets Loop/Selection ------------------------------------------------------------
+    std::vector<flashgg::Jet> Jets;
+    if(DEBUG) std::cout << "Begin Jet selection..." << std::endl;
+    for( unsigned int jetIndex = 0; jetIndex < jetsCol.size(); jetIndex++ )
+    {
+    	flashgg::Jet jet = jetsCol[jetIndex];
+        
+    	bool isJet = true;
+        
+        if(_JetDoID[0] && !(bbggTools::isJetID(jet)))
+            isJet = false;
+    	if(fabs(jet.eta()) > _JetEta[0] )
+            isJet = false;
+        // if( _JetDoPUID[0]  )
+        //            isJet = false;
+    	if(jet.pt() < _JetPt[0])
+            isJet = false;
+ 	if(jet.bDiscriminator(_bTagType) < _JetBDiscriminant[0])
+            isJet = false;
+ 	if( !isJet )
+            continue;
+ 	if( bbggTools::DeltaR(jet.p4(), dCand->leadingPhoton()->p4()) < _JetDrPho[0] 
+             || bbggTools::DeltaR(jet.p4(), dCand->subLeadingPhoton()->p4()) < _JetDrPho[0] ) continue;
+
+ 	    Jets.push_back(jet );
+     }
+
+return Jets;
+}
+
 
 edm::Ptr<flashgg::DiPhotonCandidate> bbggTools::MVAIDDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons)
 {
@@ -840,13 +1081,33 @@ bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> 
     hasLeadJet = 0;
     hasSubJet = 0;
     //1st: do single jet kinematic selection:
+    
+    //Here I have my diphoton candidate and my jets collections.
+    unsigned int jetCollectionIndex = diphoCandidate->jetCollectionIndex();
+    //can I create a std::vector<flashgg::Jet>?
+    std::vector<flashgg::Jet> testCollection;
+    for( unsigned int jetIndex = 0; jetIndex < jetsCol[jetCollectionIndex]->size(); jetIndex++ )
+    {
+        edm::Ptr<flashgg::Jet> thisJetPtr = jetsCol[jetCollectionIndex]->ptrAt( jetIndex );
+        flashgg::Jet * thisJetPointer = const_cast<flashgg::Jet *>(thisJetPtr.get());
+        testCollection.push_back(*thisJetPointer);
+    }
+    cout << testCollection.size() << std::endl;
+    //Here I can apply smearing to my jets
+    
     std::vector<edm::Ptr<flashgg::Jet>> KinJets = bbggTools::JetPreSelection(jetsCol, diphoCandidate);
+    
     if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of preselected jets:" << KinJets.size() << std::endl;
+    
     if( KinJets.size() < 2 ) return 0;
+    
     //2nd: select dijet with mass window cut:
     std::vector<edm::Ptr<flashgg::Jet>> SelJets = bbggTools::DiJetSelection(KinJets, 1);
+    
     if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of selected jets:" << SelJets.size() << std::endl;
+    
     if( SelJets.size() < 2 ) return 0;
+    
     if( SelJets.size() > 1 ){
         hasLeadJet = 1;
         leadingJetCandidate = SelJets[0];

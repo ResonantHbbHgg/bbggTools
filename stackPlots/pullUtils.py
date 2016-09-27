@@ -148,11 +148,13 @@ def doPull(bkg, data, stack):
 	pullData.SetMinimum(0.01)
 	pullError.SetTitle("")
 	pullData.SetTitle("")
-	pullError.SetFillColor(kGray)
-	pullError.SetFillStyle(3001)
-	pullError.SetLineWidth(0)
-	pullError.SetLineColor(0)
-	pullData.SetMarkerStyle(8)
+#	pullError.SetFillColorAlpha(kRed, 0.5)
+	pullError.SetFillColorAlpha(kGray+2, 0.5)
+	pullError.SetFillStyle(1001)
+#	pullError.SetLineWidth(0)
+#	pullError.SetLineColor(0)
+#	pullData.SetMarkerStyle(8)
+#	pullData.SetMarkerColorAlpha(0,0)
 	pullAll = [pullData, pullError, LowEdge - bWidth*0.18, UpEdge+bWidth*0.18]
 	print LowEdge, UpEdge
 	return pullAll
@@ -166,7 +168,7 @@ def SaveNoPull(data, bkg, fileName):
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".png")
 	c0.Delete()
 
-def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM, ControlRegion, hideData):
+def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM, ControlRegion, hideData, year):
 	gStyle.SetHatchesLineWidth(1)
 	data.SetStats(0)
 	Font = 43
@@ -230,7 +232,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 
 	ratio = 0.2
 	epsilon = 0.0
-	c1 = TCanvas("c1", "c1", 1100, 950)
+	c1 = TCanvas("c1", "c1", 900, 800)
 	SetOwnership(c1,False) #If I don't put this, I get memory leak problems...
 	p1 = TPad("pad1","pad1", 0, float(ratio - epsilon), 1, 1)
 	SetOwnership(p1,False)
@@ -243,6 +245,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	p2.SetBottomMargin(0.35)
 	p2.SetGridy()
 	p1.cd()
+	bkg.SetTitle("")
 	bkg.Draw('hist')
 	bkg.SetMinimum(0.001)
 	bkg.GetXaxis().SetNdivisions(515)
@@ -259,18 +262,20 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	tlatex.SetTextColor(kBlack)
 	tlatex.SetTextFont(63)
 	tlatex.SetTextAlign(11)
-	tlatex.SetTextSize(baseSize)
-	tlatex.DrawLatex(0.14, 0.86, "CMS")
+	tlatex.SetTextSize(25)
+	tlatex.DrawLatex(0.11, 0.91, "CMS")
 	tlatex.SetTextFont(53)
-	tlatex.SetTextSize(baseSize - 5)
-	tlatex.DrawLatex(0.2, 0.861, "Preliminary")
+	tlatex.DrawLatex(0.18, 0.91, "Preliminary")
 	tlatex.SetTextFont(43)
-	tlatex.SetTextSize(baseSize - 5)
-	Lumi = "L = " + str(lumi) + " pb^{-1} (13 TeV, 25 ns)"
+	tlatex.SetTextSize(23)
+#	tlatex.DrawLatex(0.65, 0.91,"L = 2.70 fb^{-1} (13 TeV)")
+	Lumi = "L = " + str(lumi) + " pb^{-1} (13 TeV)"#, "+ year + ")"
 	if lumi > 1000:
 		llumi = float(lumi)/1000.
-		Lumi = "L = " + str(llumi) + " fb^{-1} (13 TeV)"
-	tlatex.DrawLatex(0.14, 0.82, Lumi)
+		Lumi = "L = " + str(llumi) + "0 fb^{-1} (13 TeV)"#, "+year+")"
+#	tlatex.DrawLatex(0.14, 0.82, Lumi)
+	tlatex.DrawLatex(0.68, 0.91, Lumi)
+
 	if ControlRegion != "":
 		tlatex.SetTextFont(63)
 		tlatex.DrawLatex(0.14, 0.78, ControlRegion)
@@ -304,7 +309,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	GeneralMaximus = max(bkg.GetMaximum(), data.GetMaximum())
 	if(hideData):
 		GeneralMaximus = bkg.GetMaximum()*10
-	GenMax = pow(10, log10(GeneralMaximus)*2.)
+	GenMax = pow(10, log10(GeneralMaximus)*3.)
 	bkg.SetMaximum(GenMax)
 	GenMin = bkg.GetMinimum()
 	if GenMin == 0:
@@ -347,35 +352,38 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 			newList.append(h)
 			newLegs.append(h[1])
 
-	nMaxPerBox = (len(newList)+len(Signals)+2)/2
-	if (2*nMaxPerBox < len(newList)+len(Signals)+2):
+	nMaxPerBox = (len(newList)+len(Signals)+2)/3
+	if (3*nMaxPerBox < len(newList)+len(Signals)+2):
 		nMaxPerBox += 1
 	lenPerHist = 0.27/float(nMaxPerBox)
 
 	legends = []
 #	leg1 = TLegend(0.65, 0.65, 0.71, 0.65+lenPerHist*float(nMaxPerBox))
-	leg1 = TLegend(0.68, 0.89-lenPerHist*float(nMaxPerBox), 0.74, 0.89)
-	if (2*nMaxPerBox > len(newList)+len(Signals)+2):
-		nMaxPerBox -= 1
-	leg2 = TLegend(0.43, 0.89-lenPerHist*float(nMaxPerBox), 0.49, 0.89)
+	leg1 = TLegend(0.68, 0.85-lenPerHist*float(nMaxPerBox), 0.74, 0.89)
+#	if (3*nMaxPerBox > len(newList)+len(Signals)+2):
+#		nMaxPerBox -= 1
+	leg2 = TLegend(0.43, 0.85-lenPerHist*float(nMaxPerBox), 0.49, 0.89)
+
+	leg3 = TLegend(0.13, 0.85-lenPerHist*float(nMaxPerBox), 0.24, 0.89)
 	
 	legends.append(leg1)
 	legends.append(leg2)
+	legends.append(leg3)
 
-	data_lumi = " Data (" + str(lumi) + " pb^{-1})"
+	data_lumi = " Data (" + str(lumi) + "0 pb^{-1})"
 	if lumi > 1000:
 		llumi = float(lumi)/1000.
-		data_lumi = " Data (" + str(llumi) + " fb^{-1})"
+		data_lumi = " Data (" + str(llumi) + "0 fb^{-1})"
 #	leg1.AddEntry(DataHist, data_lumi, "lep")
 #	leg1.AddEntry(SUM, " Stat. Uncertainty", "lf")
 	
 	allLegs = []
-	allLegs.append([DataHist, " Data (" + str(llumi) + " fb^{-1})"])
-	allLegs.append([SUM,  " Stat. Uncertainty"])
+	allLegs.append([DataHist, "Data (" + str(llumi) + "0 fb^{-1})"])
+	allLegs.append([SUM,  "Stat. Uncertainty"])
 	allLegs += newList + Signals
 
-	nMaxPerBox = (len(newList)+len(Signals)+2)/2
-	if (2*nMaxPerBox < len(newList)+len(Signals)+2):
+	nMaxPerBox = (len(newList)+len(Signals)+2)/3
+	if (3*nMaxPerBox < len(newList)+len(Signals)+2):
 		nMaxPerBox += 1
 
 	for i,l in enumerate(allLegs):

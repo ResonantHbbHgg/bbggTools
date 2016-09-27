@@ -34,6 +34,8 @@ if addHiggs:
 
 for bkg in data['background']:
 	fLocation = bkgLocation
+#	if "DY" in bkg['name']:
+#		continue
 #	if "QCD" in bkg['name']:
 #		continue
 #	if "DiPho" in bkg['name']:
@@ -49,15 +51,16 @@ for bkg in data['background']:
 	datasets.append(dataset)
 
 
-for i,bkg in enumerate(data['signal']):
-	fLocation = signalLocation
-	tempfile = TFile.Open(fLocation+bkg['file'])
-	temptree = tempfile.Get('bbggSelectionTree')
-	xsec = 0.10
-	normalization = xsec*lumi/float(bkg['nevents'])
-	arr = ["signal_"+str(i), bkg['legend'], bkg['file'], normalization, bkg['color']]
-	dataset = [tempfile, temptree, arr]
-	signals.append(dataset)
+if doSignal == True:
+	for i,bkg in enumerate(data['signal']):
+		fLocation = signalLocation
+		tempfile = TFile.Open(fLocation+bkg['file'])
+		temptree = tempfile.Get('bbggSelectionTree')
+		xsec = 0.10
+		normalization = xsec*lumi/float(bkg['nevents'])
+		arr = ["signal_"+str(i), bkg['legend'], bkg['file'], normalization, bkg['color']]
+		dataset = [tempfile, temptree, arr]
+		signals.append(dataset)
 
 
 print data['data']
@@ -66,6 +69,8 @@ f = TFile.Open( fLocation+data['data'] )
 t = f.Get('bbggSelectionTree')
 
 bhists = {}
+
+COLOR = TColor()
 
 CutSignal = Cut
 if doBlind == True:
@@ -91,7 +96,6 @@ yieldsFile.write("Extra cuts on selection tree:\n")
 yieldsFile.write(Cut+"\nYields:\n")
 
 for i,plot in enumerate(plots):
-	print plot
 	h1 = TH1F("h1"+str(i), "Histograms", plot[3], plot[4], plot[5])
 	h1.Reset()
 	variable = plot[1]
@@ -104,6 +108,7 @@ for i,plot in enumerate(plots):
 	if doJetCR == 1:
 		stack.makeJetCR()
 
+	stack.setYear(year)
 	#addingbbh
 	
 	if(addbbH):
@@ -122,7 +127,10 @@ for i,plot in enumerate(plots):
 			bkg[1].Draw(variable+'>>'+bkg[2][0], cut, 'hist')
 			bhists[bkg[2][0]].Sumw2()
 			bhists[bkg[2][0]].Scale(bkg[2][3])
+#			bhists[bkg[2][0]].SetFillColor(COLOR.GetColor(bkg[2][4]))
 			bhists[bkg[2][0]].SetFillColor(bkg[2][4])
+#			bhists[bkg[2][0]].SetFillColorAlpha(bkg[2][4], 0.5)
+#			bhists[bkg[2][0]].SetLineColor(COLOR.GetColor(bkg[2][4]))
 			bhists[bkg[2][0]].SetLineColor(bkg[2][4])
 #			bhists[bkg[2][0]].SetLineColor(1)
 			print bkg[2][1]
@@ -138,7 +146,9 @@ for i,plot in enumerate(plots):
 	#		bhists[bkg[2][0]].SetFillStyle(3001)
 		stack.addHist( bbhist, bbN2, bbN3 )
 
-
+	thisdiphojetsplot = 0
+	thisqcdplot = 0
+	qcdarr = 0
 	allbkg = []
 	for BK in bkgsToAdd:
 		nInThis = 0
@@ -156,7 +166,11 @@ for i,plot in enumerate(plots):
 				bhists[ BK[0] ] = h1.Clone(BK[0])
 				bhists[ BK[0] ].Reset()
 				bhists[ BK[0] ].Sumw2()
+#				bhists[ BK[0] ].SetFillColor(bkg[2][4])
+#				bhists[ BK[0] ].SetFillColor(COLOR.GetColor(bkg[2][4]))
+#				bhists[ BK[0] ].SetFillColorAlpha(bkg[2][4], 0.5)
 				bhists[ BK[0] ].SetFillColor(bkg[2][4])
+#				bhists[ BK[0] ].SetLineColor(COLOR.GetColor(bkg[2][4]))
 				bhists[ BK[0] ].SetLineColor(bkg[2][4])
 #				bhists[ BK[0] ].SetLineColor(1)
 				bhists[ BK[0] ].SetLineWidth(0)
@@ -166,12 +180,44 @@ for i,plot in enumerate(plots):
 
 			bkg[1].Draw(variable+'>>'+BK[0] + "_Temp", cut, 'hist')
 			tempHist.Sumw2()
-			tempHist.Scale(bkg[2][3])
+			extraScale = 1.
+			if 'GJets' in bkg[2][0]:
+				extraScale = 2.3
+#			if doSignalRegion == True:
+#				extraScale = 1.155
+			tempHist.Scale(bkg[2][3]*extraScale)
 
 			bhists[ BK[0] ].Add(tempHist)
 
+			if "GJets" in bkg[2][0] and thisdiphojetsplot == 0:
+				print  bkg[2][0]
+				thisdiphojetsplot = bhists[ BK[0] ]
+				thisdiphojetsplot.Sumw2()
+			if "GJets" in bkg[2][0] and thisdiphojetsplot != 0:
+				thisdiphojetsplot.Add(bhists[ BK[0] ])
+
+			if "QCD" in bkg[2][0] and thisqcdplot == 0:
+				thisqcdplot = bhists[ BK[0] ]
+				thisqcdplot.Sumw2()
+				qcdarr = [bhists[ BK[0] ], bkg[2][1], bkg[2][3], bkg[2][4]]
+				continue
+			if "QCD" in bkg[2][0] and thisqcdplot != 0:
+				thisqcdplot.Add(bhists[ BK[0] ])
+				continue
+
 			if nInThis == BK[2]:
 				stack.addHist(bhists[ BK[0] ], bkg[2][1], bkg[2][3])
+
+#	thisint = thisdiphojetsplot.Integral()
+#	thisdiphojetsplot.Scale(1.*thisqcdplot.Integral()/thisint)
+#	thisdiphojetsplot.SetLineColor(qcdarr[3])
+#	thisdiphojetsplot.SetFillColor(qcdarr[3])
+#	nbins = thisdiphojetsplot.GetNbinsX()
+#	for bb in range(1, nbins+1):
+#		binerr = sqrt(thisdiphojetsplot.GetBinContent(bb) )*14.0
+#		thisdiphojetsplot.SetBinError(bb, binerr)
+#	stack.addHist(thisdiphojetsplot, qcdarr[1], qcdarr[2])
+			
 
 	for bkg in signals:
 		print "Adding", bkg[0], 'to stack!'

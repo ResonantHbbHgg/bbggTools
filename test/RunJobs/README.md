@@ -32,6 +32,7 @@ hadd output_GluGluToHHTo2B2G_node_10_13TeV-madgraph.root ../output_GluGluToHHTo2
 hadd output_GluGluToHHTo2B2G_node_11_13TeV-madgraph.root ../output_GluGluToHHTo2B2G_node_11_13TeV-madgraph_*
 hadd output_GluGluToHHTo2B2G_node_12_13TeV-madgraph.root ../output_GluGluToHHTo2B2G_node_12_13TeV-madgraph_*
 hadd output_GluGluToHHTo2B2G_node_13_13TeV-madgraph.root ../output_GluGluToHHTo2B2G_node_13_13TeV-madgraph_*
+hadd output_GluGluToHHTo2B2G_node_2_13TeV-madgraph.root ../output_GluGluToHHTo2B2G_node_2_13TeV-madgraph_*
 hadd output_GluGluToHHTo2B2G_node_3_13TeV-madgraph.root ../output_GluGluToHHTo2B2G_node_3_13TeV-madgraph_*
 hadd output_GluGluToHHTo2B2G_node_4_13TeV-madgraph.root ../output_GluGluToHHTo2B2G_node_4_13TeV-madgraph_*
 hadd output_GluGluToHHTo2B2G_node_5_13TeV-madgraph.root ../output_GluGluToHHTo2B2G_node_5_13TeV-madgraph_*
