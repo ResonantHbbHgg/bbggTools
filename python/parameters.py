@@ -119,11 +119,8 @@ _PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonT
 _doJetRegression			=	cms.untracked.uint32(1)
 
 
-_bRegFile      =  cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/TMVARegression_BDTG.weights.xml")
+_bRegFile      =  cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/BDTG_16plus2_jetGenJet_nu_7_6.weights.xml")
  
-#_bRegFile					=	cms.untracked.string("/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml")
-#_bRegFile					=	 cms.untracked.string("/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/Weights/BRegression/BDTG_16plus2_jetGenJet_nu_7_6.weights.xml")
-
 _jetSmear					=	cms.untracked.int32(0)
 
 _randomLabel				=	cms.untracked.string("rnd_g_JER")
