@@ -300,6 +300,27 @@ std::map<std::string,int> bbggTools::TriggerSelection(std::vector<std::string> m
 }
 
 
+float bbggTools::getCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, float ebeam) {
+  // cos theta star angle in the Collins Soper frame
+  // Copied directly from here: https://github.com/ResonantHbbHgg/Selection/blob/master/selection.h#L3367-L3385
+  TLorentzVector p1, p2;
+  p1.SetPxPyPzE(0, 0,  ebeam, ebeam);
+  p2.SetPxPyPzE(0, 0, -ebeam, ebeam);
+
+  TLorentzVector hh;
+  hh = h1 + h2;
+
+  TVector3 boost = - hh.BoostVector();
+  p1.Boost(boost);
+  p2.Boost(boost);
+  h1.Boost(boost);
+
+  TVector3 CSaxis = p1.Vect().Unit() - p2.Vect().Unit();
+  CSaxis.Unit();
+
+  return cos(   CSaxis.Angle( h1.Vect().Unit() )    );
+}
+
 bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet)
 {
     double NHF = jet->neutralHadronEnergyFraction();

@@ -53,7 +53,7 @@ process.bbggtree.puBins=cms.vdouble()
 process.bbggtree.dataPu=cms.vdouble()
 process.bbggtree.mcPu=cms.vdouble()
 
-process.bbggtree.doNonResWeights=cms.untracked.bool(True)
+process.bbggtree.getNonResGenInfo=cms.untracked.bool(True)
 
 print "I'M HERE 1"
 
