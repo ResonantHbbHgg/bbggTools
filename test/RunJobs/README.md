@@ -1,5 +1,11 @@
+
+To submit a test job locally, try this:
 ```
-mkdir NonResSignal
+fggRunJobs.py --load jsons/RunJobs_Test.json -m 0 -n 1 -d NonResSignal -x cmsRun MakeTrees_FLASHgg_Nres.py  maxEvents=-1 --no-use-tarball
+```
+You may find that it does not work because the correct ```dataset.json``` file does not exist. For that to work you need to create such dataset first, following instructions on the level above. Then, modify the ```json/RunJobs_Test.json``` file substituting the campaign name. Now it wshould work.
+
+```
 fggRunJobs.py --load <RunJobs_Signal.json> -H -D -P -n 500 -d <NonResSignal> -x cmsRun MakeTrees_FLASHgg_bkg.py  maxEvents=-1 -q 1nh --no-use-tarball
 ```   
 

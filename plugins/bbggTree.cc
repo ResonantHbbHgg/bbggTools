@@ -152,10 +152,13 @@ private:
     std::vector<std::string> myTriggers;
     std::string bTagType, PhotonMVAEstimator;
     unsigned int doSelection, DoMVAPhotonID;
-    std::string bRegFile;
+  //std::string bRegFile;
+  edm::FileInPath bRegFile;
+
     int jetSmear;
     int jetScale;
-    std::string randomLabel, resFile, sfFile, scaleFile;
+  std::string randomLabel;
+    edm::FileInPath resFile, sfFile, scaleFile;
 
     //OutFile & Hists
     TFile* outFile;
@@ -198,7 +201,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     std::vector<std::string> def_ph_whichID, def_ph_whichISO;
     unsigned int def_diph_onlyfirst;
     unsigned int def_n_bJets;
-    std::string def_bRegFile;
+    //std::string def_bRegFile;
+    edm::FileInPath def_bRegFile;
 
     def_ph_pt.push_back(10.);           def_ph_pt.push_back(10.);
     def_ph_eta.push_back(20.);          def_ph_eta.push_back(20.);
@@ -238,19 +242,21 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     int def_jetSmear = 0;
     int def_jetScale = 0;
     std::string def_randomLabel = "";
-    std::string def_resFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/Weights/JetSystematics/Fall15_25nsV2_MC_PtResolution_AK4PFchs.txt";
-    std::string def_sfFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/Weights/JetSystematics/Fall15_25nsV2_MC_SF_AK4PFchs.txt";
-    std::string def_scaleFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flg76X/CMSSW_7_6_3/src/flashgg/bbggTools/Weights/JetSystematics/Fall15_25nsV2_MC_Uncertainty_AK4PFchs.txt";
-        
+
+
+    edm::FileInPath def_resFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_PtResolution_AK4PFchs.txt");
+    edm::FileInPath def_sfFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_SF_AK4PFchs.txt");
+    edm::FileInPath def_scaleFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_Uncertainty_AK4PFchs.txt");
+    
     std::vector<std::string> def_myTriggers;	  
 
     std::string def_fileName;
 
     def_bTagType = "pfCombinedInclusiveSecondaryVertexV2BJetTags";
     def_fileName =  "out.root";
-    
-    def_bRegFile = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashggJets/CMSSW_7_4_15/src/flashgg/bbggTools/Weights/BRegression/TMVARegression_BDTG.weights.xml";
-        
+
+    def_bRegFile = edm::FileInPath("flashgg/bbggTools/data/BRegression/TMVARegression_BDTG.weights.xml");
+            
     //Get thresholds from config file
     phoIDlooseEB = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEB");
     phoIDlooseEE = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEE");
@@ -317,15 +323,16 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     MVAPhotonID = iConfig.getUntrackedParameter<std::vector<double>>("MVAPhotonID", def_MVAPhotonID);
     PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
     
-    bRegFile = iConfig.getUntrackedParameter<std::string>("bRegFile", def_bRegFile);
+    //bRegFile = iConfig.getUntrackedParameter<std::string>("bRegFile", def_bRegFile);
+    bRegFile = iConfig.getUntrackedParameter<edm::FileInPath>("bRegFile", def_bRegFile);
     
     jetSmear = iConfig.getUntrackedParameter<int>("jetSmear", def_jetSmear);
     jetScale = iConfig.getUntrackedParameter<int>("jetScale", def_jetScale);
         
     randomLabel = iConfig.getUntrackedParameter<std::string>("randomLabel", def_randomLabel);
-    resFile = iConfig.getUntrackedParameter<std::string>("resFile", def_resFile);
-    sfFile = iConfig.getUntrackedParameter<std::string>("sfFile", def_sfFile);
-    scaleFile = iConfig.getUntrackedParameter<std::string>("scaleFile", def_scaleFile);
+    resFile = iConfig.getUntrackedParameter<edm::FileInPath>("resFile", def_resFile);
+    sfFile = iConfig.getUntrackedParameter<edm::FileInPath>("sfFile", def_sfFile);
+    scaleFile = iConfig.getUntrackedParameter<edm::FileInPath>("scaleFile", def_scaleFile);
         
     tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
     tools_.SetCut_MVAPhotonID(MVAPhotonID);
@@ -409,14 +416,14 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
  
     kinFit_ = bbggKinFit();
     kinFit_.SetJetResolutionParameters(etaBins, ptRes, etaRes, phiRes);
-    jetSys_.SetupScale(scaleFile);
+    jetSys_.SetupScale(scaleFile.fullPath().data());
 
     for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
         auto token = consumes<edm::View<flashgg::Jet> >(inputTagJets_[i]);
         tokenJets_.push_back(token);
     }
     
-    jetReg_.SetupRegression("BDTG method", bRegFile);
+    jetReg_.SetupRegression("BDTG method",  bRegFile.fullPath().data());
 
     std::cout << "Parameters initialized... \n ############ Doing selection tree!" <<  std::endl;
 
@@ -607,8 +614,8 @@ void
     std::vector<flashgg::Jet> SelJets_Smear;
     //Here I can apply smearing to my jets
     if(jetSmear!=0){
-        jetSys_.SetupSmear(resFile, sfFile);
-        jetSys_.SmearJets(testCollection, rhoFixedGrd, jetSmear, randomLabel);
+      jetSys_.SetupSmear(resFile.fullPath().data(), sfFile.fullPath().data());
+      jetSys_.SmearJets(testCollection, rhoFixedGrd, jetSmear, randomLabel);
     }
     if(jetScale!=0){
         jetSys_.ScaleJets(testCollection, jetScale);
