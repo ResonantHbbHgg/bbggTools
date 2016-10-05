@@ -54,6 +54,9 @@ public:
 
     std::map<int, vector<double> > getWhichID (std::string wpoint);
     std::map<int, vector<double> > getWhichISO (std::string wpoint);
+
+
+    float getCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, float ebeam = 6500);
     
 	double getCHisoToCutValue(const flashgg::DiPhotonCandidate * dipho, int whichPho);
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
