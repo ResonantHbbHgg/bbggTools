@@ -37,95 +37,61 @@ bool bbggTools::passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho,
     //Trig1
     if ( doTrig1 )
       {
-	if ( dipho->leadingPhoton()->full5x5_r9() > 0.8 
-	     || dipho->leadingPhoton()->egChargedHadronIso() < 20 
-	     || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+	if ( ( dipho->leadingPhoton()->full5x5_r9() > 0.8 
+	       || dipho->leadingPhoton()->egChargedHadronIso() < 20 
+	       || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+	     &&
+	     ( dipho->subLeadingPhoton()->full5x5_r9() > 0.8 
+	       || dipho->subLeadingPhoton()->egChargedHadronIso() < 20 
+	       || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3)
+	     &&	( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
+	     && ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
+	     &&	( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 2.5 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 2.5 )
+	     &&	( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->leadingPhoton()->superCluster()->eta()) > 1.566 )
+	     &&	( fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->subLeadingPhoton()->superCluster()->eta()) > 1.566 )
+	     )
 	  {
-	    if ( dipho->subLeadingPhoton()->full5x5_r9() > 0.8 
-		 || dipho->subLeadingPhoton()->egChargedHadronIso() < 20 
-		 || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3 )
-	      {
-		if ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
-		  {
-		    if ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
-		      {
-			if ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 2.5 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 2.5 )
-			  {
-			    if( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->leadingPhoton()->superCluster()->eta()) > 1.566 )
-			      {
-				if( fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->subLeadingPhoton()->superCluster()->eta()) > 1.566 )
-				  {
-				    isPreselected_trig1 = true;
-				  }
-			      }
-			  }
-		      }
-		  }
-	      }
+	    isPreselected_trig1 = true;
 	  }
       }
+      
     
     //Trig2
     if ( doTrig2 )
       {
-	if ( dipho->leadingPhoton()->full5x5_r9() > 0.8 && dipho->subLeadingPhoton()->full5x5_r9() > 0.8)
+	if ( ( dipho->leadingPhoton()->full5x5_r9() > 0.8 && dipho->subLeadingPhoton()->full5x5_r9() > 0.8)
+	     && ( dipho->leadingPhoton()->egChargedHadronIso() < 20 || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+	     && ( dipho->subLeadingPhoton()->egChargedHadronIso() < 20 || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3)
+	     && ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
+	     && ( dipho->leadingPhoton()->hasPixelSeed() == 0 && dipho->subLeadingPhoton()->hasPixelSeed() == 0)
+	     && ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
+	     && ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 2.5 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 2.5 )
+	     && ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->leadingPhoton()->superCluster()->eta()) > 1.566 )
+	     && ( fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->subLeadingPhoton()->superCluster()->eta()) > 1.566 )
+	     )
 	  {
-	    if ( dipho->leadingPhoton()->egChargedHadronIso() < 20 || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
-	      {
-		if ( dipho->subLeadingPhoton()->egChargedHadronIso() < 20 || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3)
-		  {
-		    if ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
-		      {
-			if ( dipho->leadingPhoton()->hasPixelSeed() == 0 && dipho->subLeadingPhoton()->hasPixelSeed() == 0)
-			  {
-			    if ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
-			      {
-				if ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 2.5 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 2.5 )
-				  {
-				    if( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->leadingPhoton()->superCluster()->eta()) > 1.566 )
-				      {
-					if( fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->subLeadingPhoton()->superCluster()->eta()) > 1.566 )
-					  {
-					    isPreselected_trig2 = true;
-					  }
-				      }
-				  }
-			      }
-			  }
-		      }
-		  }
-	      }
+	    isPreselected_trig2 = true;
 	  }
       }
     
     if ( doTrig3 )
       {
-	if ( dipho->leadingPhoton()->full5x5_r9() > 0.8
-	     || dipho->leadingPhoton()->egChargedHadronIso() < 20
-	     || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+	if ( ( dipho->leadingPhoton()->full5x5_r9() > 0.8
+	       || dipho->leadingPhoton()->egChargedHadronIso() < 20
+	       || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3)
+	     &&
+	     ( dipho->subLeadingPhoton()->full5x5_r9() > 0.8
+	       || dipho->subLeadingPhoton()->egChargedHadronIso() < 20
+	       || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3 )
+	     && ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
+	     && ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
+	     && ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.442 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.442 )
+	     && ( dipho->leadingPhoton()->hasPixelSeed() == 0 && dipho->subLeadingPhoton()->hasPixelSeed() == 0)
+	     )
 	  {
-	    if ( dipho->subLeadingPhoton()->full5x5_r9() > 0.8
-		 || dipho->subLeadingPhoton()->egChargedHadronIso() < 20
-		 || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3 )
-	      {
-		if ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
-		  {
-		    if ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
-		      {
-			if ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.442 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.442 )
-			  {
-			    if ( dipho->leadingPhoton()->hasPixelSeed() == 0 && dipho->subLeadingPhoton()->hasPixelSeed() == 0)
-			      {
-				isPreselected_trig3 = true;
-			      }
-			  }
-		      }
-		  }
-	      }
+	    isPreselected_trig3 = true;
 	  }
-	
       }
-    
 
     if (isPreselected_trig1 || isPreselected_trig2 || isPreselected_trig3) return true;
     else return false;
