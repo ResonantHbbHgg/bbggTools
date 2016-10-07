@@ -63,10 +63,10 @@ public:
 	double getCHisoToCutValue(const flashgg::DiPhotonCandidate * dipho, int whichPho);
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
     
-    double getNHisoToCutValue(const flashgg::Photon* pho);
+	double getNHisoToCutValue(const flashgg::Photon* pho);
 	double getPHisoToCutValue(const flashgg::Photon* pho);
     
-    double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
+	double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
 	double getPHisoToCutValue(const flashgg::Photon* pho, vector<double> phCorr);
     
 	double getEA( float eta, int whichEA);
@@ -78,8 +78,8 @@ public:
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
 	bool isPhoISO(const flashgg::DiPhotonCandidate * pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
     
-    bool isJetID(edm::Ptr<flashgg::Jet> jet);
-    bool isJetID(flashgg::Jet jet);
+	bool isJetID(edm::Ptr<flashgg::Jet> jet);
+	bool isJetID(const flashgg::Jet *jet);
     
 	void setRho(double rho) {rho_ = rho;}
     
