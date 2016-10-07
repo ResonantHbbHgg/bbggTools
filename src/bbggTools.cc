@@ -290,41 +290,41 @@ float bbggTools::getCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, float 
 }
 
 
-bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet)
+bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet, bool useTight)
 {
-  return bbggTools::isJetID(jet.get());
+  return bbggTools::isJetID(jet.get(), isTight);
 }
 
-bool bbggTools::isJetID(const flashgg::Jet *jet)
+bool bbggTools::isJetID(const flashgg::Jet *jet, bool useTight)
 {
-  double NHF = jet->neutralHadronEnergyFraction();
+  double NHF  = jet->neutralHadronEnergyFraction();
   double NEMF = jet->neutralEmEnergyFraction();
   double NumConst = jet->chargedMultiplicity()+jet->neutralMultiplicity();
-  double CHF = jet->chargedHadronEnergyFraction();
-  double CHM = jet->chargedMultiplicity();
+  double CHF  = jet->chargedHadronEnergyFraction();
+  double CHM  = jet->chargedMultiplicity();
   double CEMF = jet->chargedEmEnergyFraction();
-  double NNP = jet->neutralMultiplicity();
-  
-  if( fabs(jet->eta()) < 3.0 )
-    {
-      if(NHF > 0.99) return 0;
-      if(NEMF > 0.99) return 0;
-      if(NumConst < 2) return 0;
-      if( fabs(jet->eta()) < 2.4 ){
-	if(CHF < 0) return 0;
-	if(CHM < 0) return 0;
-	if(CEMF > 0.99) return 0;
-      }
-    }
-  if ( fabs(jet->eta()) > 3.0 )
-    {
-      if(NEMF > 0.90) return 0;
-      if(NNP < 10) return 0;
-    }
-  
-  return 1;
-}
+  double NNP  = jet->neutralMultiplicity();
 
+  double jetEta = jet->eta();
+  bool looseJetID = false;
+  bool tightJetID = false;
+
+  if (fabs(jetEta) <= 2.7){
+    looseJetID = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((fabs(jetEta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(jetEta)>2.4);
+    tightJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((fabs(jetEta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(jetEta)>2.4);
+  }
+  else if ( fabs(jetEta) <= 3.0){
+    looseJetID = (NEMF<0.90 && NNP>2);
+    tightJetID = (NEMF<0.90 && NNP>2);
+  }
+  else{
+    looseJetID = (NEMF<0.90 && NNP>10); 
+    tightJetID = (NEMF<0.90 && NNP>10);
+  }
+
+  if (useTight) return tightJetID;
+  else return looseJetID;
+}
 
 
 std::map<int, vector<double> > bbggTools::getWhichID (std::string wpoint)

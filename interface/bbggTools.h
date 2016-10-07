@@ -78,8 +78,8 @@ public:
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
 	bool isPhoISO(const flashgg::DiPhotonCandidate * pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
     
-	bool isJetID(edm::Ptr<flashgg::Jet> jet);
-	bool isJetID(const flashgg::Jet *jet);
+	bool isJetID(edm::Ptr<flashgg::Jet> jet, bool useTight=false);
+	bool isJetID(const flashgg::Jet *jet, bool useTight=false);
     
 	void setRho(double rho) {rho_ = rho;}
     
