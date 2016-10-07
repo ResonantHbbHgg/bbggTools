@@ -292,7 +292,7 @@ float bbggTools::getCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, float 
 
 bool bbggTools::isJetID(edm::Ptr<flashgg::Jet> jet, bool useTight)
 {
-  return bbggTools::isJetID(jet.get(), isTight);
+  return bbggTools::isJetID(jet.get(), useTight);
 }
 
 bool bbggTools::isJetID(const flashgg::Jet *jet, bool useTight)
