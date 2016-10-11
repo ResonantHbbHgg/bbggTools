@@ -44,7 +44,9 @@ public:
 	std::vector<flashgg::Jet> JetPreSelection(std::vector<flashgg::Jet>, edm::Ptr<flashgg::DiPhotonCandidate> dCand);
 
 
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults);
+	bool passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
+	
+	std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults);
 
 	edm::Ptr<flashgg::DiPhotonCandidate> MVAIDDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons);
 	edm::Ptr<flashgg::DiPhotonCandidate> PtSumDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons);
@@ -61,10 +63,10 @@ public:
 	double getCHisoToCutValue(const flashgg::DiPhotonCandidate * dipho, int whichPho);
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
     
-    double getNHisoToCutValue(const flashgg::Photon* pho);
+	double getNHisoToCutValue(const flashgg::Photon* pho);
 	double getPHisoToCutValue(const flashgg::Photon* pho);
     
-    double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
+	double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
 	double getPHisoToCutValue(const flashgg::Photon* pho, vector<double> phCorr);
     
 	double getEA( float eta, int whichEA);
@@ -76,8 +78,8 @@ public:
 	bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
 	bool isPhoISO(const flashgg::DiPhotonCandidate * pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
     
-    bool isJetID(edm::Ptr<flashgg::Jet> jet);
-    bool isJetID(flashgg::Jet jet);
+	bool isJetID(edm::Ptr<flashgg::Jet> jet, bool useTight=false);
+	bool isJetID(const flashgg::Jet *jet, bool useTight=false);
     
 	void setRho(double rho) {rho_ = rho;}
     
