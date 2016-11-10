@@ -81,10 +81,7 @@ public:
     typedef math::XYZTLorentzVector LorentzVector;
     typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
-    vector<TVector3> norm_planes_hi(vector<TLorentzVector> partons,  TLorentzVector H);
-    vector<double> getPhi(TLorentzVector leadingPhoton, TLorentzVector subleadingPhoton, TLorentzVector leadingJet, TLorentzVector subleadingJet, 
-		       TLorentzVector diphoton, TLorentzVector dihiggs);
-                   
+                  
 private:
     virtual void beginJob() override;
     virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
@@ -798,6 +795,8 @@ void
     jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
     jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
 
+    // ======================= Calculate angles ======================
+
     // Calculating costheta star
     TLorentzVector BoostedHgg(0,0,0,0);
     BoostedHgg.SetPtEtaPhiE( diphoCand->pt(), diphoCand->eta(), diphoCand->phi(), diphoCand->energy());
@@ -855,7 +854,7 @@ void
 
     // Now calculate
 
-    vector<double> vPhi = getPhi(leadingPhotonPhi, subleadingPhotonPhi, leadingJetPhi, subleadingJetPhi, diphotonCandidatePhi, diHiggsCandidatePhi);
+    vector<double> vPhi = tools_.getPhi(leadingPhotonPhi, subleadingPhotonPhi, leadingJetPhi, subleadingJetPhi, diphotonCandidatePhi, diHiggsCandidatePhi);
     Phi = vPhi[0], Phi1 = vPhi[1];
 
 
@@ -938,77 +937,6 @@ void
 
     if(DEBUG) std::cout << "Histograms filled!" << std::endl;
 
-}
-
-
-
-
-vector<TVector3> bbggTree::norm_planes_hi(vector<TLorentzVector> partons, TLorentzVector dihiggs){
-
-  TVector3 boost_H = -dihiggs.BoostVector();
-
-  vector<TVector3> partons3v(4);
-  
-
-  for (int i = 0; i < 4; i++){
-    partons[i].Boost(boost_H);
-    partons3v[i] = partons[i].Vect().Unit();
-  }
-
-  vector<TVector3> vnorm(2);
-
-  for (int i = 0; i < 4; i++)
-    vnorm[i] = (partons3v[i*2].Cross(partons3v[i*2+1])).Unit();
-  
-  
-  return vnorm;
-
-}
-
-
-
-
-
-
-vector<double> bbggTree::getPhi(TLorentzVector leadingPhoton, TLorentzVector subleadingPhoton, TLorentzVector leadingJet, TLorentzVector subleadingJet, 
-		   TLorentzVector diphoton, TLorentzVector dihiggs){
-
-  vector<double> vPhi(2);
-
-  vector<TLorentzVector> partons(4);
-  partons[0] = leadingPhoton; partons[1] = subleadingPhoton; partons[2] = leadingJet; partons[3] = subleadingJet; 
-
-  // Define hgg direction
-  TLorentzVector hgg = diphoton;
-  TVector3 boost_H = - dihiggs.BoostVector();
-  hgg.Boost(boost_H);
-  TVector3 hgg_vect = diphoton.Vect().Unit();
-
-
-  // Calculate the normal to Hgg and hbbdecay plane
-  vector<TVector3> vnorm = norm_planes_hi(partons, dihiggs);
-
-
-  // ====================================================================
-
-  // Calculate Phi
-  double dsignhgg = hgg_vect.Dot(vnorm[1].Cross(vnorm[0]))/(abs(hgg_vect.Dot(vnorm[1].Cross(vnorm[0]))));
-  vPhi[0] = dsignhgg*(-1)*acos(vnorm[0].Dot(vnorm[1]));
-
-  // ==========================
-
-  // Define z direction
-  TLorentzVector p1(0, 0,  6500, 6500);
-  TVector3 z_vect = p1.Vect().Unit();
-
-  // Calcuate the normal Hgg and Hbb 
-  TVector3 zzprime = (z_vect.Cross(hgg_vect)).Unit();
-
-  // Calculate Phi1
-  dsignhgg = hgg_vect.Dot(zzprime.Cross(vnorm[0]))/(fabs(hgg_vect.Dot(zzprime.Cross(vnorm[0]))));
-  vPhi[1] = dsignhgg*acos(zzprime.Dot(vnorm[0]));
-
-  return vPhi;
 }
 
 

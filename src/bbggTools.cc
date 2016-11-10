@@ -1084,3 +1084,71 @@ bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> 
 
     return 1;
 }
+
+vector<TVector3> bbggTools::norm_planes_hi(vector<TLorentzVector> partons, TLorentzVector dihiggs){
+
+  TVector3 boost_H = -dihiggs.BoostVector();
+
+  vector<TVector3> partons3v(4);
+  
+
+  for (int i = 0; i < 4; i++){
+    partons[i].Boost(boost_H);
+    partons3v[i] = partons[i].Vect().Unit();
+  }
+
+  vector<TVector3> vnorm(2);
+
+  for (int i = 0; i < 4; i++)
+    vnorm[i] = (partons3v[i*2].Cross(partons3v[i*2+1])).Unit();
+  
+  
+  return vnorm;
+
+}
+
+
+
+
+
+
+vector<double> bbggTools::getPhi(TLorentzVector leadingPhoton, TLorentzVector subleadingPhoton, TLorentzVector leadingJet, TLorentzVector subleadingJet, 
+		   TLorentzVector diphoton, TLorentzVector dihiggs){
+
+  vector<double> vPhi(2);
+
+  vector<TLorentzVector> partons(4);
+  partons[0] = leadingPhoton; partons[1] = subleadingPhoton; partons[2] = leadingJet; partons[3] = subleadingJet; 
+
+  // Define hgg direction
+  TLorentzVector hgg = diphoton;
+  TVector3 boost_H = - dihiggs.BoostVector();
+  hgg.Boost(boost_H);
+  TVector3 hgg_vect = diphoton.Vect().Unit();
+
+
+  // Calculate the normal to Hgg and hbbdecay plane
+  vector<TVector3> vnorm = norm_planes_hi(partons, dihiggs);
+
+
+  // ====================================================================
+
+  // Calculate Phi
+  double dsignhgg = hgg_vect.Dot(vnorm[1].Cross(vnorm[0]))/(abs(hgg_vect.Dot(vnorm[1].Cross(vnorm[0]))));
+  vPhi[0] = dsignhgg*(-1)*acos(vnorm[0].Dot(vnorm[1]));
+
+  // ==========================
+
+  // Define z direction
+  TLorentzVector p1(0, 0,  6500, 6500);
+  TVector3 z_vect = p1.Vect().Unit();
+
+  // Calcuate the normal Hgg and Hbb 
+  TVector3 zzprime = (z_vect.Cross(hgg_vect)).Unit();
+
+  // Calculate Phi1
+  dsignhgg = hgg_vect.Dot(zzprime.Cross(vnorm[0]))/(fabs(hgg_vect.Dot(zzprime.Cross(vnorm[0]))));
+  vPhi[1] = dsignhgg*acos(zzprime.Dot(vnorm[0]));
+
+  return vPhi;
+}

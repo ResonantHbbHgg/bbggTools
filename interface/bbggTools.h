@@ -59,6 +59,11 @@ public:
 
 
     float getCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, float ebeam = 6500);
+
+    vector<TVector3> norm_planes_hi(vector<TLorentzVector> partons,  TLorentzVector H);
+    vector<double> getPhi(TLorentzVector leadingPhoton, TLorentzVector subleadingPhoton, TLorentzVector leadingJet, TLorentzVector subleadingJet, 
+		       TLorentzVector diphoton, TLorentzVector dihiggs);
+ 
     
 	double getCHisoToCutValue(const flashgg::DiPhotonCandidate * dipho, int whichPho);
 	double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
