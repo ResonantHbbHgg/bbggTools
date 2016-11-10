@@ -30,6 +30,7 @@ Implementation:
 #include "TTree.h"
 #include "TFile.h"
 #include "TLorentzVector.h"
+#include "TVector3.h"
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -80,10 +81,17 @@ public:
     typedef math::XYZTLorentzVector LorentzVector;
     typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
+    vector<TVector3> norm_planes_hi(vector<TLorentzVector> partons,  TLorentzVector H);
+    vector<double> getPhi(TLorentzVector leadingPhoton, TLorentzVector subleadingPhoton, TLorentzVector leadingJet, TLorentzVector subleadingJet, 
+		       TLorentzVector diphoton, TLorentzVector dihiggs);
+                   
 private:
     virtual void beginJob() override;
     virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
     virtual void endJob() override;
+
+
+
 
     // ----------member data ---------------------------
     bbggTools tools_;
@@ -112,7 +120,8 @@ private:
     vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
-    float CosThetaStar, leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR_2, DiJetDiPho_DR_1, PhoJetMinDr;
+    float CosThetaStar, CosThetaStarHgg, CosThetaStarHbb, Phi, Phi1;
+    float leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR_2, DiJetDiPho_DR_1, PhoJetMinDr;
     std::map<std::string, int> myTriggerResults;
 
     double genTotalWeight;
@@ -490,6 +499,10 @@ void
     isSignal = 0;
     isPhotonCR = 0;
     CosThetaStar = -999;
+    CosThetaStarHgg = -999;
+    CosThetaStarHbb = -999;
+    Phi = -999;
+    Phi1 = -999;
     //    nvtx = 0;
 
     diphotonCandidate.SetPxPyPzE(0,0,0,0);// = diphoCand->p4();
@@ -785,7 +798,7 @@ void
     jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
     jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
 
-    //Calculating costheta star
+    // Calculating costheta star
     TLorentzVector BoostedHgg(0,0,0,0);
     BoostedHgg.SetPtEtaPhiE( diphoCand->pt(), diphoCand->eta(), diphoCand->phi(), diphoCand->energy());
     TLorentzVector HHforBoost(0,0,0,0);
@@ -794,6 +807,59 @@ void
     BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
     CosThetaStar = BoostedHgg.CosTheta();
 
+
+    // Calculating costheta star Hgg
+    TLorentzVector leadingPhotonToBoost(0,0,0,0);
+    leadingPhotonToBoost.SetPtEtaPhiE( leadingPhoton.pt(), leadingPhoton.eta(), leadingPhoton.phi(), leadingPhoton.energy());    
+    TLorentzVector Hgg(0,0,0,0);
+    Hgg.SetPtEtaPhiE( diphotonCandidate.pt(), diphotonCandidate.eta(), diphotonCandidate.phi(), diphotonCandidate.energy());
+    TVector3 HggVector = Hgg.BoostVector();
+    leadingPhotonToBoost.Boost( -HggVector.x(), -HggVector.y(), -HggVector.z() );
+
+    CosThetaStarHgg = leadingPhotonToBoost.CosTheta();
+
+
+    // Calculating costheta star Hbb
+    TLorentzVector leadingJetToBoost(0,0,0,0);
+    leadingJetToBoost.SetPtEtaPhiE( leadingJet.pt(), leadingJet.eta(), leadingJet.phi(), leadingJet.energy());    
+    TLorentzVector Hbb(0,0,0,0);
+    Hbb.SetPtEtaPhiE( dijetCandidate.pt(), dijetCandidate.eta(), dijetCandidate.phi(), dijetCandidate.energy());
+    TVector3 HbbVector = Hbb.BoostVector();
+    leadingJetToBoost.Boost( -HbbVector.x(), -HbbVector.y(), -HbbVector.z() );
+
+    CosThetaStarHbb = leadingJetToBoost.CosTheta();
+
+
+    // ======================== Calculate Phi and Phi1 ===============
+
+    // First recast everything into TLorentz vector
+
+    TLorentzVector leadingPhotonPhi(0,0,0,0);
+    leadingPhotonPhi.SetPtEtaPhiE( leadingPhoton.pt(), leadingPhoton.eta(), leadingPhoton.phi(), leadingPhoton.energy());    
+
+    TLorentzVector subleadingPhotonPhi(0,0,0,0);
+    subleadingPhotonPhi.SetPtEtaPhiE( leadingPhoton.pt(), leadingPhoton.eta(), leadingPhoton.phi(), leadingPhoton.energy());    
+
+    TLorentzVector leadingJetPhi(0,0,0,0);
+    leadingJetPhi.SetPtEtaPhiE( leadingJet.pt(), leadingJet.eta(), leadingJet.phi(), leadingJet.energy());    
+
+    TLorentzVector subleadingJetPhi(0,0,0,0);
+    subleadingJetPhi.SetPtEtaPhiE( leadingJet.pt(), leadingJet.eta(), leadingJet.phi(), leadingJet.energy());    
+
+
+    TLorentzVector diphotonCandidatePhi(0,0,0,0);
+    diphotonCandidatePhi.SetPtEtaPhiE( diphotonCandidate.pt(), diphotonCandidate.eta(), diphotonCandidate.phi(), diphotonCandidate.energy()); 
+
+    TLorentzVector diHiggsCandidatePhi(0,0,0,0);
+    diHiggsCandidatePhi.SetPtEtaPhiE( diHiggsCandidate.pt(), diHiggsCandidate.eta(), diHiggsCandidate.phi(), diHiggsCandidate.energy()); 
+
+    // Now calculate
+
+    vector<double> vPhi = getPhi(leadingPhotonPhi, subleadingPhotonPhi, leadingJetPhi, subleadingJetPhi, diphotonCandidatePhi, diHiggsCandidatePhi);
+    Phi = vPhi[0], Phi1 = vPhi[1];
+
+
+    // ===========================================
 
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
 
@@ -875,6 +941,78 @@ void
 }
 
 
+
+
+vector<TVector3> bbggTree::norm_planes_hi(vector<TLorentzVector> partons, TLorentzVector dihiggs){
+
+  TVector3 boost_H = -dihiggs.BoostVector();
+
+  vector<TVector3> partons3v(4);
+  
+
+  for (int i = 0; i < 4; i++){
+    partons[i].Boost(boost_H);
+    partons3v[i] = partons[i].Vect().Unit();
+  }
+
+  vector<TVector3> vnorm(2);
+
+  for (int i = 0; i < 4; i++)
+    vnorm[i] = (partons3v[i*2].Cross(partons3v[i*2+1])).Unit();
+  
+  
+  return vnorm;
+
+}
+
+
+
+
+
+
+vector<double> bbggTree::getPhi(TLorentzVector leadingPhoton, TLorentzVector subleadingPhoton, TLorentzVector leadingJet, TLorentzVector subleadingJet, 
+		   TLorentzVector diphoton, TLorentzVector dihiggs){
+
+  vector<double> vPhi(2);
+
+  vector<TLorentzVector> partons(4);
+  partons[0] = leadingPhoton; partons[1] = subleadingPhoton; partons[2] = leadingJet; partons[3] = subleadingJet; 
+
+  // Define hgg direction
+  TLorentzVector hgg = diphoton;
+  TVector3 boost_H = - dihiggs.BoostVector();
+  hgg.Boost(boost_H);
+  TVector3 hgg_vect = diphoton.Vect().Unit();
+
+
+  // Calculate the normal to Hgg and hbbdecay plane
+  vector<TVector3> vnorm = norm_planes_hi(partons, dihiggs);
+
+
+  // ====================================================================
+
+  // Calculate Phi
+  double dsignhgg = hgg_vect.Dot(vnorm[1].Cross(vnorm[0]))/(abs(hgg_vect.Dot(vnorm[1].Cross(vnorm[0]))));
+  vPhi[0] = dsignhgg*(-1)*acos(vnorm[0].Dot(vnorm[1]));
+
+  // ==========================
+
+  // Define z direction
+  TLorentzVector p1(0, 0,  6500, 6500);
+  TVector3 z_vect = p1.Vect().Unit();
+
+  // Calcuate the normal Hgg and Hbb 
+  TVector3 zzprime = (z_vect.Cross(hgg_vect)).Unit();
+
+  // Calculate Phi1
+  dsignhgg = hgg_vect.Dot(zzprime.Cross(vnorm[0]))/(fabs(hgg_vect.Dot(zzprime.Cross(vnorm[0]))));
+  vPhi[1] = dsignhgg*acos(zzprime.Dot(vnorm[0]));
+
+  return vPhi;
+}
+
+
+
 // ------------ method called once each job just before starting event loop  ------------
 void
 bbggTree::beginJob()
@@ -924,6 +1062,10 @@ bbggTree::beginJob()
     tree->Branch("isSignal", &isSignal, "isSignal/I");
     tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
     tree->Branch("CosThetaStar", &CosThetaStar, "CosThetaStar/F");
+    tree->Branch("CosThetaStarHgg", &CosThetaStarHgg, "CosThetaStarHgg/F");
+    tree->Branch("CosThetaStarHbb", &CosThetaStarHbb, "CosThetaStarHbb/F");
+    tree->Branch("Phi", &Phi, "Phi/F");
+    tree->Branch("Phi1", &Phi1, "Phi1/F");
     tree->Branch("TriggerResults", &myTriggerResults);
     tree->Branch("DiJetDiPho_DR_1", &DiJetDiPho_DR_1, "DiJetDiPho_DR_1/F");
     tree->Branch("DiJetDiPho_DR_2", &DiJetDiPho_DR_2, "DiJetDiPho_DR_2/F");
