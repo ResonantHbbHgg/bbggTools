@@ -140,14 +140,14 @@ def readLorentzVector():
     fCosThetaStarHgg = CosThetaStarh1(leadingPhoton,diphoton)
     fCosThetaStarHbb = CosThetaStarh1(leadingJet,dijet)
 
-    fPhi = Phi(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, dijet, dihiggs)
-    fPhi1 = Phi1(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, dijet, dihiggs)
+    vPhi = {} 
+    vPhi = Phi(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, dijet, dihiggs)
 
     acosThetaStar[0] = fCosThetaStar
     acosThetaStarHgg[0] = fCosThetaStarHgg
     acosThetaStarHbb[0] = fCosThetaStarHbb
-    aPhi[0] = fPhi
-    aPhi1[0] = fPhi1
+    aPhi[0] = vPhi[0]
+    aPhi1[0] = vPhi[1]
 
     ambb[0] = mass_jj
     amgg[0] = mass_gg
@@ -165,8 +165,8 @@ def readLorentzVector():
     hcosThetaStarHgg.Fill(fCosThetaStarHgg)
     hcosThetaStarHbb.Fill(fCosThetaStarHbb)
     
-    hPhi.Fill(fPhi)
-    hPhi1.Fill(fPhi1)
+    hPhi.Fill(vPhi[0])
+    hPhi1.Fill(vPhi[1])
 
     hcosThetaStar_vs_hcosThetaStarHgg.Fill(fCosThetaStar, fCosThetaStarHgg)
     hcosThetaStar_vs_hcosThetaStarHbb.Fill(fCosThetaStar, fCosThetaStarHbb)
@@ -353,7 +353,7 @@ def CosThetaStarh1(parton, higgs):
   return cosThetaStarh1;
 
 
-def Phi(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, dijet, dihiggs):
+def norm_planes_hi(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, dijet, dihiggs):
 
   g1 = ROOT.TLorentzVector();
   g1.SetPxPyPzE(leadingPhoton.px(), leadingPhoton.py(),  leadingPhoton.pz(), leadingPhoton.e());
@@ -376,21 +376,11 @@ def Phi(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, di
   H = ROOT.TLorentzVector();
   H.SetPxPyPzE(dihiggs.px(), dihiggs.py(),  dihiggs.pz(), dihiggs.e());
 
-  vnorm = norm_planes_hi(g1,g2,b1,b2, hgg, hbb, H);
-  hiv3 = hgg.Vect().Unit();
-  dsignh1 = hiv3.Dot(vnorm[1].Cross(vnorm[0]))/(abs(hiv3.Dot(vnorm[1].Cross(vnorm[0]))));
-  phi = dsignh1*(-1)*math.acos(vnorm[0].Dot(vnorm[1]));
-  return phi;
-
-
-def norm_planes_hi(g1, g2, b1, b2, hgg, hbb, H):
-
   boost_H = -H.BoostVector();
 
   partons = {}
   partons3v = {}
   
-
 
   partons[0] = g1
   partons[1] = g2
@@ -415,49 +405,46 @@ def norm_planes_hi(g1, g2, b1, b2, hgg, hbb, H):
   return vnorm;
 
 
-def Phi1(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, dijet, dihiggs):
+def Phi(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, dijet, dihiggs):
 
-
-  g1 = ROOT.TLorentzVector();
-  g1.SetPxPyPzE(leadingPhoton.px(), leadingPhoton.py(),  leadingPhoton.pz(), leadingPhoton.e());
-
-  g2 = ROOT.TLorentzVector();
-  g2.SetPxPyPzE(subleadingPhoton.px(), subleadingPhoton.py(),  subleadingPhoton.pz(), subleadingPhoton.e());
-
-  b1 = ROOT.TLorentzVector();
-  b1.SetPxPyPzE(leadingJet.px(), leadingJet.py(),  leadingJet.pz(), leadingJet.e());
-
-  b2 = ROOT.TLorentzVector();
-  b2.SetPxPyPzE(subleadingJet.px(), subleadingJet.py(),  subleadingJet.pz(), subleadingJet.e());
+  vPhi = {}
+# Define hgg direction
 
   hgg = ROOT.TLorentzVector();
   hgg.SetPxPyPzE(diphoton.px(), diphoton.py(),  diphoton.pz(), diphoton.e());
 
-  hbb = ROOT.TLorentzVector();
-  hbb.SetPxPyPzE(dijet.px(), dijet.py(),  dijet.pz(), dijet.e());
-
   H = ROOT.TLorentzVector();
   H.SetPxPyPzE(dihiggs.px(), dihiggs.py(),  dihiggs.pz(), dihiggs.e());
 
-
   boost_H = - H.BoostVector();
+  hgg.Boost(boost_H)
+  hgg_vect = hgg.Vect();
 
+
+#  Calculate the normal to Hgg and Hbb decay plane
+  vnorm = norm_planes_hi(leadingPhoton, subleadingPhoton, leadingJet, subleadingJet, diphoton, dijet, dihiggs);
+
+
+# calculate Phi
+
+  dsignh1 = hgg_vect.Dot(vnorm[1].Cross(vnorm[0]))/(abs(hgg_vect.Dot(vnorm[1].Cross(vnorm[0]))));
+  vPhi[0] = dsignh1*(-1)*math.acos(vnorm[0].Dot(vnorm[1]));
+
+#======================================================================
+
+# Define z direction
   p1 = ROOT.TLorentzVector();
   p1.SetPxPyPzE(0, 0,  6500, 6500);
+  z_vect = p1.Vect();
 
-  p1_vect = p1.Vect();
+#  Calcuate the normal to the zz' plane
+  zzprime = (z_vect.Cross(hgg_vect)).Unit();
 
-  hgg_vect = hgg.BoostVector();
-  hiv3 = hgg_vect
+# calculate Phi1
+  dsignh1 = hgg_vect.Dot(zzprime.Cross(vnorm[0]))/(abs(hgg_vect.Dot(zzprime.Cross(vnorm[0]))));
+  vPhi[1] = dsignh1*math.acos(zzprime.Dot(vnorm[0]));
 
-  zzprime = (p1_vect.Cross(hgg_vect)).Unit();
-
-
-  vnorm = norm_planes_hi(g1, g2, b1, b2, hgg, hbb, H);
-  dsignh1 = hiv3.Dot(zzprime.Cross(vnorm[0]))/(abs(hiv3.Dot(zzprime.Cross(vnorm[0]))));
-  dPhi1 = dsignh1*math.acos(zzprime.Dot(vnorm[0]));
-
-  return dPhi1;
+  return vPhi;
 
 
 readLorentzVector()
