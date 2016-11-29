@@ -2,14 +2,10 @@
 import FWCore.ParameterSet.Config as cms
 import flashgg.Taggers.flashggTags_cff as flashggTags
 
-
+_is2016					=	cms.untracked.uint32(1)
 _doPhotonCR				=	cms.untracked.uint32(1)
-_triggerTag				=	cms.InputTag("TriggerResults", "", "HLT")
-_myTriggers				=	cms.untracked.vstring(
-						"HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95_v",
-						"HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v",
-						"HLT_Diphoton30EB_18EB_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v"
-													)
+_triggerTag				=	cms.InputTag("TriggerResults", "", "HLT2")
+_myTriggers				=	cms.untracked.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v")
 _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 #_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
@@ -116,7 +112,7 @@ _MVAPhotonID				=	cms.untracked.vdouble(0.374, 0.336)
 #MVA user float
 _PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
 
-_doJetRegression			=	cms.untracked.uint32(1)
+_doJetRegression			=	cms.untracked.uint32(0)
 
 
 _bRegFile      =  cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/BDTG_16plus2_jetGenJet_nu_7_6.weights.xml")

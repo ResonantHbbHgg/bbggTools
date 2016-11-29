@@ -5,23 +5,60 @@ from flashgg.bbggTools.More_microAOD_DJet40Inf import *
 from flashgg.bbggTools.pColors import *
 import flashgg.Taggers.flashggTags_cff as flashggTags
 
+##### Arguments
+#import flashgg.bbggTools.VarParsing as opts
+#options = opts.VarParsing('analysis')
+#------- Add extra option
+#options.register('doSelection',
+#					False,
+#					opts.VarParsing.multiplicity.singleton,
+#					opts.VarParsing.varType.bool,
+#					'False: Make tree before selection; True: Make tree after selection')
+#options.register('doDoubleCountingMitigation',
+#					False,
+#					opts.VarParsing.multiplicity.singleton,
+#					opts.VarParsing.varType.bool,
+#					'False: Do not remove double counted photons from QCD/GJet/DiPhotonJets; True: Remove double counted photons from QCD/GJet/DiPhotonJets')
+#options.register('nPromptPhotons',
+#					0,
+#					opts.VarParsing.multiplicity.singleton,
+#					opts.VarParsing.varType.int,
+#					'Number of prompt photons to be selected - to use this, set doDoubleCountingMitigation=1')
+#
+#-------
+#
+#options.parseArguments()
+
+#maxEvents = 5
+#if options.maxEvents:
+#        maxEvents = int(options.maxEvents)
+
+#inputFile = "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164203/0000/myMicroAODOutputFile_1.root" #RadFiles['650']
+#if options.inputFiles:
+#        inputFile = options.inputFiles
+
+#outputFile = "rest_rad700.root"
+#if options.outputFile:
+#        outputFile = options.outputFile
+######
 process = cms.Process("bbggtree")
 process.load("flashgg.bbggTools.bbggTree_cfi")
 process.bbggtree.rho = cms.InputTag('fixedGridRhoAll')
 process.bbggtree.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
-#process.bbggtree.puInfo=cms.InputTag("slimmedAddPileupInfo")
+process.bbggtree.puInfo=cms.InputTag("slimmedAddPileupInfo")
 process.bbggtree.lumiWeight = cms.double(1.0)
 process.bbggtree.intLumi = cms.double(1.0)
-process.bbggtree.puReWeight=cms.bool(False)
-#process.bbggtree.puBins=cms.vdouble()
-#process.bbggtree.dataPu=cms.vdouble()
-#process.bbggtree.mcPu=cms.vdouble()
+process.bbggtree.puReWeight=cms.bool(True)
+process.bbggtree.puBins=cms.vdouble()
+process.bbggtree.dataPu=cms.vdouble()
+process.bbggtree.mcPu=cms.vdouble()
+
+print "I'M HERE 1"
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring("test.root")
 )
-
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 2000 )
@@ -48,9 +85,20 @@ customize.register('nPromptPhotons',
 					VarParsing.VarParsing.multiplicity.singleton,
 					VarParsing.VarParsing.varType.int,
 					'Number of prompt photons to be selected - to use this, set doDoubleCountingMitigation=1')
+customize.register('PURW',
+				1,
+				VarParsing.VarParsing.multiplicity.singleton,
+				VarParsing.VarParsing.varType.bool,
+				"Do PU reweighting? Doesn't work on 76X")
+
 
 # call the customization
 customize(process)
+
+process.bbggtree.puReWeight=cms.bool( customize.PURW )
+if customize.PURW == False:
+	process.bbggtree.puTarget = cms.vdouble()
+print "I'M HERE 2"
 
 maxEvents = 5
 if customize.maxEvents:
@@ -66,33 +114,29 @@ if customize.outputFile:
 
 print customize.inputFiles, customize.outputFile, customize.maxEvents, customize.doSelection, customize.doDoubleCountingMitigation, customize.nPromptPhotons
 
+
+#process.load("FWCore.MessageService.MessageLogger_cfi")
+
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(maxEvents) )
+#process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 2000 )
+
+## Available mass points:
+# RadFiles: 320, 340, 350, 400, 600, 650, 700
+# GravFiles: 260, 270, 280, 320, 350, 500, 550
+#NonResPhys14 = 'file:/afs/cern.ch/work/r/rateixei/work/DiHiggs/FLASHggPreSel/CMSSW_7_4_0_pre9/src/flashgg/MicroAOD/test/hhbbgg_hggVtx.root'
+
+#process.source = cms.Source("PoolSource",
+#    # replace 'myfile.root' with the source file you want to use
+#    fileNames = cms.untracked.vstring(
+#        customize.inputFiles
+#    )
+#)
+
+print "I'M HERE 3"
+
 #process.load("flashgg.bbggTools.bbggTree_cfi")
 process.load("flashgg.Taggers.flashggTags_cff")
 process.bbggtree.OutFileName = cms.untracked.string(outputFile)
-
-from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
-#### 2015 triggers
-#process.hltHighLevel= hltHighLevel.clone(HLTPaths = cms.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95_v*",
-#								"HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v*",
-#								"HLT_Diphoton30EB_18EB_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v*") )
-#### 2016 trigger
-process.hltHighLevel= hltHighLevel.clone(HLTPaths = cms.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v*",
-								) )
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-
-#############   Geometry  ###############
-process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
-process.load("Geometry.CaloEventSetup.CaloGeometry_cfi")
-process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
-process.load('RecoMET.METFilters.eeBadScFilter_cfi')
-process.load("Configuration.Geometry.GeometryECALHCAL_cff")
-process.eeBadScFilter.EERecHitSource = cms.InputTag("reducedEgamma","reducedEERecHits") # Saved MicroAOD Collection (data only)
-
-process.dataRequirements = cms.Sequence()
-
-process.dataRequirements += process.hltHighLevel
-process.dataRequirements += process.eeBadScFilter
-
 
 print bcolors.OKBLUE + "########################################################################" + bcolors.ENDC
 print bcolors.OKBLUE + "#  _   _  _   _  _      _                     _____                    #" + bcolors.ENDC
@@ -117,5 +161,6 @@ if customize.doDoubleCountingMitigation is True:
 if customize.doDoubleCountingMitigation is False:
 	process.bbggtree.doDoubleCountingMitigation = cms.untracked.uint32(0)
 
+#process.p = cms.Path(process.bbggtree)
 
-process.p = cms.Path(process.dataRequirements*flashggTags.flashggUnpackedJets*process.bbggtree)
+process.p = cms.Path(flashggTags.flashggUnpackedJets*process.bbggtree)

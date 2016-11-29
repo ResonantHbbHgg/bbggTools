@@ -89,6 +89,7 @@ def doPull(bkg, data, stack):
 	UpEdge = 0
 	LowEdge = 0
 	bWidth = 0
+	thisStack = stack.Clone("thisStackClone")
 	for x in xrange(0, data_nbins):
 		LowEdge = data.GetXaxis().GetBinLowEdge(data_nbins - x)
 		UpEdge = data.GetXaxis().GetBinUpEdge(x+1)
@@ -118,8 +119,8 @@ def doPull(bkg, data, stack):
 #			erro = sqrt( float(n_bkg) )
 #			erro = (bkg.GetBinContent(x+1)+bkg.GetBinError(x+1))/bkg.GetBinContent(x+1)
 			erro = bkg.GetBinError(x+1)
-			err = stack.GetStack().Last().GetBinError(x+1)
-			cont = stack.GetStack().Last().GetBinContent(x+1)
+			err = thisStack.GetStack().Last().GetBinError(x+1)
+			cont = thisStack.GetStack().Last().GetBinContent(x+1)
 			erro = (cont+err)/cont - 1
 #			erro = stack.GetStack().Last().GetBinError(x+1)
 			py.append(sigma)
@@ -166,7 +167,7 @@ def SaveNoPull(data, bkg, fileName):
 	bkg.Draw('histsame')
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".pdf")
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".png")
-	c0.Delete()
+#	c0.Delete()
 
 def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM, ControlRegion, hideData, year):
 	gStyle.SetHatchesLineWidth(1)
@@ -174,18 +175,49 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	Font = 43
 	labelSize = 20
 	titleSize = 24
-	
+
+	bkg.Draw('hist')
+	bkg.SetTitle("")
+	bkg.SetMinimum(0.001)
+	print bkg.GetNhists()
+
+	#### Configure thstack
+	bkg.GetHistogram().GetXaxis().SetNdivisions(515)
+
+
+	ratio = 0.2
+	epsilon = 0.0
+	c1 = TCanvas("c2", "c2", 900, 800)
+	SetOwnership(c1,False) #If I don't put this, I get memory leak problems...
+	p1 = TPad("pad1","pad1", 0, float(ratio - epsilon), 1, 1)
+	SetOwnership(p1,False)
+	p1.SetBottomMargin(epsilon)
+	p2 = TPad("pad2","pad2",0,0,1,float(ratio*(1-epsilon)) )
+	SetOwnership(p2,False)
+	p2.SetFillColor(0)
+	p2.SetFillStyle(0)
+	p2.SetTopMargin(0.0)
+	p2.SetBottomMargin(0.35)
+	p2.SetGridy()
+	p1.cd()
+	bkg.Draw('hist')
+	bkg.SetTitle("")
+	bkg.SetMinimum(0.001)
+	print bkg.GetNhists()
+
+	#### Configure thstack
+	bkg.GetHistogram().GetXaxis().SetNdivisions(515)
 	if(hideData == False):
-		bkg.GetXaxis().SetTitleFont(Font)
-		bkg.GetXaxis().SetTitleSize(0)
-		bkg.GetXaxis().SetLabelFont(Font)
-		bkg.GetXaxis().SetLabelSize(0)
+		bkg.GetHistogram().GetXaxis().SetTitleFont(Font)
+		bkg.GetHistogram().GetXaxis().SetTitleSize(0)
+		bkg.GetHistogram().GetXaxis().SetLabelFont(Font)
+		bkg.GetHistogram().GetXaxis().SetLabelSize(0)
 	if(hideData):
-		bkg.GetXaxis().SetTitleFont(Font)
-		bkg.GetXaxis().SetTitleSize(titleSize)
-		bkg.GetXaxis().SetLabelFont(Font)
-		bkg.GetXaxis().SetLabelSize(labelSize)
-		bkg.GetXaxis().SetTitle(varName)
+		bkg.GetHistogram().GetXaxis().SetTitleFont(Font)
+		bkg.GetHistogram().GetXaxis().SetTitleSize(titleSize)
+		bkg.GetHistogram().GetXaxis().SetLabelFont(Font)
+		bkg.GetHistogram().GetXaxis().SetLabelSize(labelSize)
+		bkg.GetHistogram().GetXaxis().SetTitle(varName)
 		
 
 	bkg.GetYaxis().SetTitleFont(Font)
@@ -203,9 +235,6 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 
 	bkg.GetYaxis().SetTitleOffset(1.75)
 
-#	gStyle.SetPadTickX(1)
-#	gStyle.SetPadTickY(1)
-
 	pullE.GetXaxis().SetLabelFont(Font)
 	pullE.GetXaxis().SetLabelSize(labelSize)
 	pullE.GetXaxis().SetLabelOffset(0.01)
@@ -217,7 +246,6 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	pullE.GetXaxis().SetLabelOffset(0.05)
 	pullE.GetXaxis().SetNdivisions(515)
 	pullE.GetXaxis().SetTickLength(0.15)
-	bkg.GetXaxis().SetNdivisions(515)
 
 	pullE.GetYaxis().SetTitle("Data/MC")
 	pullE.GetYaxis().SetTitleFont(Font)
@@ -228,27 +256,9 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	pullE.GetYaxis().SetLabelSize(15)
 
 	pullE.GetYaxis().SetNdivisions(504)
+	pullE.GetXaxis().SetRangeUser(bkg.GetHistogram().GetXaxis().GetXmin(), bkg.GetHistogram().GetXaxis().GetXmax())
+	### Fin
 
-
-	ratio = 0.2
-	epsilon = 0.0
-	c1 = TCanvas("c1", "c1", 900, 800)
-	SetOwnership(c1,False) #If I don't put this, I get memory leak problems...
-	p1 = TPad("pad1","pad1", 0, float(ratio - epsilon), 1, 1)
-	SetOwnership(p1,False)
-	p1.SetBottomMargin(epsilon)
-	p2 = TPad("pad2","pad2",0,0,1,float(ratio*(1-epsilon)) )
-	SetOwnership(p2,False)
-	p2.SetFillColor(0)
-	p2.SetFillStyle(0)
-	p2.SetTopMargin(0.0)
-	p2.SetBottomMargin(0.35)
-	p2.SetGridy()
-	p1.cd()
-	bkg.SetTitle("")
-	bkg.Draw('hist')
-	bkg.SetMinimum(0.001)
-	bkg.GetXaxis().SetNdivisions(515)
 	p1.Update()
 	gStyle.SetHatchesLineWidth(2)
 	SUM.Draw("E2 same")
@@ -272,9 +282,11 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	Lumi = "L = " + str(lumi) + " pb^{-1} (13 TeV)"#, "+ year + ")"
 	if lumi > 1000:
 		llumi = float(lumi)/1000.
-		Lumi = "L = " + str(llumi) + "0 fb^{-1} (13 TeV)"#, "+year+")"
+		Lumi = "L = " + str(llumi) + " fb^{-1} (13 TeV)"#, "+year+")"
 #	tlatex.DrawLatex(0.14, 0.82, Lumi)
-	tlatex.DrawLatex(0.68, 0.91, Lumi)
+	tlatex.SetTextAlign(31)
+	tlatex.DrawLatex(0.9, 0.91, Lumi)
+	tlatex.SetTextAlign(11)
 
 	if ControlRegion != "":
 		tlatex.SetTextFont(63)
@@ -284,7 +296,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 		leg.Draw('same')
 
 	for h in signals:
-		h[0].Draw("same")
+		h[0].Draw("same hist")
 
 	p2.cd()
 #	pullE.GetYaxis().SetNdivisions(4, False)
@@ -292,7 +304,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 		pullE.Draw("AF2")
 	if(hideData):
 		pullE.Draw("A")
-	Line = TLine(pullE.GetXaxis().GetXmin(), 1., pullE.GetXaxis().GetXmax(), 1.)
+	Line = TLine(bkg.GetHistogram().GetXaxis().GetXmin(), 1., bkg.GetHistogram().GetXaxis().GetXmax(), 1.)
 	Line.SetLineColor(kRed)
 	if(hideData==False):
 		Line.Draw()
@@ -309,7 +321,9 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	GeneralMaximus = max(bkg.GetMaximum(), data.GetMaximum())
 	if(hideData):
 		GeneralMaximus = bkg.GetMaximum()*10
-	GenMax = pow(10, log10(GeneralMaximus)*3.)
+	GeneralMaximus = max(GeneralMaximus, 1E-5)
+	print GeneralMaximus, log10(abs(GeneralMaximus))
+	GenMax = pow(10, log10(abs(GeneralMaximus))*3.)
 	bkg.SetMaximum(GenMax)
 	GenMin = bkg.GetMinimum()
 	if GenMin == 0:
@@ -322,7 +336,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	c1.Update()
 	c1.SaveAs(dirName+"/LOG_" + fileName + ".pdf")
 	c1.SaveAs(dirName+"/LOG_" + fileName + ".png")
-	c1.Delete()
+#	c1.Delete()
 
 	print "Expected number of events (MC):", SUM.Integral()
 	print "Observed number of events (DATA):", data.Integral()
@@ -340,7 +354,7 @@ def SavePull(pullH, pullE, LowEdge, UpEdge, dirName):
 #		pullE.Draw("same2")
 #	ca.SaveAs(dirName + "/pull.pdf")
 #	ca.SaveAs(dirName + "/pull.png")
-	ca.Delete()
+#	ca.Delete()
 
 def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 	newList = []
@@ -364,21 +378,21 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 #		nMaxPerBox -= 1
 	leg2 = TLegend(0.43, 0.85-lenPerHist*float(nMaxPerBox), 0.49, 0.89)
 
-	leg3 = TLegend(0.13, 0.85-lenPerHist*float(nMaxPerBox), 0.24, 0.89)
+	leg3 = TLegend(0.13, 0.85-lenPerHist*float(nMaxPerBox), 0.19, 0.89)
 	
 	legends.append(leg1)
 	legends.append(leg2)
 	legends.append(leg3)
 
-	data_lumi = " Data (" + str(lumi) + "0 pb^{-1})"
+	data_lumi = " Data (" + str(lumi) + " pb^{-1})"
 	if lumi > 1000:
 		llumi = float(lumi)/1000.
-		data_lumi = " Data (" + str(llumi) + "0 fb^{-1})"
+		data_lumi = " Data (" + str(llumi) + " fb^{-1})"
 #	leg1.AddEntry(DataHist, data_lumi, "lep")
 #	leg1.AddEntry(SUM, " Stat. Uncertainty", "lf")
 	
 	allLegs = []
-	allLegs.append([DataHist, "Data (" + str(llumi) + "0 fb^{-1})"])
+	allLegs.append([DataHist, "Data (" + str(llumi) + " fb^{-1})"])
 	allLegs.append([SUM,  "Stat. Uncertainty"])
 	allLegs += newList + Signals
 

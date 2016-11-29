@@ -1,0 +1,19 @@
+{
+    "processes": {
+	"Data"   : [
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2-2_2_0-v0-Run2016B-PromptReco-v1-6afd65c310508d0f49bd277bc7a8e5b1/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2-2_2_0-v0-Run2016B-PromptReco-v2-6afd65c310508d0f49bd277bc7a8e5b1/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2-2_2_0-v0-Run2016C-PromptReco-v2-9a092465adbfb13c40886e07b86f6d23/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p2-2_2_0-v0-Run2016B-PromptReco-v2-6afd65c310508d0f49bd277bc7a8e5b1/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p2-2_2_0-v0-Run2016C-PromptReco-v2-9a092465adbfb13c40886e07b86f6d23/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p2-2_2_0-v0-Run2016D-PromptReco-v2-9a092465adbfb13c40886e07b86f6d23/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p3-2_2_0-v0-Run2016B-PromptReco-v2-6afd65c310508d0f49bd277bc7a8e5b1/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p3-2_2_0-v0-Run2016D-PromptReco-v2-9a092465adbfb13c40886e07b86f6d23/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p4-2_2_0-v0-Run2016D-PromptReco-v2-9a092465adbfb13c40886e07b86f6d23/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p5-2_2_0-v0-Run2016E-PromptReco-v2-1c4f014e0b128564177a0bace59e44e3/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p5-2_2_0-v0-Run2016F-PromptReco-v1-1c4f014e0b128564177a0bace59e44e3/USER",
+                    "/DoubleEG/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2_p5-2_2_0-v0-Run2016G-PromptReco-v1-1c4f014e0b128564177a0bace59e44e3/USER"
+		   ]
+     },
+     "cmdLine" : "campaign=RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2 targetLumi=22.37e+3 doSelection=1 processId=Data processType=Data"
+}

@@ -585,20 +585,29 @@ if(SelDiPhos.size() < 1) {return;}
 //Efficiencies->Fill(4);
 passed4 = 1;
 
-//Check jet presel:
 edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = SelDiPhos[0];
-std::vector<edm::Ptr<flashgg::Jet>> PreSelJets = tools_.JetPreSelection(theJetsCols, diphoCand);
+unsigned int jetCollectionIndex = diphoCand->jetCollectionIndex();
+std::vector<flashgg::Jet> testCollection;
+for( unsigned int jetIndex = 0; jetIndex < theJetsCols[jetCollectionIndex]->size(); jetIndex++ )
+{
+    edm::Ptr<flashgg::Jet> thisJetPtr = theJetsCols[jetCollectionIndex]->ptrAt( jetIndex );
+    flashgg::Jet * thisJetPointer = const_cast<flashgg::Jet *>(thisJetPtr.get());
+    testCollection.push_back(*thisJetPointer);
+}
+
+//Check jet presel:
+std::vector<flashgg::Jet> PreSelJets = tools_.JetPreSelection(testCollection, diphoCand);
 if(PreSelJets.size() < 2) {return;}
-std::vector<edm::Ptr<flashgg::Jet>> SelJets = tools_.DiJetSelection(PreSelJets, 1);
+std::vector<flashgg::Jet> SelJets = tools_.DiJetSelection(PreSelJets, 1);
 if(SelJets.size() < 2) {return;}
 //Loop over jets
 for(unsigned int j = 0; j < 2; j++)
 {
-  edm::Ptr<flashgg::Jet> thisJet = SelJets[j];
-  float thisEta = fabs(thisJet->eta());
-  float thisPt = thisJet->pt();
-  float bdis = thisJet->bDiscriminator(bTagType);
-  int flavor = abs(thisJet->hadronFlavour());
+  flashgg::Jet thisJet = SelJets[j];
+  float thisEta = fabs(thisJet.eta());
+  float thisPt = thisJet.pt();
+  float bdis = thisJet.bDiscriminator(bTagType);
+  int flavor = abs(thisJet.hadronFlavour());
   if(flavor == 5){
      b_all2d->Fill(thisEta, thisPt, 1.);
      if(bdis > 0.8)

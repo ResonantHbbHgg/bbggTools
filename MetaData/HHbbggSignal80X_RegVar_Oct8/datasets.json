@@ -1,0 +1,1073 @@
+{
+    "/GluGluToBulkGravitonToHHTo2B2G_M-1000_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 2000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-1000_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_154835/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 2000, 
+                "totEvents": 2000, 
+                "weights": 2000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 45000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-1000_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_154835/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 45000, 
+                "totEvents": 45000, 
+                "weights": 45000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 3000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-1000_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_154835/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 3000, 
+                "totEvents": 3000, 
+                "weights": 3000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 2000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_154953/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 2000, 
+                "totEvents": 2000, 
+                "weights": 2000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 10000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_154953/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 10000, 
+                "totEvents": 10000, 
+                "weights": 10000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 2800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_154953/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 2800, 
+                "totEvents": 2800, 
+                "weights": 2800.0
+            }, 
+            {
+                "bad": false, 
+                "events": 30600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_154953/0000/myMicroAODOutputFile_4.root", 
+                "nevents": 30600, 
+                "totEvents": 30600, 
+                "weights": 30600.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 42400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155112/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 42400, 
+                "totEvents": 42400, 
+                "weights": 42400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 7600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155112/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 7600, 
+                "totEvents": 7600, 
+                "weights": 7600.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155229/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 2000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155347/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 2000, 
+                "totEvents": 2000, 
+                "weights": 2000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 32600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155347/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 32600, 
+                "totEvents": 32600, 
+                "weights": 32600.0
+            }, 
+            {
+                "bad": false, 
+                "events": 1000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155347/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 1000, 
+                "totEvents": 1000, 
+                "weights": 1000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 13000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155347/0000/myMicroAODOutputFile_4.root", 
+                "nevents": 13000, 
+                "totEvents": 13000, 
+                "weights": 13000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 1000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155347/0000/myMicroAODOutputFile_5.root", 
+                "nevents": 1000, 
+                "totEvents": 1000, 
+                "weights": 1000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 46600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_155505/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 46600, 
+                "totEvents": 46600, 
+                "weights": 46600.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 30400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_185015/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 30400, 
+                "totEvents": 30400, 
+                "weights": 30400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 5000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_185015/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 5000, 
+                "totEvents": 5000, 
+                "weights": 5000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 13600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_185015/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 13600, 
+                "totEvents": 13600, 
+                "weights": 13600.0
+            }, 
+            {
+                "bad": false, 
+                "events": 1000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_185015/0000/myMicroAODOutputFile_4.root", 
+                "nevents": 1000, 
+                "totEvents": 1000, 
+                "weights": 1000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-340_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 3000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-340_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162039/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 3000, 
+                "totEvents": 3000, 
+                "weights": 3000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 47000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-340_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162039/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 47000, 
+                "totEvents": 47000, 
+                "weights": 47000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 4000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162207/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 4000, 
+                "totEvents": 4000, 
+                "weights": 4000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 43200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162207/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 43200, 
+                "totEvents": 43200, 
+                "weights": 43200.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-400_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 5000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-400_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_171551/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 5000, 
+                "totEvents": 5000, 
+                "weights": 5000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 45000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-400_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_171551/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 45000, 
+                "totEvents": 45000, 
+                "weights": 45000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-450_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-450_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162413/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 1800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_160448/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 1800, 
+                "totEvents": 1800, 
+                "weights": 1800.0
+            }, 
+            {
+                "bad": false, 
+                "events": 48200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_160448/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 48200, 
+                "totEvents": 48200, 
+                "weights": 48200.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 38000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_160605/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 38000, 
+                "totEvents": 38000, 
+                "weights": 38000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 11000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_160605/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 11000, 
+                "totEvents": 11000, 
+                "weights": 11000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-600_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 3400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-600_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_171704/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 3400, 
+                "totEvents": 3400, 
+                "weights": 3400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 16400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-600_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_171704/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 16400, 
+                "totEvents": 16400, 
+                "weights": 16400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 26400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-600_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_171704/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 26400, 
+                "totEvents": 26400, 
+                "weights": 26400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 3800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-600_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_171704/0000/myMicroAODOutputFile_4.root", 
+                "nevents": 3800, 
+                "totEvents": 3800, 
+                "weights": 3800.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-650_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 21800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-650_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_160750/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 21800, 
+                "totEvents": 21800, 
+                "weights": 21800.0
+            }, 
+            {
+                "bad": false, 
+                "events": 28200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-650_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_160750/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 28200, 
+                "totEvents": 28200, 
+                "weights": 28200.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-700_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 10400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-700_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_160908/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 10400, 
+                "totEvents": 10400, 
+                "weights": 10400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 39600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-700_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_160908/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 39600, 
+                "totEvents": 39600, 
+                "weights": 39600.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-750_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 42200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-750_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161021/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 42200, 
+                "totEvents": 42200, 
+                "weights": 42200.0
+            }, 
+            {
+                "bad": false, 
+                "events": 7800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-750_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161021/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 7800, 
+                "totEvents": 7800, 
+                "weights": 7800.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-800_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 49800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-800_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_185134/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 49800, 
+                "totEvents": 49800, 
+                "weights": 49800.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 16400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2/161008_165423/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 16400, 
+                "totEvents": 16400, 
+                "weights": 16400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 33600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2/161008_165423/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 33600, 
+                "totEvents": 33600, 
+                "weights": 33600.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_10_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 25200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_10_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161355/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 25200, 
+                "totEvents": 25200, 
+                "weights": 25200.0
+            }, 
+            {
+                "bad": false, 
+                "events": 24600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_10_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161355/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 24600, 
+                "totEvents": 24600, 
+                "weights": 24600.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_11_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_11_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161507/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_12_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 7200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_12_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161621/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 7200, 
+                "totEvents": 7200, 
+                "weights": 7200.0
+            }, 
+            {
+                "bad": false, 
+                "events": 42800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_12_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161621/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 42800, 
+                "totEvents": 42800, 
+                "weights": 42800.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_13_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 12200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_13_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161747/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 12200, 
+                "totEvents": 12200, 
+                "weights": 12200.0
+            }, 
+            {
+                "bad": false, 
+                "events": 2800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_13_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161747/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 2800, 
+                "totEvents": 2800, 
+                "weights": 2800.0
+            }, 
+            {
+                "bad": false, 
+                "events": 2000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_13_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161747/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 2000, 
+                "totEvents": 2000, 
+                "weights": 2000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 32000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_13_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161747/0000/myMicroAODOutputFile_4.root", 
+                "nevents": 32000, 
+                "totEvents": 32000, 
+                "weights": 32000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_2_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 13800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_2_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161903/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 13800, 
+                "totEvents": 13800, 
+                "weights": 13800.0
+            }, 
+            {
+                "bad": false, 
+                "events": 35800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_2_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_161903/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 35800, 
+                "totEvents": 35800, 
+                "weights": 35800.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_3_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 10600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_3_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_185252/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 10600, 
+                "totEvents": 10600, 
+                "weights": 10600.0
+            }, 
+            {
+                "bad": false, 
+                "events": 28400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_3_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_185252/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 28400, 
+                "totEvents": 28400, 
+                "weights": 28400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 11000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_3_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_185252/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 11000, 
+                "totEvents": 11000, 
+                "weights": 11000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_4_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 3000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_4_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162103/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 3000, 
+                "totEvents": 3000, 
+                "weights": 3000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 45000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_4_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162103/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 45000, 
+                "totEvents": 45000, 
+                "weights": 45000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 2000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_4_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162103/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 2000, 
+                "totEvents": 2000, 
+                "weights": 2000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_5_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_5_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162219/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_6_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_6_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_172037/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_7_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_7_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162412/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_8_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 47600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_8_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162558/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 47600, 
+                "totEvents": 47600, 
+                "weights": 47600.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_9_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 46600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_9_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162734/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 46600, 
+                "totEvents": 46600, 
+                "weights": 46600.0
+            }, 
+            {
+                "bad": false, 
+                "events": 2000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_9_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162734/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 2000, 
+                "totEvents": 2000, 
+                "weights": 2000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_SM_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_SM_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_162857/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToHHTo2B2G_node_box_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 49000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToHHTo2B2G_node_box_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163012/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 49000, 
+                "totEvents": 49000, 
+                "weights": 49000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-250_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 34800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-250_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163128/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 34800, 
+                "totEvents": 34800, 
+                "weights": 34800.0
+            }, 
+            {
+                "bad": false, 
+                "events": 15000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-250_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163128/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 15000, 
+                "totEvents": 15000, 
+                "weights": 15000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-260_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-260_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163244/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-270_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 47400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-270_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163420/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 47400, 
+                "totEvents": 47400, 
+                "weights": 47400.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-280_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 49000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-280_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163536/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 49000, 
+                "totEvents": 49000, 
+                "weights": 49000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 1000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-280_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163536/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 1000, 
+                "totEvents": 1000, 
+                "weights": 1000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-300_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-300_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163650/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-320_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 2000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-320_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_172151/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 2000, 
+                "totEvents": 2000, 
+                "weights": 2000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 48000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-320_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_172151/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 48000, 
+                "totEvents": 48000, 
+                "weights": 48000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 9200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163921/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 9200, 
+                "totEvents": 9200, 
+                "weights": 9200.0
+            }, 
+            {
+                "bad": false, 
+                "events": 5000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163921/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 5000, 
+                "totEvents": 5000, 
+                "weights": 5000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 20000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163921/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 20000, 
+                "totEvents": 20000, 
+                "weights": 20000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 2400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163921/0000/myMicroAODOutputFile_4.root", 
+                "nevents": 2400, 
+                "totEvents": 2400, 
+                "weights": 2400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 13400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-340_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_163921/0000/myMicroAODOutputFile_5.root", 
+                "nevents": 13400, 
+                "totEvents": 13400, 
+                "weights": 13400.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-350_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 35200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-350_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164038/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 35200, 
+                "totEvents": 35200, 
+                "weights": 35200.0
+            }, 
+            {
+                "bad": false, 
+                "events": 14800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-350_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164038/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 14800, 
+                "totEvents": 14800, 
+                "weights": 14800.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-400_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-400_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164152/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-450_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 8800, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-450_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164311/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 8800, 
+                "totEvents": 8800, 
+                "weights": 8800.0
+            }, 
+            {
+                "bad": false, 
+                "events": 41200, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-450_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164311/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 41200, 
+                "totEvents": 41200, 
+                "weights": 41200.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-500_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 5000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-500_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164430/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 5000, 
+                "totEvents": 5000, 
+                "weights": 5000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 36000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-500_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164430/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 36000, 
+                "totEvents": 36000, 
+                "weights": 36000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 9000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-500_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164430/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 9000, 
+                "totEvents": 9000, 
+                "weights": 9000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-550_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-550_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164543/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 46400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164658/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 46400, 
+                "totEvents": 46400, 
+                "weights": 46400.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 3600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2/161008_165040/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 3600, 
+                "totEvents": 3600, 
+                "weights": 3600.0
+            }, 
+            {
+                "bad": false, 
+                "events": 3000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2/161008_165040/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 3000, 
+                "totEvents": 3000, 
+                "weights": 3000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 43400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2/161008_165040/0000/myMicroAODOutputFile_3.root", 
+                "nevents": 43400, 
+                "totEvents": 43400, 
+                "weights": 43400.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-700_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-700_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164812/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-750_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 50000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-750_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v2/161008_165152/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 50000, 
+                "totEvents": 50000, 
+                "weights": 50000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-800_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 44000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-800_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164926/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 44000, 
+                "totEvents": 44000, 
+                "weights": 44000.0
+            }, 
+            {
+                "bad": false, 
+                "events": 6000, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-800_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/161008_164926/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 6000, 
+                "totEvents": 6000, 
+                "weights": 6000.0
+            }
+        ], 
+        "vetted": true
+    }, 
+    "/GluGluToRadionToHHTo2B2G_M-900_narrow_13TeV-madgraph/rateixei-HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v3-83e4743f648c3fa958f182ead94c7239/USER": {
+        "files": [
+            {
+                "bad": false, 
+                "events": 46400, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-900_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v3/161008_165307/0000/myMicroAODOutputFile_1.root", 
+                "nevents": 46400, 
+                "totEvents": 46400, 
+                "weights": 46400.0
+            }, 
+            {
+                "bad": false, 
+                "events": 3600, 
+                "name": "/store/group/phys_higgs/resonant_HH/RunII/MicroAOD/HHbbggSignal80X_RegVar_Oct8/2_2_0/GluGluToRadionToHHTo2B2G_M-900_narrow_13TeV-madgraph/HHbbggSignal80X_RegVar_Oct8-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v3/161008_165307/0000/myMicroAODOutputFile_2.root", 
+                "nevents": 3600, 
+                "totEvents": 3600, 
+                "weights": 3600.0
+            }
+        ], 
+        "vetted": true
+    }
+}

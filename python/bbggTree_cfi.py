@@ -5,6 +5,7 @@ import flashgg.bbggTools.KinFitParams as KinFit
 ### For more information on each parameter, see parameters.py
 
 bbggtree = cms.EDAnalyzer('bbggTree',
+	is2016=param._is2016,
 	triggerTag=param._triggerTag,
 	myTriggers=param._myTriggers,
 	metTag=param._metTag,
