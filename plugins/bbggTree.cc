@@ -102,6 +102,8 @@ private:
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
     edm::EDGetTokenT<edm::View<pat::MET> > METToken_;
 
+    //Efficiency histogram
+    TH1F* h_Efficiencies = new TH1F("h_Efficiencies", "Efficiencies;Cut Level;Number of events", 10, 0, 10);
     //Tree objects
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
@@ -112,8 +114,10 @@ private:
     vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
-    float CosThetaStar, leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR_2, DiJetDiPho_DR_1, PhoJetMinDr;
+    float leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR, PhoJetMinDr;
+    float CosThetaStar, CosThetaStar_CS, CosTheta_bb, CosTheta_gg, CosTheta_bbgg, CosTheta_ggbb, Phi0, Phi1;
     std::map<std::string, int> myTriggerResults;
+    float leadingPhotonR9full5x5, subleadingPhotonR9full5x5;
 
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -123,8 +127,8 @@ private:
     int isSignal, isPhotonCR;
     //    int nvtx;
 
-  Double_t gen_mHH;
-  Double_t gen_cosTheta;
+    Double_t gen_mHH;
+    Double_t gen_cosTheta;
 
   // -- End of Tree objects --
   // --    ---        --
@@ -158,17 +162,17 @@ private:
     unsigned int nPromptPhotons, doDoubleCountingMitigation, doPhotonCR, doJetRegression;
     std::vector<std::string> myTriggers;
     std::string bTagType, PhotonMVAEstimator;
-    unsigned int doSelection, DoMVAPhotonID;
-  //std::string bRegFile;
-  edm::FileInPath bRegFile;
+    unsigned int DoMVAPhotonID;
+    edm::FileInPath bRegFile;
+    unsigned int is2016;
 
     int jetSmear;
     int jetScale;
-  std::string randomLabel;
+    std::string randomLabel;
     edm::FileInPath resFile, sfFile, scaleFile;
 
 
-  Bool_t getNonResGenInfo;
+    Bool_t getNonResGenInfo;
 
     //OutFile & Hists
     TFile* outFile;
@@ -186,7 +190,6 @@ bbggTree::bbggTree(const edm::ParameterSet& iConfig) :
 diPhotonToken_( consumes<edm::View<flashgg::DiPhotonCandidate> >( iConfig.getUntrackedParameter<edm::InputTag> ( "DiPhotonTag", edm::InputTag( "flashggDiPhotons" ) ) ) ),
 genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag", edm::InputTag( "prunedGenParticles" ) ) ) ),
 genToken2_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag2", edm::InputTag( "flashggPrunedGenParticles" ) ) ) ),
-//rhoFixedGrid_(consumes<double>(iConfig.getParameter<edm::InputTag>( "rhoFixedGridCollection" ) ) ),
 inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) )
 {
     //now do what ever initialization is needed
@@ -201,7 +204,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     EvtCount = 0;
     //Default values for thresholds
     std::string def_bTagType, def_PhotonMVAEstimator;
-    unsigned int def_doSelection = 0;
+    unsigned int def_is2016 = 1;
     std::vector<double> def_ph_pt, def_ph_eta, def_ph_r9;
     std::vector<double> def_diph_pt, def_diph_eta, def_diph_mass, def_MVAPhotonID;
     std::vector<double> def_jt_pt, def_jt_eta, def_jt_drPho, def_jt_bDis;
@@ -286,7 +289,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     phCorrEB = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEB");
     phCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEE");
 
-    doSelection = iConfig.getUntrackedParameter<unsigned int>("doSelectionTree", def_doSelection);
+    is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
     ph_pt     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonPtOverDiPhotonMass", def_ph_pt);
     ph_eta    = iConfig.getUntrackedParameter<std::vector<double > >("PhotonEta", def_ph_eta);
     ph_r9     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonR9", def_ph_r9);
@@ -461,10 +464,10 @@ void
     bbggTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
-    globVar_->fill(iEvent);
-
     if( EvtCount%100 == 0 && !DEBUG) std::cout << "[bbggTree::analyze] Analyzing event number: " << EvtCount << std::endl;
     if (DEBUG) std::cout << "[bbggTree::analyze] Analyzing event number: " << EvtCount << std::endl;
+
+    globVar_->fill(iEvent);
 
     EvtCount++;
     using namespace edm;
@@ -490,7 +493,16 @@ void
     isSignal = 0;
     isPhotonCR = 0;
     CosThetaStar = -999;
-    //    nvtx = 0;
+    CosThetaStar_CS = -999;
+    CosTheta_bb = -999;
+    CosTheta_gg = -999;
+    CosTheta_bbgg = -999;
+    CosTheta_ggbb = -999;
+    Phi0 = -999;
+    Phi1 = -999;
+    genTotalWeight = 1.0;
+    leadingPhotonR9full5x5 = -999;
+    subleadingPhotonR9full5x5 = -999;
 
     diphotonCandidate.SetPxPyPzE(0,0,0,0);// = diphoCand->p4();
     leadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
@@ -518,10 +530,6 @@ void
     Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
     iEvent.getByToken( diPhotonToken_, diPhotons );
 
-    // Handle<double> rhoHandle;        // the old way for now...move to getbytoken?
-    // iEvent.getByToken( rhoFixedGrid_, rhoHandle );
-    //
-    // const double rhoFixedGrd = *( rhoHandle.product() );
     const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
     tools_.setRho(rhoFixedGrd);
     const double nPVs = globVar_->valueOf(globVar_->indexOf("nvtx"));
@@ -530,7 +538,7 @@ void
     Handle<View<reco::GenParticle> > genParticles2;
 
     //Trigger
-    if(myTriggers.size() > 0){
+    if(myTriggers.size() > 0 && !is2016){
         Handle<edm::TriggerResults> trigResults;
         iEvent.getByToken(triggerToken_, trigResults);
         const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
@@ -610,7 +618,10 @@ void
 
     if(DEBUG) std::cout << "Number of diphoton candidates: " << diphoVec.size() << std::endl;
 
+    h_Efficiencies->Fill(0.0, genTotalWeight);
     if (diphoVec.size() < 1) return;
+
+    h_Efficiencies->Fill(1, genTotalWeight);
     if (theJetsCols.size() < 1) return;
 
     bool cutsChecked = tools_.CheckCuts();
@@ -622,18 +633,22 @@ void
     if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
 
     //Trigger preselection on diphoton candidates:
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
-    if(DEBUG) std::cout << "[bbggTree::analyze] Number of pre-selected diphtoons: "<< PreSelDipho.size() << std::endl;
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho;
+    if(is2016) PreSelDipho = tools_.DiPhotonPreselection( diphoVec );
+    if(!is2016) PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
+    if(DEBUG) std::cout << "[bbggTree::analyze] Number of pre-selected diphotons: " << PreSelDipho.size() << std::endl;
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() < 1 ) return;
+    h_Efficiencies->Fill(2, genTotalWeight);
 
     /////////////////////////////////////////////////////
     /// DOING SELECTION HERE NOW ////////////////////////
     /////////////////////////////////////////////////////
     edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate;
     vector<edm::Ptr<flashgg::DiPhotonCandidate>> KinDiPhoton = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
-    if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: "<< KinDiPhoton.size() << std::endl;
+    if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: " << KinDiPhoton.size() << std::endl;
     if( KinDiPhoton.size() < 1) return;
+    h_Efficiencies->Fill(3, genTotalWeight);
     vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton );
     vector<edm::Ptr<flashgg::DiPhotonCandidate>> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
     vector<edm::Ptr<flashgg::DiPhotonCandidate>> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
@@ -650,6 +665,7 @@ void
     if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
     if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
 
+    if(isSignal) h_Efficiencies->Fill(4, genTotalWeight);
     if(DEBUG) std::cout << "[bbggTree::analyze] Is signal region: " << isSignal << "; Is control region: " << isPhotonCR << std::endl;
 
     ///////////// JETS
@@ -657,6 +673,9 @@ void
     bool hasSubJet = 0;
     flashgg::Jet LeadingJet, SubLeadingJet;
     unsigned int jetCollectionIndex = diphoCandidate->jetCollectionIndex();
+    if( theJetsCols[jetCollectionIndex]->size() < 2) return;
+    if(isSignal) h_Efficiencies->Fill(5, genTotalWeight);
+
     std::vector<flashgg::Jet> testCollection;
     for( unsigned int jetIndex = 0; jetIndex < theJetsCols[jetCollectionIndex]->size(); jetIndex++ )
     {
@@ -664,10 +683,8 @@ void
         flashgg::Jet * thisJetPointer = const_cast<flashgg::Jet *>(thisJetPtr.get());
         testCollection.push_back(*thisJetPointer);
     }
-    std::vector<edm::Ptr<flashgg::Jet>> KinJets;
-    std::vector<flashgg::Jet> KinJets_Smear;
-    std::vector<edm::Ptr<flashgg::Jet>> SelJets;
-    std::vector<flashgg::Jet> SelJets_Smear;
+    std::vector<flashgg::Jet> KinJets;
+    std::vector<flashgg::Jet> SelJets;
     //Here I can apply smearing to my jets
     if(jetSmear!=0){
       jetSys_.SetupSmear(resFile.fullPath().data(), sfFile.fullPath().data());
@@ -688,35 +705,23 @@ void
         if(DEBUG) std::cout << "DOING REGRESSION! JetCol after: " << testCollection.size() << std::endl;
     }
 
-    if(jetSmear!=0 || jetScale!=0 || doJetRegression!=0){
-        if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION" << std::endl;
-        KinJets_Smear = tools_.JetPreSelection(testCollection, diphoCandidate);
-        if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - KinSel" << KinJets_Smear.size() << std::endl;
-        if( KinJets_Smear.size() < 2 ) return;
-        SelJets_Smear = tools_.DiJetSelection(KinJets_Smear, 1);
-        if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - DiJetSel" << SelJets_Smear.size() << std::endl;
-        if( SelJets_Smear.size() < 2 ) return;
-        if( SelJets_Smear.size() > 1 ) {
-            hasLeadJet = 1;
-            hasSubJet = 1;
-            LeadingJet = SelJets_Smear[0];
-            SubLeadingJet = SelJets_Smear[1];
-        }
-    }
+//    if(jetSmear!=0 || jetScale!=0 || doJetRegression!=0){
+    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION" << std::endl;
+    KinJets = tools_.JetPreSelection(testCollection, diphoCandidate);
+    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - KinSel" << KinJets.size() << std::endl;
+    if( KinJets.size() < 2 ) return;
+    if(isSignal) h_Efficiencies->Fill(6, genTotalWeight);
 
-    if(jetScale == 0 && jetSmear == 0 && doJetRegression==0) {
-        KinJets = tools_.JetPreSelection(theJetsCols, diphoCandidate);
-        if( KinJets.size() < 2 ) return;
-        SelJets = tools_.DiJetSelection(KinJets, 1);
-        if( SelJets.size() < 2 ) return;
-        if( SelJets.size() > 1 ) {
-            hasLeadJet = 1;
-            hasSubJet = 1;
-            flashgg::Jet * thisLeadJetPointer = const_cast<flashgg::Jet *>( SelJets[0].get() );
-            LeadingJet = *thisLeadJetPointer;
-            flashgg::Jet * thisSubleadJetPointer = const_cast<flashgg::Jet *>( SelJets[1].get() );
-            SubLeadingJet = *thisSubleadJetPointer;
-        }
+    SelJets = tools_.DiJetSelection(KinJets, 1);
+    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - DiJetSel" << SelJets.size() << std::endl;
+    if( SelJets.size() < 2 ) return;
+    if(isSignal) h_Efficiencies->Fill(7, genTotalWeight);
+
+    if( SelJets.size() > 1 ) {
+        hasLeadJet = 1;
+        hasSubJet = 1;
+        LeadingJet = SelJets[0];
+        SubLeadingJet = SelJets[1];
     }
 
     /////////////////////////////////////////////////////
@@ -751,6 +756,9 @@ void
         nPromptInDiPhoton = _mcTools.CheckNumberOfPromptPhotons(diphoCand, genParticles);
     }
 
+    leadingPhotonR9full5x5 = diphoCand->leadingPhoton()->full5x5_r9();
+    subleadingPhotonR9full5x5 = diphoCand->subLeadingPhoton()->full5x5_r9();
+
     diphotonCandidate = diphoCand->p4();
     leadingPhoton = diphoCand->leadingPhoton()->p4();
     subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
@@ -768,8 +776,7 @@ void
     diHiggsCandidate = diphotonCandidate + dijetCandidate;
 
 
-    DiJetDiPho_DR_1 = tools_.DeltaR(diphotonCandidate, dijetCandidate);
-    DiJetDiPho_DR_2 = tools_.DeltaR(diphotonCandidate,dijetCandidate);
+    DiJetDiPho_DR = tools_.DeltaR(diphotonCandidate, dijetCandidate);
 
     PhoJetMinDr = min( min( tools_.DeltaR( leadingPhoton, leadingJet ), tools_.DeltaR( leadingPhoton, subleadingJet ) ),
                        min( tools_.DeltaR( subleadingPhoton, leadingJet ), tools_.DeltaR( subleadingPhoton, subleadingJet ) ) );
@@ -785,15 +792,22 @@ void
     jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
     jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
 
-    //Calculating costheta star
-    TLorentzVector BoostedHgg(0,0,0,0);
-    BoostedHgg.SetPtEtaPhiE( diphoCand->pt(), diphoCand->eta(), diphoCand->phi(), diphoCand->energy());
-    TLorentzVector HHforBoost(0,0,0,0);
-    HHforBoost.SetPtEtaPhiE( diHiggsCandidate.pt(), diHiggsCandidate.eta(), diHiggsCandidate.phi(), diHiggsCandidate.energy());
-    TVector3 HHBoostVector = HHforBoost.BoostVector();
-    BoostedHgg.Boost( -HHBoostVector.x(), -HHBoostVector.y(), -HHBoostVector.z() );
-    CosThetaStar = BoostedHgg.CosTheta();
-
+    //Getting CosThetaStar Angles
+    const flashgg::DiPhotonCandidate* thisDiPhoCand = diphoCand.get();
+    vector<float> CosThetaAngles  = tools_.CosThetaAngles(thisDiPhoCand, LeadingJet, SubLeadingJet);
+    TLorentzVector djc, dpc;
+    djc.SetPtEtaPhiE( dijetCandidate.pt(), dijetCandidate.eta(), dijetCandidate.phi(), dijetCandidate.energy());
+    dpc.SetPtEtaPhiE( diphotonCandidate.pt(), diphotonCandidate.eta(), diphotonCandidate.phi(), diphotonCandidate.energy());
+    CosThetaStar_CS = tools_.getCosThetaStar_CS(djc,dpc,6500); //Colin Sopper Frame CTS
+    CosThetaStar = CosThetaAngles[0];
+    CosTheta_bb = CosThetaAngles[1];
+    CosTheta_gg = CosThetaAngles[2];
+    CosTheta_bbgg = CosThetaAngles[3];
+    CosTheta_ggbb = CosThetaAngles[4];
+    vector<double> PhiAngles = tools_.getPhi(thisDiPhoCand, LeadingJet, SubLeadingJet);
+    Phi0 = PhiAngles[0];
+    Phi1 = PhiAngles[1];
+    
 
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
 
@@ -892,11 +906,13 @@ bbggTree::beginJob()
     tree->Branch("leadingPhotonISO", &leadingPhotonISO);
     tree->Branch("leadingPhotonEVeto", &leadingPhotonEVeto, "leadingPhotonEVeto/I");
     tree->Branch("leadingPhotonIDMVA", &leadingPhotonIDMVA, "leadingPhotonIDMVA/f");
+    tree->Branch("leadingPhotonR9full5x5", &leadingPhotonR9full5x5, "leadingPhotonR9full5x5/F");
     tree->Branch("subleadingPhoton", &subleadingPhoton);
     tree->Branch("subleadingPhotonID", &subleadingPhotonID);
     tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
     tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
     tree->Branch("subleadingPhotonIDMVA", &subleadingPhotonIDMVA, "subleadingPhotonIDMVA/f");
+    tree->Branch("subleadingPhotonR9full5x5", &subleadingPhotonR9full5x5, "subleadingPhotonR9full5x5/F");
     tree->Branch("diphotonCandidate", &diphotonCandidate);
     tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
     tree->Branch("leadingJet", &leadingJet);
@@ -924,9 +940,15 @@ bbggTree::beginJob()
     tree->Branch("isSignal", &isSignal, "isSignal/I");
     tree->Branch("isPhotonCR", &isPhotonCR, "isPhotonCR/I");
     tree->Branch("CosThetaStar", &CosThetaStar, "CosThetaStar/F");
+    tree->Branch("CosThetaStar_CS", &CosThetaStar_CS, "CosThetaStar_CS/F");
+    tree->Branch("CosTheta_bb", &CosTheta_bb, "CosTheta_bb/F");
+    tree->Branch("CosTheta_gg", &CosTheta_gg, "CosTheta_gg/F");
+    tree->Branch("CosTheta_bbgg", &CosTheta_bbgg, "CosTheta_bbgg/F");
+    tree->Branch("CosTheta_ggbb", &CosTheta_ggbb, "CosTheta_ggbb/F");
+    tree->Branch("Phi0", &Phi0, "Phi0/F");
+    tree->Branch("Phi1", &Phi1, "Phi1/F");
     tree->Branch("TriggerResults", &myTriggerResults);
-    tree->Branch("DiJetDiPho_DR_1", &DiJetDiPho_DR_1, "DiJetDiPho_DR_1/F");
-    tree->Branch("DiJetDiPho_DR_2", &DiJetDiPho_DR_2, "DiJetDiPho_DR_2/F");
+    tree->Branch("DiJetDiPho_DR", &DiJetDiPho_DR, "DiJetDiPho_DR/F");
     tree->Branch("PhoJetMinDr", &PhoJetMinDr, "PhoJetMinDr/F");
 
     std::map<std::string, std::string> replacements;
@@ -941,7 +963,8 @@ void
 bbggTree::endJob()
 {
 outFile->cd();
-//    tree->Write();
+//tree->Write();
+h_Efficiencies->Write();
 outFile->Write();
 outFile->Close();
 }

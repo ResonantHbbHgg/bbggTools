@@ -26,6 +26,7 @@ class myStack:
 		self.dataLegend = ''
 		self.varName = ''
 		self.tStack = THStack(str(name), str(title))
+		SetOwnership(self.tStack, False)
 		self.varName = varName
 		self.dirName = dirName
 		self.lumi = lumi
@@ -44,11 +45,14 @@ class myStack:
 		self.isPhoCR = 1
 	def addHist(self, hist, legend, norm):
 		self.myHistograms.append([deepcopy(hist), str(legend), norm])
+		SetOwnership( self.myHistograms[ len(self.myHistograms)-1 ][0], False )
 		self.legends.append(legend)
 	def addSignal(self, hist, legend, norm):
 		self.mySignals.append([deepcopy(hist), str(legend), norm])
+		SetOwnership( self.mySignals[len(self.mySignals)-1][0], False)
 	def addData(self, hist, legend):
 		self.myData = deepcopy(hist)
+		SetOwnership( self.myData, False)
 		self.dataLegend = legend
 	def alreadyHas(self, legend):
 		if legend in self.legends:
@@ -64,15 +68,10 @@ class myStack:
 			return 0
 		mySumHists = self.myHistograms[0][0].Clone("mySumHists")
 		mySumHists.Reset()
-#		legend = TLegend(0.11, 0.65, 0.89, 0.9)
-#		legend.AddEntry(self.myData, self.dataLegend, "lep")
 		for Hist in self.myHistograms:
 			hist = Hist[0]
-			hist.Sumw2()
-			self.tStack.Add(hist)
+			self.tStack.Add(hist, "hist")
 			mySumHists.Add(hist,1)
-#			legend.AddEntry(hist, Hist[1], 'f')
-#		self.tStack.SetMinimum(-0.1)
 		generalMaximus = max( self.myData.GetMaximum(), self.tStack.GetMaximum() )
 		self.tStack.SetMaximum(generalMaximus*1.5)
 		pullHandE = doPull(mySumHists, self.myData, self.tStack)
@@ -82,23 +81,17 @@ class myStack:
 		UpEdge = pullHandE[3]
 		self.SUM = self.tStack.GetStack().Last().Clone("SUM")
 		self.SUM.SetLineWidth(0)
-#		self.SUM.SetMarkerStyle(10)
-#		self.SUM.SetMarkerSize(0)
-#		self.SUM.SetFillColorAlpha(kRed, 0.5)
 		self.SUM.SetFillColorAlpha(kGray+2, 0.5)
 		self.SUM.SetMarkerColorAlpha(0,0)
-#		self.SUM.SetLineColorAlpha(kRed,0.5)
 		self.SUM.SetLineColorAlpha(kGray+2,0.5)
-#		self.SUM.SetMarkerColor(15)
-#		self.SUM.SetFillStyle(3254)
 		self.SUM.SetFillStyle(1001)
 		legend = MakeLegend(self.myHistograms, self.myData, self.lumi, self.mySignals, self.SUM)
-		SavePull(pullH, pullE, LowEdge, UpEdge, self.dirName)
-		SaveNoPull(self.myData, self.tStack, fileName)
 		ControlRegion = ""
 		if self.isPhoCR == 1:
 			ControlRegion = "Fake Photon CR"
 		if self.isJetCR == 1:
 			ControlRegion = "Light Jets CR"
+		print self.tStack.GetNhists()
 		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM, ControlRegion, self.hideData_, self.year)
+#		gROOT.EndOfProcessCleanups()
 
