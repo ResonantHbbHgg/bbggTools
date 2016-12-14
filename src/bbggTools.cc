@@ -904,6 +904,95 @@ std::vector<flashgg::Jet> bbggTools::DiJetSelection(std::vector<flashgg::Jet> Je
 
 }
 
+
+
+
+std::vector<flashgg::Jet> bbggTools::DiJetVBFSelection(std::vector<flashgg::Jet> Jets, std::vector<flashgg::Jet> DiJet)
+{
+
+
+    flashgg::Jet jet1, jet2;
+    std::vector<flashgg::Jet> SelDijet;
+    double sumbtag_ref = -999;
+    bool hasDiJet = false;
+    sumbtag_ref = sumbtag_ref;
+
+    double deta_max = 0; 
+    int iJet_vbf = -1, jJet_vbf = -1;
+    double dRj1 = 0, dRj2 = 0;
+
+    if(DEBUG) std::cout << "Jet sorting... " << std::endl;
+
+
+    for(unsigned int iJet = 0; iJet < Jets.size(); iJet++) {
+ 
+      dRj1 = bbggTools::DeltaR(Jets[iJet].p4(), DiJet[0].p4()); 
+      dRj2 = bbggTools::DeltaR(Jets[iJet].p4(), DiJet[1].p4()); 
+
+      if (dRj1 < 0.1 || dRj2 < 0.1) {
+	std::cout << "Matched!" << endl;
+	continue;
+      }
+
+      for(unsigned int jJet = iJet+1; jJet < Jets.size(); jJet++) {
+
+	dRj1 = bbggTools::DeltaR(Jets[jJet].p4(), DiJet[0].p4()); 
+	dRj2 = bbggTools::DeltaR(Jets[jJet].p4(), DiJet[1].p4()); 
+
+	if (dRj1 < 0.1 || dRj2 < 0.1) {
+	  std::cout << "Matched!" << endl;
+	  continue;
+	}
+
+	double deta = fabs(Jets[iJet].p4().eta() - Jets[jJet].p4().eta());
+
+	//	std::cout << "Jets[iJet].p4().eta() = " << Jets[iJet].p4().eta() << " Jets[jJet].p4().eta() = " << Jets[jJet].p4().eta() << " deta = " << deta << endl;
+
+	if (deta > deta_max) {
+	  deta_max = deta;
+	  iJet_vbf = iJet; jJet_vbf = jJet; 
+	  hasDiJet = true;
+	}
+
+      }
+
+    }
+
+    if (hasDiJet){
+      if( Jets[iJet_vbf].pt() > Jets[jJet_vbf].pt() ) {
+	jet1 = Jets.at(iJet_vbf);
+	jet2 = Jets.at(jJet_vbf);
+      } else {
+	jet2 = Jets.at(iJet_vbf);
+	jet1 = Jets.at(jJet_vbf);
+      }
+
+      SelDijet.push_back(jet1);
+      SelDijet.push_back(jet2);
+
+    }
+     
+    std::cout << "" << endl;
+
+    return SelDijet;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 std::vector<edm::Ptr<flashgg::Jet>> bbggTools::JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate)
 {
