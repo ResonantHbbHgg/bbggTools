@@ -930,7 +930,7 @@ std::vector<flashgg::Jet> bbggTools::DiJetVBFSelection(std::vector<flashgg::Jet>
       dRj2 = bbggTools::DeltaR(Jets[iJet].p4(), DiJet[1].p4()); 
 
       if (dRj1 < 0.1 || dRj2 < 0.1) {
-	std::cout << "Matched!" << endl;
+	//	std::cout << "Matched! " << iJet << endl;
 	continue;
       }
 
@@ -940,7 +940,7 @@ std::vector<flashgg::Jet> bbggTools::DiJetVBFSelection(std::vector<flashgg::Jet>
 	dRj2 = bbggTools::DeltaR(Jets[jJet].p4(), DiJet[1].p4()); 
 
 	if (dRj1 < 0.1 || dRj2 < 0.1) {
-	  std::cout << "Matched!" << endl;
+	  //	  std::cout << "Matched! " << jJet << endl;
 	  continue;
 	}
 
@@ -972,7 +972,7 @@ std::vector<flashgg::Jet> bbggTools::DiJetVBFSelection(std::vector<flashgg::Jet>
 
     }
      
-    std::cout << "" << endl;
+    //   std::cout << "" << endl;
 
     return SelDijet;
 
