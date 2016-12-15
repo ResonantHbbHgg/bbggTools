@@ -44,6 +44,7 @@ public:
 
 //    std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
     std::vector<flashgg::Jet> JetPreSelection(std::vector<flashgg::Jet>, edm::Ptr<flashgg::DiPhotonCandidate> dCand);
+    std::vector<flashgg::Jet> JetVBFPreSelection(std::vector<flashgg::Jet>, edm::Ptr<flashgg::DiPhotonCandidate> dCand, std::vector<flashgg::Jet> DiJet);
 
     bool passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
     bool passHggPreselection(const flashgg::DiPhotonCandidate * dipho);

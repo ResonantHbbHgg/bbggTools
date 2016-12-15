@@ -919,30 +919,13 @@ std::vector<flashgg::Jet> bbggTools::DiJetVBFSelection(std::vector<flashgg::Jet>
 
     double deta_max = 0; 
     int iJet_vbf = -1, jJet_vbf = -1;
-    double dRj1 = 0, dRj2 = 0;
 
     if(DEBUG) std::cout << "Jet sorting... " << std::endl;
 
 
     for(unsigned int iJet = 0; iJet < Jets.size(); iJet++) {
- 
-      dRj1 = bbggTools::DeltaR(Jets[iJet].p4(), DiJet[0].p4()); 
-      dRj2 = bbggTools::DeltaR(Jets[iJet].p4(), DiJet[1].p4()); 
-
-      if (dRj1 < 0.1 || dRj2 < 0.1) {
-	//	std::cout << "Matched! " << iJet << endl;
-	continue;
-      }
 
       for(unsigned int jJet = iJet+1; jJet < Jets.size(); jJet++) {
-
-	dRj1 = bbggTools::DeltaR(Jets[jJet].p4(), DiJet[0].p4()); 
-	dRj2 = bbggTools::DeltaR(Jets[jJet].p4(), DiJet[1].p4()); 
-
-	if (dRj1 < 0.1 || dRj2 < 0.1) {
-	  //	  std::cout << "Matched! " << jJet << endl;
-	  continue;
-	}
 
 	double deta = fabs(Jets[iJet].p4().eta() - Jets[jJet].p4().eta());
 
@@ -1028,6 +1011,50 @@ std::vector<edm::Ptr<flashgg::Jet>> bbggTools::JetPreSelection(JetCollectionVect
 return Jets;
 }
 */
+
+
+std::vector<flashgg::Jet> bbggTools::JetVBFPreSelection(std::vector<flashgg::Jet> jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> dCand, std::vector<flashgg::Jet> DiJet)
+{
+
+    //Begin Jets Loop/Selection ------------------------------------------------------------
+    std::vector<flashgg::Jet> Jets;
+    if(DEBUG) std::cout << "Begin Jet selection..." << std::endl;
+    for( unsigned int jetIndex = 0; jetIndex < jetsCol.size(); jetIndex++ )
+    {
+      //flashgg::Jet jet = jetsCol[jetIndex];
+      const flashgg::Jet *jet = &(jetsCol[jetIndex]);
+
+    	bool isJet = true;
+
+        if(_JetDoID[0] && !(bbggTools::isJetID(jet)))
+            isJet = false;
+        // if( _JetDoPUID[0]  )
+        //            isJet = false;
+    	if(jet->pt() < _JetPt[0])
+            isJet = false;
+ 	if( !isJet )
+            continue;
+ 	if( bbggTools::DeltaR(jet->p4(), dCand->leadingPhoton()->p4()) < _JetDrPho[0]
+	    || bbggTools::DeltaR(jet->p4(), dCand->subLeadingPhoton()->p4()) < _JetDrPho[0] ) {
+	  //	  cout << "Matched to photon" << endl;
+	  continue;
+	}
+	if( bbggTools::DeltaR(jet->p4(), DiJet[0].p4()) < 0.1
+	    || bbggTools::DeltaR(jet->p4(), DiJet[1].p4()) < 0.1 ) {
+	  //	  cout << "Matched to higgs jet" << endl;
+	  continue;
+
+	}
+ 	    Jets.push_back(*jet );
+     }
+
+    if(DEBUG)    cout << "VBF jets candidate size" << Jets.size() << endl;
+
+return Jets;
+}
+
+
+
 
 std::vector<flashgg::Jet> bbggTools::JetPreSelection(std::vector<flashgg::Jet> jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> dCand)
 {

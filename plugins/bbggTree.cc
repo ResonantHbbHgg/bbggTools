@@ -746,7 +746,10 @@ void
         SubLeadingJet = SelJets[1];
     }
 
-    SelVBFJets = tools_.DiJetVBFSelection(collectionForVBF, SelJets);
+    collectionForVBF = tools_.JetVBFPreSelection(collectionForVBF, diphoCandidate, SelJets);
+
+    if (collectionForVBF.size() > 1) 
+      SelVBFJets = tools_.DiJetVBFSelection(collectionForVBF, SelJets);
 
  
     /////////////////////////////////////////////////////
