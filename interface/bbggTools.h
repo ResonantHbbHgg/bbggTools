@@ -40,8 +40,11 @@ public:
 //    std::vector<edm::Ptr<flashgg::Jet>> DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets, bool DoMassCut = 0);
     std::vector<flashgg::Jet> DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut = 0);
     
+    std::vector<flashgg::Jet> DiJetVBFSelection(std::vector<flashgg::Jet> Jets, std::vector<flashgg::Jet> DiJet);
+
 //    std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
     std::vector<flashgg::Jet> JetPreSelection(std::vector<flashgg::Jet>, edm::Ptr<flashgg::DiPhotonCandidate> dCand);
+    std::vector<flashgg::Jet> JetVBFPreSelection(std::vector<flashgg::Jet>, edm::Ptr<flashgg::DiPhotonCandidate> dCand, std::vector<flashgg::Jet> DiJet);
 
     bool passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
     bool passHggPreselection(const flashgg::DiPhotonCandidate * dipho);

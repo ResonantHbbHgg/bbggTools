@@ -107,6 +107,10 @@ private:
     //Tree objects
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
+
+    LorentzVector leadingJet_VBF, subleadingJet_VBF, DijetVBF;
+    float dEta_VBF, Mjj_VBF;
+
     LorentzVector leadingJet_KF, subleadingJet_KF, dijetCandidate_KF;
     LorentzVector leadingJet_Reg, subleadingJet_Reg, dijetCandidate_Reg;
     LorentzVector leadingJet_RegKF, subleadingJet_RegKF, dijetCandidate_RegKF;
@@ -504,6 +508,9 @@ void
     leadingPhotonR9full5x5 = -999;
     subleadingPhotonR9full5x5 = -999;
 
+    dEta_VBF = -999; 
+    Mjj_VBF = 0;
+
     diphotonCandidate.SetPxPyPzE(0,0,0,0);// = diphoCand->p4();
     leadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
     subleadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->subLeadingPhoton()->p4();
@@ -515,6 +522,11 @@ void
     subleadingJet_flavour = 0;//SubLeadingJet->partonFlavour();
     dijetCandidate.SetPxPyPzE(0,0,0,0);// = leadingJet + subleadingJet;
     diHiggsCandidate.SetPxPyPzE(0,0,0,0);// = diphotonCandidate + dijetCandidate;
+
+    leadingJet_VBF.SetPxPyPzE(0,0,0,0);// = LeadingJet->p4();
+    subleadingJet_VBF.SetPxPyPzE(0,0,0,0);// = LeadingJet->p4();
+
+    
 
     gen_mHH = 0;
     gen_cosTheta = -99;
@@ -685,6 +697,7 @@ void
     }
     std::vector<flashgg::Jet> KinJets;
     std::vector<flashgg::Jet> SelJets;
+    std::vector<flashgg::Jet> SelVBFJets;
     //Here I can apply smearing to my jets
     if(jetSmear!=0){
       jetSys_.SetupSmear(resFile.fullPath().data(), sfFile.fullPath().data());
@@ -693,6 +706,13 @@ void
     if(jetScale!=0){
         jetSys_.ScaleJets(testCollection, jetScale);
     }
+
+    
+    std::vector<flashgg::Jet> collectionForVBF;
+    for( unsigned int jetIndex = 0; jetIndex < testCollection.size(); jetIndex++ )
+      collectionForVBF.push_back(testCollection[jetIndex]);
+
+
     if(doJetRegression!=0) {
         Handle<View<pat::MET> > METs;
         iEvent.getByToken( METToken_, METs );
@@ -713,6 +733,8 @@ void
     if(isSignal) h_Efficiencies->Fill(6, genTotalWeight);
 
     SelJets = tools_.DiJetSelection(KinJets, 1);
+
+
     if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - DiJetSel" << SelJets.size() << std::endl;
     if( SelJets.size() < 2 ) return;
     if(isSignal) h_Efficiencies->Fill(7, genTotalWeight);
@@ -724,6 +746,12 @@ void
         SubLeadingJet = SelJets[1];
     }
 
+    collectionForVBF = tools_.JetVBFPreSelection(collectionForVBF, diphoCandidate, SelJets);
+
+    if (collectionForVBF.size() > 1) 
+      SelVBFJets = tools_.DiJetVBFSelection(collectionForVBF, SelJets);
+
+ 
     /////////////////////////////////////////////////////
     /// DOING SELECTION HERE NOW ////////////////////////
     /////////////////////////////////////////////////////
@@ -774,6 +802,18 @@ void
 
     dijetCandidate = leadingJet + subleadingJet;
     diHiggsCandidate = diphotonCandidate + dijetCandidate;
+
+
+    // VBF definition
+    if (SelVBFJets.size() > 1){
+      leadingJet_VBF = SelVBFJets[0].p4();
+      subleadingJet_VBF = SelVBFJets[1].p4();
+      DijetVBF = leadingJet_VBF + subleadingJet_VBF;
+      
+      dEta_VBF = fabs(leadingJet_VBF.eta() - subleadingJet_VBF.eta());
+      Mjj_VBF = DijetVBF.M();
+    }
+
 
 
     DiJetDiPho_DR = tools_.DeltaR(diphotonCandidate, dijetCandidate);
@@ -950,6 +990,11 @@ bbggTree::beginJob()
     tree->Branch("TriggerResults", &myTriggerResults);
     tree->Branch("DiJetDiPho_DR", &DiJetDiPho_DR, "DiJetDiPho_DR/F");
     tree->Branch("PhoJetMinDr", &PhoJetMinDr, "PhoJetMinDr/F");
+    tree->Branch("leadingJet_VBF", &leadingJet_VBF);
+    tree->Branch("subleadingJet_VBF", &subleadingJet_VBF);
+    tree->Branch("dEta_VBF", &dEta_VBF, "dEta_VBF/F");
+    tree->Branch("Mjj_VBF", &Mjj_VBF, "Mjj_VBF/F");
+
 
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);
