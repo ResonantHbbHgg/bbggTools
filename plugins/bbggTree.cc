@@ -606,11 +606,15 @@ void
             }
             bbggMC _mcTools = bbggMC();
             unsigned int nPrompt = _mcTools.CheckNumberOfPromptPhotons(dipho, genParticles);
+            if (nPromptPhotons > 1 && nPrompt > 1) diphoVec.push_back(dipho);
+            if (nPromptPhotons < 2 && nPrompt < 2) diphoVec.push_back(dipho);
+/*
             if (nPromptPhotons > 0 && nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
             if (nPromptPhotons == 0) {
                 if (nPrompt == 0) diphoVec.push_back(dipho);
                 else if (nPrompt == 1) diphoVec.push_back(dipho);
             }
+*/
         } else {
             diphoVec.push_back(dipho);
         }
