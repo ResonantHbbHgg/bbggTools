@@ -56,6 +56,7 @@ Implementation:
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
@@ -63,6 +64,7 @@ Implementation:
 #include "flashgg/bbggTools/interface/bbggKinFit.h"
 #include "flashgg/bbggTools/interface/bbggJetRegression.h"
 #include "flashgg/bbggTools/interface/bbggJetSystematics.h"
+#include "flashgg/bbggTools/interface/bbggPhotonCorrector.h"
 
 //
 // class declaration
@@ -90,6 +92,7 @@ private:
     bbggKinFit kinFit_;
     bbggJetRegression jetReg_;
     bbggJetSystematics jetSys_;
+    bbggPhotonCorrector phoCorr_;
     flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
@@ -101,6 +104,8 @@ private:
     edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
     edm::EDGetTokenT<edm::View<pat::MET> > METToken_;
+    edm::EDGetTokenT<EcalRecHitCollection> ebRecHits_token;
+
 
     //Efficiency histogram
     TH1F* h_Efficiencies = new TH1F("h_Efficiencies", "Efficiencies;Cut Level;Number of events", 10, 0, 10);
@@ -169,6 +174,8 @@ private:
     unsigned int DoMVAPhotonID;
     edm::FileInPath bRegFile;
     unsigned int is2016;
+    int doPhotonScale, doPhotonExtraScale, doPhotonSmearing;
+    std::string PhotonScaleFile;
 
     int jetSmear;
     int jetScale;
@@ -200,6 +207,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     tools_ = bbggTools();
     jetReg_ = bbggJetRegression();
     jetSys_ = bbggJetSystematics();
+    phoCorr_ = bbggPhotonCorrector();
     //    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
@@ -219,39 +227,27 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     std::vector<std::string> def_ph_whichID, def_ph_whichISO;
     unsigned int def_diph_onlyfirst;
     unsigned int def_n_bJets;
+    int def_doPhotonScale, def_doPhotonExtraScale, def_doPhotonSmearing;
+    std::string def_PhotonScaleFile;
     //std::string def_bRegFile;
     edm::FileInPath def_bRegFile;
 
-    def_ph_pt.push_back(10.);           def_ph_pt.push_back(10.);
-    def_ph_eta.push_back(20.);          def_ph_eta.push_back(20.);
-    def_ph_r9.push_back(-1.);           def_ph_r9.push_back(-1.);
-    def_ph_elVeto.push_back(-1);       def_ph_elVeto.push_back(-1);
-    def_ph_doelVeto.push_back(0);       def_ph_elVeto.push_back(0);
-    def_ph_doID.push_back(0);		    def_ph_doID.push_back(0);
-    def_ph_whichID.push_back("loose");  def_ph_whichID.push_back("loose");
-    def_ph_doISO.push_back(0);	        def_ph_doISO.push_back(0);
-    def_ph_whichISO.push_back("loose"); def_ph_whichISO.push_back("loose");
-    def_MVAPhotonID.push_back(1.);      def_MVAPhotonID.push_back(1.);
-    def_diph_pt.push_back(10.);         def_diph_pt.push_back(10.);
-    def_diph_eta.push_back(0.);         def_diph_eta.push_back(0.);
-    def_diph_mass.push_back(0.);        def_diph_mass.push_back(1000.);
-    def_diph_onlyfirst = 0;
-    def_jt_pt.push_back(10.);           def_jt_pt.push_back(10.);
-    def_jt_eta.push_back(20.);          def_jt_eta.push_back(20.);
-    def_jt_bDis.push_back(0.);          def_jt_bDis.push_back(0.);
-    def_jt_doPU.push_back(0);           def_jt_doPU.push_back(0);
-    def_jt_doID.push_back(0);           def_jt_doID.push_back(0);
-    def_n_bJets = 0;
-    def_dijt_pt.push_back(10.);         def_dijt_pt.push_back(10.);
-    def_dijt_eta.push_back(20.);        def_dijt_eta.push_back(20.);
-    def_dijt_mass.push_back(0.);        def_dijt_mass.push_back(1000.);
-    def_jt_drPho.push_back(0.5);
-    def_cand_pt.push_back(0.);
-    def_cand_eta.push_back(20.);
-    def_cand_mass.push_back(0.);		def_cand_mass.push_back(2000.);
-
-    def_dr_cands.push_back(0.11);
-
+    //init values
+    def_ph_pt.push_back(10.); def_ph_pt.push_back(10.); def_ph_eta.push_back(20.); def_ph_eta.push_back(20.);
+    def_ph_r9.push_back(-1.); def_ph_r9.push_back(-1.); def_ph_elVeto.push_back(-1); def_ph_elVeto.push_back(-1);
+    def_ph_doelVeto.push_back(0); def_ph_elVeto.push_back(0); def_ph_doID.push_back(0); def_ph_doID.push_back(0);
+    def_ph_whichID.push_back("loose"); def_ph_whichID.push_back("loose"); def_ph_doISO.push_back(0); def_ph_doISO.push_back(0);
+    def_ph_whichISO.push_back("loose"); def_ph_whichISO.push_back("loose"); def_MVAPhotonID.push_back(1.); def_MVAPhotonID.push_back(1.);
+    def_diph_pt.push_back(10.); def_diph_pt.push_back(10.); def_diph_eta.push_back(0.); def_diph_eta.push_back(0.);
+    def_diph_mass.push_back(0.); def_diph_mass.push_back(1000.); def_diph_onlyfirst = 0; def_jt_pt.push_back(10.);
+    def_jt_pt.push_back(10.); def_jt_eta.push_back(20.); def_jt_eta.push_back(20.); def_jt_bDis.push_back(0.);
+    def_jt_bDis.push_back(0.); def_jt_doPU.push_back(0); def_jt_doPU.push_back(0); def_jt_doID.push_back(0);
+    def_jt_doID.push_back(0); def_n_bJets = 0; def_dijt_pt.push_back(10.); def_dijt_pt.push_back(10.);
+    def_dijt_eta.push_back(20.); def_dijt_eta.push_back(20.); def_dijt_mass.push_back(0.); def_dijt_mass.push_back(1000.);
+    def_jt_drPho.push_back(0.5); def_cand_pt.push_back(0.); def_cand_eta.push_back(20.); def_cand_mass.push_back(0.);
+    def_cand_mass.push_back(2000.); def_dr_cands.push_back(0.11);
+    def_doPhotonScale = -10; def_doPhotonExtraScale = -10; def_doPhotonSmearing = -10;
+    def_PhotonScaleFile = "EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV2_2016_pho";
     unsigned int def_nPromptPhotons = 0;
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
@@ -275,7 +271,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
     def_bRegFile = edm::FileInPath("flashgg/bbggTools/data/BRegression/TMVARegression_BDTG.weights.xml");
 
-    //Get thresholds from config file
+    //Get photon ID thresholds from config file
     phoIDlooseEB = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEB");
     phoIDlooseEE = iConfig.getUntrackedParameter<std::vector<double > >("phoIDlooseEE");
     phoIDmediumEB = iConfig.getUntrackedParameter<std::vector<double > >("phoIDmediumEB");
@@ -294,6 +290,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     phCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEE");
 
     is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
+
+    //photon selection parameters
     ph_pt     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonPtOverDiPhotonMass", def_ph_pt);
     ph_eta    = iConfig.getUntrackedParameter<std::vector<double > >("PhotonEta", def_ph_eta);
     ph_r9     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonR9", def_ph_r9);
@@ -307,6 +305,18 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     diph_eta  = iConfig.getUntrackedParameter<std::vector<double > >("DiPhotonEta", def_diph_eta);
     diph_mass = iConfig.getUntrackedParameter<std::vector<double > >("DiPhotonMassWindow", def_diph_mass);
     diph_onlyfirst = iConfig.getUntrackedParameter<unsigned int>("DiPhotonOnlyFirst", def_diph_onlyfirst);
+    nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
+    doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
+    doPhotonCR = iConfig.getUntrackedParameter<unsigned int>("doPhotonCR", def_doPhotonCR);
+    DoMVAPhotonID = iConfig.getUntrackedParameter<unsigned int>("DoMVAPhotonID", def_DoMVAPhotonID);
+    MVAPhotonID = iConfig.getUntrackedParameter<std::vector<double>>("MVAPhotonID", def_MVAPhotonID);
+    PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
+    doPhotonScale = iConfig.getUntrackedParameter<int>("doPhotonScale", def_doPhotonScale);
+    doPhotonExtraScale = iConfig.getUntrackedParameter<int>("doPhotonExtraScale", def_doPhotonExtraScale);
+    doPhotonSmearing = iConfig.getUntrackedParameter<int>("doPhotonSmearing", def_doPhotonSmearing);
+    PhotonScaleFile = iConfig.getUntrackedParameter<std::string >("PhotonCorrectionFile", def_PhotonScaleFile);
+
+    //jet selection parameters
     jt_pt     = iConfig.getUntrackedParameter<std::vector<double > >("JetPtOverDiJetMass", def_jt_pt);
     jt_eta    = iConfig.getUntrackedParameter<std::vector<double > >("JetEta", def_jt_eta);
     jt_drPho  = iConfig.getUntrackedParameter<std::vector<double > >("JetDrPho", def_jt_drPho);
@@ -317,37 +327,30 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     dijt_pt   = iConfig.getUntrackedParameter<std::vector<double > >("DiJetPt", def_dijt_pt);
     dijt_eta  = iConfig.getUntrackedParameter<std::vector<double > >("DiJetEta", def_dijt_eta);
     dijt_mass = iConfig.getUntrackedParameter<std::vector<double > >("DiJetMassWindow", def_dijt_mass);
+    doJetRegression = iConfig.getUntrackedParameter<unsigned int>("doJetRegression", def_doJetRegression);
+    bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
+    bRegFile = iConfig.getUntrackedParameter<edm::FileInPath>("bRegFile", def_bRegFile);
+    jetSmear = iConfig.getUntrackedParameter<int>("jetSmear", def_jetSmear);
+    jetScale = iConfig.getUntrackedParameter<int>("jetScale", def_jetScale);
+
+    //extra selection
     cand_pt 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidatePt", def_cand_mass);
     cand_eta 	= iConfig.getUntrackedParameter<std::vector<double > >("CandidateEta", def_cand_mass);
     cand_mass = iConfig.getUntrackedParameter<std::vector<double > >("CandidateMassWindow", def_cand_mass);
     dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
-    nPromptPhotons = iConfig.getUntrackedParameter<unsigned int>("nPromptPhotons", def_nPromptPhotons);
-    doDoubleCountingMitigation = iConfig.getUntrackedParameter<unsigned int>("doDoubleCountingMitigation", def_doDoubleCountingMitigation);
-    doPhotonCR = iConfig.getUntrackedParameter<unsigned int>("doPhotonCR", def_doPhotonCR);
-    doJetRegression = iConfig.getUntrackedParameter<unsigned int>("doJetRegression", def_doJetRegression);
-    bTagType = iConfig.getUntrackedParameter<std::string>( "bTagType", def_bTagType );
+
+
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
+
+    //tokens and labels
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
     genInfoToken_ = consumes<GenEventInfoProduct>( genInfo_ );
-
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
-
-    //MET
     METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
-
-    //MVA Photon ID
-    DoMVAPhotonID = iConfig.getUntrackedParameter<unsigned int>("DoMVAPhotonID", def_DoMVAPhotonID);
-    MVAPhotonID = iConfig.getUntrackedParameter<std::vector<double>>("MVAPhotonID", def_MVAPhotonID);
-    PhotonMVAEstimator = iConfig.getUntrackedParameter<std::string>("PhotonMVAEstimator", def_PhotonMVAEstimator);
-
-    //bRegFile = iConfig.getUntrackedParameter<std::string>("bRegFile", def_bRegFile);
-    bRegFile = iConfig.getUntrackedParameter<edm::FileInPath>("bRegFile", def_bRegFile);
-
-    jetSmear = iConfig.getUntrackedParameter<int>("jetSmear", def_jetSmear);
-    jetScale = iConfig.getUntrackedParameter<int>("jetScale", def_jetScale);
-
     randomLabel = iConfig.getUntrackedParameter<std::string>("randomLabel", def_randomLabel);
+    ebRecHits_token = consumes<EcalRecHitCollection>( iConfig.getParameter<edm::InputTag>( "reducedBarrelRecHitCollection" ) );
+
     resFile = iConfig.getUntrackedParameter<edm::FileInPath>("resFile", def_resFile);
     sfFile = iConfig.getUntrackedParameter<edm::FileInPath>("sfFile", def_sfFile);
     scaleFile = iConfig.getUntrackedParameter<edm::FileInPath>("scaleFile", def_scaleFile);
@@ -545,6 +548,7 @@ void
     const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
     tools_.setRho(rhoFixedGrd);
     const double nPVs = globVar_->valueOf(globVar_->indexOf("nvtx"));
+    const int runNumber = globVar_->valueOf(globVar_->indexOf("run"));
 
     Handle<View<pat::PackedGenParticle> > genParticles;
     Handle<View<reco::GenParticle> > genParticles2;
@@ -567,6 +571,29 @@ void
     } else {
         genTotalWeight = 1;
     }
+
+    //Remove MC duplicates (if needed)
+    vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoVec;
+    for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
+    {
+        edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
+        if(doDoubleCountingMitigation){
+            if ( !genInfo.isValid() ) {
+                std::cout << "[bbggTree::analyze] Oh, man! You're trying to get MC information from data. Pay attention to what you're doing!" << std::endl;
+                return;
+            }
+            bbggMC _mcTools = bbggMC();
+            unsigned int nPrompt = _mcTools.CheckNumberOfPromptPhotons(dipho, genParticles);
+            if (nPromptPhotons > 1 && nPrompt > 1) diphoVec.push_back(dipho);
+            if (nPromptPhotons < 2 && nPrompt < 2) diphoVec.push_back(dipho);
+        } else {
+            diphoVec.push_back(dipho);
+        }
+    }
+
+    //Eff step 0
+    if(DEBUG) std::cout << "Number of diphoton candidates: " << diphoVec.size() << std::endl;
+    h_Efficiencies->Fill(0.0, genTotalWeight);
 
 
     if (getNonResGenInfo){
@@ -605,38 +632,8 @@ void
       // --- End of gen HH info
     }
 
-
-    //PreLoop
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoVec;
-    for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
-    {
-        edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
-        if(doDoubleCountingMitigation){
-            if ( !genInfo.isValid() ) {
-                std::cout << "[bbggTree::analyze] Oh, man! You're trying to get MC information from data. Pay attention to what you're doing!" << std::endl;
-                return;
-            }
-            bbggMC _mcTools = bbggMC();
-            unsigned int nPrompt = _mcTools.CheckNumberOfPromptPhotons(dipho, genParticles);
-            if (nPromptPhotons > 1 && nPrompt > 1) diphoVec.push_back(dipho);
-            if (nPromptPhotons < 2 && nPrompt < 2) diphoVec.push_back(dipho);
-/*
-            if (nPromptPhotons > 0 && nPrompt == nPromptPhotons) diphoVec.push_back(dipho);
-            if (nPromptPhotons == 0) {
-                if (nPrompt == 0) diphoVec.push_back(dipho);
-                else if (nPrompt == 1) diphoVec.push_back(dipho);
-            }
-*/
-        } else {
-            diphoVec.push_back(dipho);
-        }
-    }
-
-    if(DEBUG) std::cout << "Number of diphoton candidates: " << diphoVec.size() << std::endl;
-
-    h_Efficiencies->Fill(0.0, genTotalWeight);
     if (diphoVec.size() < 1) return;
-
+    //Eff step 1
     h_Efficiencies->Fill(1, genTotalWeight);
     if (theJetsCols.size() < 1) return;
 
@@ -648,26 +645,70 @@ void
 
     if(DEBUG) std::cout << "[bbggTree::analyze] About to do event selection! " << std::endl;
 
+    /////////////////////////////////////////////////////
+    /// DOING SELECTION HERE NOW ////////////////////////
+    /////////////////////////////////////////////////////
+
+    /////////////
+    // Photons //
+    /////////////
+
+    //Prepare reference collection
+    std::vector<flashgg::DiPhotonCandidate> diphotonCollection;
+    for( unsigned int dpIndex = 0; dpIndex < diphoVec.size(); dpIndex++ )
+    {
+        edm::Ptr<flashgg::DiPhotonCandidate> thisDPPtr = diphoVec[ dpIndex ];
+        flashgg::DiPhotonCandidate * thisDPPointer = const_cast<flashgg::DiPhotonCandidate *>(thisDPPtr.get());
+        diphotonCollection.push_back(*thisDPPointer);
+    }
+
+    ////Do scale and smearing
+    //Prepare scales and smearings
+    if (doPhotonSmearing > -10 || doPhotonScale > -10) {
+        phoCorr_.SetupCorrector(PhotonScaleFile);
+        phoCorr_.setRandomLabel(randomLabel);
+    }
+    //Smear MC
+    if (!iEvent.isRealData() && doPhotonSmearing > -10) {
+        phoCorr_.setVariation(doPhotonSmearing);
+        phoCorr_.SmearPhotonsInDiPhotons(diphotonCollection, runNumber);
+    }
+    //Scale Data
+    if (iEvent.isRealData() && doPhotonScale > -10) {
+        phoCorr_.setVariation(doPhotonScale);
+        phoCorr_.ScalePhotonsInDiPhotons(diphotonCollection, runNumber);
+    }
+    //Extra scale on data
+    if (iEvent.isRealData() && doPhotonExtraScale > -10) {
+        edm::Handle<EcalRecHitCollection> _ebRecHits;
+        iEvent.getByToken(ebRecHits_token, _ebRecHits);
+        phoCorr_.setVariation(doPhotonScale);
+        phoCorr_.ExtraScalePhotonsInDiPhotons(diphotonCollection, *_ebRecHits);
+    }
+
     //Trigger preselection on diphoton candidates:
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho;
-    if(is2016) PreSelDipho = tools_.DiPhotonPreselection( diphoVec );
-    if(!is2016) PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
+    vector<flashgg::DiPhotonCandidate> PreSelDipho;
+    if(is2016) PreSelDipho = tools_.DiPhotonPreselection( diphotonCollection );
+    if(!is2016) PreSelDipho = tools_.DiPhoton76XPreselection( diphotonCollection, myTriggerResults);
     if(DEBUG) std::cout << "[bbggTree::analyze] Number of pre-selected diphotons: " << PreSelDipho.size() << std::endl;
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() < 1 ) return;
     h_Efficiencies->Fill(2, genTotalWeight);
 
-    /////////////////////////////////////////////////////
-    /// DOING SELECTION HERE NOW ////////////////////////
-    /////////////////////////////////////////////////////
-    edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate;
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> KinDiPhoton = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
+    
+    //Kinematic selection
+    std::vector<flashgg::DiPhotonCandidate> KinDiPhoton = tools_.DiPhotonKinematicSelection( diphotonCollection, 1);
     if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: " << KinDiPhoton.size() << std::endl;
     if( KinDiPhoton.size() < 1) return;
     h_Efficiencies->Fill(3, genTotalWeight);
-    vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton );
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
+
+    //Evaluate photon IDs
+    vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton );
+    vector<flashgg::DiPhotonCandidate> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
+    vector<flashgg::DiPhotonCandidate> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
+
+    //Select diphoton candidate
+    flashgg::DiPhotonCandidate diphoCandidate;
     if(SignalDiPhotons.size() > 0) {
         diphoCandidate = tools_.PtSumDiPhotonSelection(SignalDiPhotons);//SignalDiPhotons[0];
         isSignal = 1;
@@ -688,7 +729,7 @@ void
     bool hasLeadJet = 0;
     bool hasSubJet = 0;
     flashgg::Jet LeadingJet, SubLeadingJet;
-    unsigned int jetCollectionIndex = diphoCandidate->jetCollectionIndex();
+    unsigned int jetCollectionIndex = diphoCandidate.jetCollectionIndex();
     if( theJetsCols[jetCollectionIndex]->size() < 2) return;
     if(isSignal) h_Efficiencies->Fill(5, genTotalWeight);
 
@@ -711,11 +752,9 @@ void
         jetSys_.ScaleJets(testCollection, jetScale);
     }
 
-    
     std::vector<flashgg::Jet> collectionForVBF;
     for( unsigned int jetIndex = 0; jetIndex < testCollection.size(); jetIndex++ )
       collectionForVBF.push_back(testCollection[jetIndex]);
-
 
     if(doJetRegression!=0) {
         Handle<View<pat::MET> > METs;
@@ -730,18 +769,17 @@ void
     }
 
 //    if(jetSmear!=0 || jetScale!=0 || doJetRegression!=0){
-    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION" << std::endl;
+    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - PreSel" << std::endl;
     KinJets = tools_.JetPreSelection(testCollection, diphoCandidate);
-    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - KinSel" << KinJets.size() << std::endl;
     if( KinJets.size() < 2 ) return;
     if(isSignal) h_Efficiencies->Fill(6, genTotalWeight);
 
+    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - KinSel" << KinJets.size() << std::endl;
     SelJets = tools_.DiJetSelection(KinJets, 1);
-
-
-    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - DiJetSel" << SelJets.size() << std::endl;
     if( SelJets.size() < 2 ) return;
     if(isSignal) h_Efficiencies->Fill(7, genTotalWeight);
+
+    if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - DiJetSel" << SelJets.size() << std::endl;
 
     if( SelJets.size() > 1 ) {
         hasLeadJet = 1;
@@ -763,7 +801,7 @@ void
 
     if(!hasLeadJet || !hasSubJet) return;
 
-    edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = diphoCandidate;//tools_.GetSelected_diphoCandidate();
+    flashgg::DiPhotonCandidate diphoCand = diphoCandidate;//tools_.GetSelected_diphoCandidate();
 
     if(DEBUG && doJetRegression){
         std::cout << "Userflots of leading jet: " << std::endl;
@@ -780,7 +818,7 @@ void
         std::cout << "\t softLepDr: " << LeadingJet.userFloat("softLepDr") << std::endl;
     }
 
-    if (DEBUG) std::cout << "Jet collection picked: " << diphoCand->jetCollectionIndex() << std::endl;
+    if (DEBUG) std::cout << "Jet collection picked: " << diphoCand.jetCollectionIndex() << std::endl;
 
     nPromptInDiPhoton = 999;
     if ( genInfo.isValid() ){
@@ -788,12 +826,12 @@ void
         nPromptInDiPhoton = _mcTools.CheckNumberOfPromptPhotons(diphoCand, genParticles);
     }
 
-    leadingPhotonR9full5x5 = diphoCand->leadingPhoton()->full5x5_r9();
-    subleadingPhotonR9full5x5 = diphoCand->subLeadingPhoton()->full5x5_r9();
+    leadingPhotonR9full5x5 = diphoCand.leadingPhoton()->full5x5_r9();
+    subleadingPhotonR9full5x5 = diphoCand.subLeadingPhoton()->full5x5_r9();
 
-    diphotonCandidate = diphoCand->p4();
-    leadingPhoton = diphoCand->leadingPhoton()->p4();
-    subleadingPhoton = diphoCand->subLeadingPhoton()->p4();
+    diphotonCandidate = diphoCand.p4();
+    leadingPhoton = diphoCand.leadingPhoton()->p4();
+    subleadingPhoton = diphoCand.subLeadingPhoton()->p4();
 
     leadingJet = LeadingJet.p4();
     leadingJet_bDis = LeadingJet.bDiscriminator(bTagType);
@@ -837,8 +875,8 @@ void
     jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
 
     //Getting CosThetaStar Angles
-    const flashgg::DiPhotonCandidate* thisDiPhoCand = diphoCand.get();
-    vector<float> CosThetaAngles  = tools_.CosThetaAngles(thisDiPhoCand, LeadingJet, SubLeadingJet);
+//    const flashgg::DiPhotonCandidate* thisDiPhoCand = diphoCand.get();
+    vector<float> CosThetaAngles  = tools_.CosThetaAngles(&diphoCand, LeadingJet, SubLeadingJet);
     TLorentzVector djc, dpc;
     djc.SetPtEtaPhiE( dijetCandidate.pt(), dijetCandidate.eta(), dijetCandidate.phi(), dijetCandidate.energy());
     dpc.SetPtEtaPhiE( diphotonCandidate.pt(), diphotonCandidate.eta(), diphotonCandidate.phi(), diphotonCandidate.energy());
@@ -848,13 +886,14 @@ void
     CosTheta_gg = CosThetaAngles[2];
     CosTheta_bbgg = CosThetaAngles[3];
     CosTheta_ggbb = CosThetaAngles[4];
-    vector<double> PhiAngles = tools_.getPhi(thisDiPhoCand, LeadingJet, SubLeadingJet);
+    vector<double> PhiAngles = tools_.getPhi(&diphoCand, LeadingJet, SubLeadingJet);
     Phi0 = PhiAngles[0];
     Phi1 = PhiAngles[1];
     
 
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
 
+/*
     int lphoIDloose = 0;
     int lphoIDmedium = 0;
     int lphoIDtight = 0;
@@ -867,6 +906,7 @@ void
     int sphoISOloose = 0;
     int sphoISOmedium = 0;
     int sphoISOtight = 0;
+
 
     float lpho_eta_abs = fabs( diphoCand->leadingPhoton()->superCluster()->eta() );
     float spho_eta_abs = fabs( diphoCand->subLeadingPhoton()->superCluster()->eta() );
@@ -921,9 +961,10 @@ void
     subleadingPhotonISO.push_back(sphoISOloose);
     subleadingPhotonISO.push_back(sphoISOmedium);
     subleadingPhotonISO.push_back(sphoISOtight);
+*/
 
-    leadingPhotonEVeto = diphoCand->leadingPhoton()->passElectronVeto();
-    subleadingPhotonEVeto = diphoCand->subLeadingPhoton()->passElectronVeto();
+    leadingPhotonEVeto = diphoCand.leadingPhoton()->passElectronVeto();
+    subleadingPhotonEVeto = diphoCand.subLeadingPhoton()->passElectronVeto();
 
     if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
     tree->Fill();

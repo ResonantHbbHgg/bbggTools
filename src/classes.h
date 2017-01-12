@@ -28,17 +28,18 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 //Local
+#include "flashgg/bbggTools/interface/bbggJetRegression.h"
+#include "flashgg/bbggTools/interface/bbggJetSystematics.h"
 #include "flashgg/bbggTools/interface/bbggKinFit.h"
-#include "flashgg/bbggTools/interface/bbggTools.h"
 #include "flashgg/bbggTools/interface/bbggMC.h"
-#include "flashgg/bbggTools/interface/bbggLTMaker.h"
-#include "flashgg/bbggTools/interface/bbgg2DFitter.h"
+#include "flashgg/bbggTools/interface/bbggPhotonCorrector.h"
+#include "flashgg/bbggTools/interface/bbggTools.h"
 
 namespace {
 	struct dictionary {
 //		bbggTools dummy_tools;
-       bbggLTMaker dummy_ltree;
+//       bbggLTMaker dummy_ltree;
 //        bbggMC dummy_mc;
-        bbgg2DFitter dummy_fit;
+//        bbgg2DFitter dummy_fit;
 	};
 }

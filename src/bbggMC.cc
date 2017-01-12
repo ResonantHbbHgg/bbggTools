@@ -51,6 +51,11 @@ edm::Ptr<flashgg::Jet> bbggMC::GetSelected_subleadingJetCandidate()
 
 unsigned int bbggMC::CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandidate> dipho, edm::Handle<edm::View<pat::PackedGenParticle> > genCol)
 {
+    return bbggMC::CheckNumberOfPromptPhotons( *dipho, genCol);
+}
+
+unsigned int bbggMC::CheckNumberOfPromptPhotons(flashgg::DiPhotonCandidate dipho, edm::Handle<edm::View<pat::PackedGenParticle> > genCol)
+{
 	vector<unsigned int> iGenPho;
 	for( unsigned int iGen = 0; iGen < genCol->size(); iGen++)
 	{
@@ -64,8 +69,8 @@ unsigned int bbggMC::CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandid
 	if (DEBUG ) std::cout << "Number of isPromptFinalState gen photons: " << iGenPho.size() << std::endl;
 	
 	vector<LorentzVector> phos;
-	phos.push_back(dipho->leadingPhoton()->p4());
-	phos.push_back(dipho->subLeadingPhoton()->p4());
+	phos.push_back(dipho.leadingPhoton()->p4());
+	phos.push_back(dipho.subLeadingPhoton()->p4());
 	unsigned int nPromptMatched = 0;
 	for(unsigned int iPho = 0; iPho < phos.size(); iPho++)
 	{
@@ -85,6 +90,11 @@ unsigned int bbggMC::CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandid
 
 unsigned int bbggMC::CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandidate> dipho, edm::Handle<edm::View<reco::GenParticle> > genCol)
 {
+    return bbggMC::CheckNumberOfPromptPhotons( *dipho, genCol);
+}
+
+unsigned int bbggMC::CheckNumberOfPromptPhotons(flashgg::DiPhotonCandidate dipho, edm::Handle<edm::View<reco::GenParticle> > genCol)
+{
 	vector<unsigned int> iGenPho;
 	for( unsigned int iGen = 0; iGen < genCol->size(); iGen++)
 	{
@@ -98,8 +108,8 @@ unsigned int bbggMC::CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandid
 //	std::cout << "Number of isPromptFinalState gen photons: " << iGenPho.size() << std::endl;
 	
 	vector<LorentzVector> phos;
-	phos.push_back(dipho->leadingPhoton()->p4());
-	phos.push_back(dipho->subLeadingPhoton()->p4());
+	phos.push_back(dipho.leadingPhoton()->p4());
+	phos.push_back(dipho.subLeadingPhoton()->p4());
 	unsigned int nPromptMatched = 0;
 	for(unsigned int iPho = 0; iPho < phos.size(); iPho++)
 	{
