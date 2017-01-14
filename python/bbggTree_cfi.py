@@ -69,6 +69,12 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	bRegFile=param._bRegFile,
 	jetSmear=param._jetSmear,
 	randomLabel=param._randomLabel,
-	jetScale=param._jetScale
+	jetScale=param._jetScale,
+        doPhotonScale=param._doPhotonScale,
+        doPhotonExtraScale=param._doPhotonExtraScale,
+        doPhotonSmearing=param._doPhotonSmearing,
+        PhotonCorrectionFile=param._PhotonCorrectionFile,
+        doCustomPhotonMVA=param._doCustomPhotonMVA,
+        mvaValuesMap=param._mvaValuesMap
 #	doSelectionTree=param._doSelectionTree
 )

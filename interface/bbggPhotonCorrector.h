@@ -25,6 +25,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/Common/interface/PtrVector.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 #include "EgammaAnalysis/ElectronTools/interface/EnergyScaleCorrection_class.hh"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 
@@ -49,6 +50,8 @@ public:
 
     void ExtraScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonCandidate> & diPhos, EcalRecHitCollection _ebRecHits);
     void ExtraScalePhoton(flashgg::Photon & photon, EcalRecHitCollection _ebRecHits);
+
+    void SetCustomPhotonIDMVA(std::vector<flashgg::DiPhotonCandidate> & diPhos, edm::Handle<edm::ValueMap<float> > mvaValues);
 
 private:
     bool isSet;

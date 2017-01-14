@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const int DEBUG = 0;
+const int DEBUG = 1;
 
 //bool DEBUG = false;
 
@@ -38,6 +38,7 @@ void bbggPhotonCorrector::SetupCorrector(std::string CorrectionFile)
 
 void bbggPhotonCorrector::SmearPhotonsInDiPhotons(std::vector<flashgg::DiPhotonCandidate> & diPhos, int runNumber)
 {
+    if(DEBUG) std::cout << "[bbggPhotonCorrector::SmearPhotonsInDiPhotons] Begin" <<std::endl;
     runNumber_ = runNumber;
     scaler_.doSmearings = true;
     scaler_.doScale = false;
@@ -52,6 +53,7 @@ void bbggPhotonCorrector::SmearPhotonsInDiPhotons(std::vector<flashgg::DiPhotonC
 
 void bbggPhotonCorrector::ScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonCandidate> & diPhos, int runNumber)
 {
+    if(DEBUG) std::cout << "[bbggPhotonCorrector::ScalePhotonsInDiPhotons] Begin" <<std::endl;
     runNumber_ = runNumber;
     scaler_.doSmearings = false;
     scaler_.doScale = true;
@@ -125,4 +127,19 @@ void bbggPhotonCorrector::ExtraScalePhoton(flashgg::Photon & photon, EcalRecHitC
 
     bbggPhotonCorrector::LorentzVector thisp4 = photon.p4();
     photon.setP4( Ecorr*thisp4);
+}
+
+void bbggPhotonCorrector::SetCustomPhotonIDMVA( std::vector<flashgg::DiPhotonCandidate> & diPhos, edm::Handle<edm::ValueMap<float> > mvaValues)
+{
+    for (unsigned int iy = 0; iy < diPhos.size(); iy++)
+    {
+        float leadingMVA = (*mvaValues)[diPhos[iy].leadingView()->originalPhoton()];
+        diPhos[iy].getLeadingPhoton().addUserFloat("EGMMVAID", leadingMVA);
+        float subleadingMVA = (*mvaValues)[diPhos[iy].subLeadingView()->originalPhoton()];
+        diPhos[iy].getSubLeadingPhoton().addUserFloat("EGMMVAID", subleadingMVA);
+        if(DEBUG) {
+            std::cout << "[SetCustomPhotonIDMVA] Leading photon EGM MVA: " << diPhos[iy].leadingPhoton()->userFloat("EGMMVAID") << std::endl;
+            std::cout << "[SetCustomPhotonIDMVA] SubLeading photon EGM MVA: " << diPhos[iy].subLeadingPhoton()->userFloat("EGMMVAID") << std::endl;
+        }
+    }
 }

@@ -57,6 +57,7 @@ Implementation:
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
@@ -70,7 +71,7 @@ Implementation:
 // class declaration
 //
 
-const int DEBUG = 0;
+const int DEBUG = 1;
 
 class bbggTree : public edm::EDAnalyzer {
 public:
@@ -105,17 +106,15 @@ private:
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
     edm::EDGetTokenT<edm::View<pat::MET> > METToken_;
     edm::EDGetTokenT<EcalRecHitCollection> ebRecHits_token;
-
+    edm::EDGetTokenT<edm::ValueMap<float> > mvaValuesMapToken_;
 
     //Efficiency histogram
     TH1F* h_Efficiencies = new TH1F("h_Efficiencies", "Efficiencies;Cut Level;Number of events", 10, 0, 10);
     //Tree objects
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
-
     LorentzVector leadingJet_VBF, subleadingJet_VBF, DijetVBF;
     float dEta_VBF, Mjj_VBF;
-
     LorentzVector leadingJet_KF, subleadingJet_KF, dijetCandidate_KF;
     LorentzVector leadingJet_Reg, subleadingJet_Reg, dijetCandidate_Reg;
     LorentzVector leadingJet_RegKF, subleadingJet_RegKF, dijetCandidate_RegKF;
@@ -126,7 +125,7 @@ private:
     float leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR, PhoJetMinDr;
     float CosThetaStar, CosThetaStar_CS, CosTheta_bb, CosTheta_gg, CosTheta_bbgg, CosTheta_ggbb, Phi0, Phi1;
     std::map<std::string, int> myTriggerResults;
-    float leadingPhotonR9full5x5, subleadingPhotonR9full5x5;
+    float leadingPhotonR9full5x5, subleadingPhotonR9full5x5, customLeadingPhotonMVA, customSubLeadingPhotonMVA;
 
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -173,7 +172,7 @@ private:
     std::string bTagType, PhotonMVAEstimator;
     unsigned int DoMVAPhotonID;
     edm::FileInPath bRegFile;
-    unsigned int is2016;
+    unsigned int is2016, doCustomPhotonMVA;
     int doPhotonScale, doPhotonExtraScale, doPhotonSmearing;
     std::string PhotonScaleFile;
 
@@ -226,7 +225,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     std::vector<int> def_jt_doPU, def_jt_doID;
     std::vector<std::string> def_ph_whichID, def_ph_whichISO;
     unsigned int def_diph_onlyfirst;
-    unsigned int def_n_bJets;
+    unsigned int def_n_bJets, def_doCustomPhotonMVA;
     int def_doPhotonScale, def_doPhotonExtraScale, def_doPhotonSmearing;
     std::string def_PhotonScaleFile;
     //std::string def_bRegFile;
@@ -245,7 +244,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     def_jt_doID.push_back(0); def_n_bJets = 0; def_dijt_pt.push_back(10.); def_dijt_pt.push_back(10.);
     def_dijt_eta.push_back(20.); def_dijt_eta.push_back(20.); def_dijt_mass.push_back(0.); def_dijt_mass.push_back(1000.);
     def_jt_drPho.push_back(0.5); def_cand_pt.push_back(0.); def_cand_eta.push_back(20.); def_cand_mass.push_back(0.);
-    def_cand_mass.push_back(2000.); def_dr_cands.push_back(0.11);
+    def_cand_mass.push_back(2000.); def_dr_cands.push_back(0.11); def_doCustomPhotonMVA = 0;
     def_doPhotonScale = -10; def_doPhotonExtraScale = -10; def_doPhotonSmearing = -10;
     def_PhotonScaleFile = "EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV2_2016_pho";
     unsigned int def_nPromptPhotons = 0;
@@ -315,6 +314,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     doPhotonExtraScale = iConfig.getUntrackedParameter<int>("doPhotonExtraScale", def_doPhotonExtraScale);
     doPhotonSmearing = iConfig.getUntrackedParameter<int>("doPhotonSmearing", def_doPhotonSmearing);
     PhotonScaleFile = iConfig.getUntrackedParameter<std::string >("PhotonCorrectionFile", def_PhotonScaleFile);
+    doCustomPhotonMVA = iConfig.getUntrackedParameter<unsigned int>("doCustomPhotonMVA", def_doCustomPhotonMVA);
 
     //jet selection parameters
     jt_pt     = iConfig.getUntrackedParameter<std::vector<double > >("JetPtOverDiJetMass", def_jt_pt);
@@ -349,7 +349,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
     METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
     randomLabel = iConfig.getUntrackedParameter<std::string>("randomLabel", def_randomLabel);
-    ebRecHits_token = consumes<EcalRecHitCollection>( iConfig.getParameter<edm::InputTag>( "reducedBarrelRecHitCollection" ) );
+//    ebRecHits_token = consumes<EcalRecHitCollection>( iConfig.getParameter<edm::InputTag>( "reducedBarrelRecHitCollection" ) );
+    mvaValuesMapToken_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("mvaValuesMap"));
 
     resFile = iConfig.getUntrackedParameter<edm::FileInPath>("resFile", def_resFile);
     sfFile = iConfig.getUntrackedParameter<edm::FileInPath>("sfFile", def_sfFile);
@@ -360,6 +361,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
     tools_.SetCut_MVAPhotonID(MVAPhotonID);
     tools_.SetCut_PhotonMVAEstimator(PhotonMVAEstimator);
+    if(doCustomPhotonMVA) tools_.SetCut_PhotonMVAEstimator(std::string("EGMMVAID"));
 
     tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
@@ -510,6 +512,8 @@ void
     genTotalWeight = 1.0;
     leadingPhotonR9full5x5 = -999;
     subleadingPhotonR9full5x5 = -999;
+    customLeadingPhotonMVA = -999;
+    customSubLeadingPhotonMVA = -999;
 
     dEta_VBF = -999; 
     Mjj_VBF = 0;
@@ -652,7 +656,7 @@ void
     /////////////
     // Photons //
     /////////////
-
+ 
     //Prepare reference collection
     std::vector<flashgg::DiPhotonCandidate> diphotonCollection;
     for( unsigned int dpIndex = 0; dpIndex < diphoVec.size(); dpIndex++ )
@@ -660,13 +664,14 @@ void
         edm::Ptr<flashgg::DiPhotonCandidate> thisDPPtr = diphoVec[ dpIndex ];
         flashgg::DiPhotonCandidate * thisDPPointer = const_cast<flashgg::DiPhotonCandidate *>(thisDPPtr.get());
         diphotonCollection.push_back(*thisDPPointer);
+        diphotonCollection[dpIndex].makePhotonsPersistent();
     }
 
     ////Do scale and smearing
     //Prepare scales and smearings
     if (doPhotonSmearing > -10 || doPhotonScale > -10) {
         phoCorr_.SetupCorrector(PhotonScaleFile);
-        phoCorr_.setRandomLabel(randomLabel);
+        phoCorr_.setRandomLabel(std::string("rnd_g_E"));
     }
     //Smear MC
     if (!iEvent.isRealData() && doPhotonSmearing > -10) {
@@ -701,6 +706,19 @@ void
     if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: " << KinDiPhoton.size() << std::endl;
     if( KinDiPhoton.size() < 1) return;
     h_Efficiencies->Fill(3, genTotalWeight);
+
+    //Calculate Custom MVA ID
+    if( doCustomPhotonMVA ) {
+        edm::Handle<edm::ValueMap<float> > mvaValues;
+        iEvent.getByToken(mvaValuesMapToken_,mvaValues);
+        phoCorr_.SetCustomPhotonIDMVA(KinDiPhoton, mvaValues);
+        if(DEBUG) {
+           for (unsigned int iy = 0; iy < KinDiPhoton.size(); iy++) {
+               std::cout << "[bbggTree] Leading Custom MVA : " << KinDiPhoton[iy].leadingPhoton()->userFloat("EGMMVAID") << std::endl;
+               std::cout << "[bbggTree] SubLeading Custom MVA : " << KinDiPhoton[iy].subLeadingPhoton()->userFloat("EGMMVAID") << std::endl;
+           }
+        }
+    }
 
     //Evaluate photon IDs
     vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton );
@@ -890,6 +908,10 @@ void
     Phi0 = PhiAngles[0];
     Phi1 = PhiAngles[1];
     
+    customLeadingPhotonMVA = diphoCand.leadingPhoton()->userFloat("EGMMVAID");
+    customSubLeadingPhotonMVA = diphoCand.subLeadingPhoton()->userFloat("EGMMVAID");
+    leadingPhotonIDMVA = diphoCand.leadingPhoton()->userFloat(PhotonMVAEstimator);
+    subleadingPhotonIDMVA = diphoCand.subLeadingPhoton()->userFloat(PhotonMVAEstimator);
 
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
 

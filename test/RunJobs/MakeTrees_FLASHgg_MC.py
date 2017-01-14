@@ -1,46 +1,7 @@
 import FWCore.ParameterSet.Config as cms
-from flashgg.bbggTools.microAOD_RadFiles import *
-from flashgg.bbggTools.microAOD_GravFiles import *
-from flashgg.bbggTools.More_microAOD_DJet40Inf import *
 from flashgg.bbggTools.pColors import *
 import flashgg.Taggers.flashggTags_cff as flashggTags
 
-##### Arguments
-#import flashgg.bbggTools.VarParsing as opts
-#options = opts.VarParsing('analysis')
-#------- Add extra option
-#options.register('doSelection',
-#					False,
-#					opts.VarParsing.multiplicity.singleton,
-#					opts.VarParsing.varType.bool,
-#					'False: Make tree before selection; True: Make tree after selection')
-#options.register('doDoubleCountingMitigation',
-#					False,
-#					opts.VarParsing.multiplicity.singleton,
-#					opts.VarParsing.varType.bool,
-#					'False: Do not remove double counted photons from QCD/GJet/DiPhotonJets; True: Remove double counted photons from QCD/GJet/DiPhotonJets')
-#options.register('nPromptPhotons',
-#					0,
-#					opts.VarParsing.multiplicity.singleton,
-#					opts.VarParsing.varType.int,
-#					'Number of prompt photons to be selected - to use this, set doDoubleCountingMitigation=1')
-#
-#-------
-#
-#options.parseArguments()
-
-#maxEvents = 5
-#if options.maxEvents:
-#        maxEvents = int(options.maxEvents)
-
-#inputFile = "/store/user/rateixei/flashgg/RunIISpring15-50ns/Spring15BetaV2/GluGluToRadionToHHTo2B2G_M-650_narrow_13TeV-madgraph/RunIISpring15-50ns-Spring15BetaV2-v0-RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/150804_164203/0000/myMicroAODOutputFile_1.root" #RadFiles['650']
-#if options.inputFiles:
-#        inputFile = options.inputFiles
-
-#outputFile = "rest_rad700.root"
-#if options.outputFile:
-#        outputFile = options.outputFile
-######
 process = cms.Process("bbggtree")
 process.load("flashgg.bbggTools.bbggTree_cfi")
 process.bbggtree.rho = cms.InputTag('fixedGridRhoAll')
@@ -114,27 +75,20 @@ if customize.outputFile:
 
 print customize.inputFiles, customize.outputFile, customize.maxEvents, customize.doSelection, customize.doDoubleCountingMitigation, customize.nPromptPhotons
 
-
-#process.load("FWCore.MessageService.MessageLogger_cfi")
-
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(maxEvents) )
-#process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 2000 )
-
-## Available mass points:
-# RadFiles: 320, 340, 350, 400, 600, 650, 700
-# GravFiles: 260, 270, 280, 320, 350, 500, 550
-#NonResPhys14 = 'file:/afs/cern.ch/work/r/rateixei/work/DiHiggs/FLASHggPreSel/CMSSW_7_4_0_pre9/src/flashgg/MicroAOD/test/hhbbgg_hggVtx.root'
-
-#process.source = cms.Source("PoolSource",
-#    # replace 'myfile.root' with the source file you want to use
-#    fileNames = cms.untracked.vstring(
-#        customize.inputFiles
-#    )
-#)
+## Prepare photon ID
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+dataFormat = DataFormat.MiniAOD
+switchOnVIDPhotonIdProducer(process, dataFormat)
+my_id_modules = ['RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring16_nonTrig_V1_cff']
+process.egmPhotonIDs.physicsObjectSrc = cms.InputTag('flashggRandomizedPhotons')
+process.photonMVAValueMapProducer.src = cms.InputTag('flashggRandomizedPhotons')
+process.egmPhotonIsolation.srcToIsolate = cms.InputTag('flashggRandomizedPhotons')
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
+#    getattr(process, idmod).physicsObjectSrc = cms.InputTag('flashggPhotons')
 
 print "I'M HERE 3"
 
-#process.load("flashgg.bbggTools.bbggTree_cfi")
 process.load("flashgg.Taggers.flashggTags_cff")
 process.bbggtree.OutFileName = cms.untracked.string(outputFile)
 
@@ -163,4 +117,22 @@ if customize.doDoubleCountingMitigation is False:
 
 #process.p = cms.Path(process.bbggtree)
 
-process.p = cms.Path(flashggTags.flashggUnpackedJets*process.bbggtree)
+process.dump=cms.EDAnalyzer('EventContentAnalyzer')
+
+# Load the producer module to build full 5x5 cluster shapes and whatever 
+# else is needed for IDs
+#process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
+#process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
+#process.load("Geometry.CaloEventSetup.CaloGeometry_cfi")
+#process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
+#process.load("Configuration.Geometry.GeometryECALHCAL_cff")
+#from RecoEgamma.PhotonIdentification.PhotonIDValueMapProducer_cfi import *
+# Load the producer for MVA IDs. Make sure it is also added to the sequence!
+#from RecoEgamma.PhotonIdentification.PhotonMVAValueMapProducer_cfi import *
+#process.photonMVAValueMapProducer.src = cms.InputTag('flashggRandomizedPhotons')
+#process.photonIDValueMapProducer.src = cms.InputTag('flashggRandomizedPhotons')
+
+process.p = cms.Path( process.egmPhotonIDSequence*flashggTags.flashggUnpackedJets*process.bbggtree)
+#process.p = cms.Path(process.photonMVAValueMapProducer * process.egmPhotonIDs*flashggTags.flashggUnpackedJets*process.bbggtree)
+#process.p = cms.Path(process.photonIDValueMapProducer * process.photonMVAValueMapProducer *flashggTags.flashggUnpackedJets*process.bbggtree)
+#process.p = cms.Path(flashggTags.flashggUnpackedJets*process.bbggtree)
