@@ -66,12 +66,12 @@ void bbggPhotonCorrector::ScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonC
     }
 }
 
-void bbggPhotonCorrector::ExtraScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonCandidate> & diPhos, EcalRecHitCollection _ebRecHits)
+void bbggPhotonCorrector::ExtraScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonCandidate> & diPhos)//, EcalRecHitCollection _ebRecHits)
 {
     for ( unsigned int dp = 0; dp < diPhos.size(); dp++) {
         float beforeLeadingCorr = diPhos[dp].getLeadingPhoton().energy();
-        ExtraScalePhoton(diPhos[dp].getLeadingPhoton(), _ebRecHits);
-        ExtraScalePhoton(diPhos[dp].getSubLeadingPhoton(), _ebRecHits);
+        ExtraScalePhoton(diPhos[dp].getLeadingPhoton());//, _ebRecHits);
+        ExtraScalePhoton(diPhos[dp].getSubLeadingPhoton());//, _ebRecHits);
         float afterLeadingCorr = diPhos[dp].getLeadingPhoton().energy();
         if (DEBUG) std::cout << "[bbggPhotonCorrector::ScalePhotonsInDiPhotons] Before scale: " << beforeLeadingCorr << " - after scale: " << afterLeadingCorr << std::endl;
     }
@@ -106,12 +106,21 @@ void bbggPhotonCorrector::ScalePhoton(flashgg::Photon & photon)
     photon.setP4( scale*thisp4);
 }
 
-void bbggPhotonCorrector::ExtraScalePhoton(flashgg::Photon & photon, EcalRecHitCollection _ebrechits)
+void bbggPhotonCorrector::ExtraScalePhoton(flashgg::Photon & photon)//, EcalRecHitCollection _ebrechits)
 {
+    float seedEnergy = photon.seedEnergy();
+    bool isEB = (fabs(photon.superCluster()->eta()) < 1.5) ? 0 : 1;
+    double Ecorr = 1;
+    if (!isEB) Ecorr = 1;
+    else {
+        if(seedEnergy > 200 && seedEnergy < 300)  Ecorr=1.0199 + variation_*0.0008;
+        else if(seedEnergy > 300 && seedEnergy < 400) Ecorr=  1.052 + variation_*0.003;
+        else if(seedEnergy > 400 && seedEnergy < 500) Ecorr = 1.015 + variation_*0.006;
+    }
 
+/* 
     DetId detid = photon.superCluster()->seed()->seed();
     const EcalRecHit * rh = NULL;
-    double Ecorr=1;
     if (detid.subdetId() == EcalBarrel) {
         auto rh_i =  _ebrechits.find(detid);
         if( rh_i != _ebrechits.end()) rh =  &(*rh_i);
@@ -124,6 +133,7 @@ void bbggPhotonCorrector::ExtraScalePhoton(flashgg::Photon & photon, EcalRecHitC
         else if(rh->energy()>300 && rh->energy()<400) Ecorr=  1.052 + variation_*0.003;
         else if(rh->energy()>400 && rh->energy()<500) Ecorr = 1.015 + variation_*0.006;
     }
+*/
 
     bbggPhotonCorrector::LorentzVector thisp4 = photon.p4();
     photon.setP4( Ecorr*thisp4);

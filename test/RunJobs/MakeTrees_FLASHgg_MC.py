@@ -132,7 +132,8 @@ process.dump=cms.EDAnalyzer('EventContentAnalyzer')
 #process.photonMVAValueMapProducer.src = cms.InputTag('flashggRandomizedPhotons')
 #process.photonIDValueMapProducer.src = cms.InputTag('flashggRandomizedPhotons')
 
-process.p = cms.Path( process.egmPhotonIDSequence*flashggTags.flashggUnpackedJets*process.bbggtree)
-#process.p = cms.Path(process.photonMVAValueMapProducer * process.egmPhotonIDs*flashggTags.flashggUnpackedJets*process.bbggtree)
-#process.p = cms.Path(process.photonIDValueMapProducer * process.photonMVAValueMapProducer *flashggTags.flashggUnpackedJets*process.bbggtree)
-#process.p = cms.Path(flashggTags.flashggUnpackedJets*process.bbggtree)
+from flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi import flashggUpdatedIdMVADiPhotons
+
+process.p = cms.Path( flashggUpdatedIdMVADiPhotons
+                      * flashggTags.flashggUnpackedJets
+                      * process.bbggtree)

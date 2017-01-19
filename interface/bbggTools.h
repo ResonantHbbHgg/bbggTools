@@ -36,7 +36,7 @@ public:
     std::vector<flashgg::DiPhotonCandidate> DiPhotonKinematicSelection(vector<flashgg::DiPhotonCandidate> diphoCol, bool DoMassCut = 0);
     std::vector<flashgg::DiPhotonCandidate> DiPhotonIDSelection( std::vector<flashgg::DiPhotonCandidate> diphoCol);
     std::vector<flashgg::DiPhotonCandidate> GetDiPhotonsInCategory( std::vector<std::pair<flashgg::DiPhotonCandidate, int > > SelectedDiPhotons, int category );
-    std::vector<std::pair<flashgg::DiPhotonCandidate, int > > EvaluatePhotonIDs( std::vector<flashgg::DiPhotonCandidate> diphoCol);
+    std::vector<std::pair<flashgg::DiPhotonCandidate, int > > EvaluatePhotonIDs( std::vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID = 0);
     bool passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
     bool passHggPreselection(const flashgg::DiPhotonCandidate * dipho);
     std::vector<flashgg::DiPhotonCandidate> DiPhoton76XPreselection(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults);

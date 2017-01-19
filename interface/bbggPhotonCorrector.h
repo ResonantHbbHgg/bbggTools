@@ -48,8 +48,8 @@ public:
     void ScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonCandidate> & diPhos, int runNumber);
     void ScalePhoton(flashgg::Photon & photon);
 
-    void ExtraScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonCandidate> & diPhos, EcalRecHitCollection _ebRecHits);
-    void ExtraScalePhoton(flashgg::Photon & photon, EcalRecHitCollection _ebRecHits);
+    void ExtraScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonCandidate> & diPhos);//, EcalRecHitCollection _ebRecHits);
+    void ExtraScalePhoton(flashgg::Photon & photon);//, EcalRecHitCollection _ebRecHits);
 
     void SetCustomPhotonIDMVA(std::vector<flashgg::DiPhotonCandidate> & diPhos, edm::Handle<edm::ValueMap<float> > mvaValues);
 

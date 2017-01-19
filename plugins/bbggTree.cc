@@ -56,8 +56,6 @@ Implementation:
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/Common/interface/ValueMap.h"
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
@@ -105,8 +103,6 @@ private:
     edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
     edm::EDGetTokenT<edm::View<pat::MET> > METToken_;
-    edm::EDGetTokenT<EcalRecHitCollection> ebRecHits_token;
-    edm::EDGetTokenT<edm::ValueMap<float> > mvaValuesMapToken_;
 
     //Efficiency histogram
     TH1F* h_Efficiencies = new TH1F("h_Efficiencies", "Efficiencies;Cut Level;Number of events", 10, 0, 10);
@@ -349,8 +345,6 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
     METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
     randomLabel = iConfig.getUntrackedParameter<std::string>("randomLabel", def_randomLabel);
-//    ebRecHits_token = consumes<EcalRecHitCollection>( iConfig.getParameter<edm::InputTag>( "reducedBarrelRecHitCollection" ) );
-    mvaValuesMapToken_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("mvaValuesMap"));
 
     resFile = iConfig.getUntrackedParameter<edm::FileInPath>("resFile", def_resFile);
     sfFile = iConfig.getUntrackedParameter<edm::FileInPath>("sfFile", def_sfFile);
@@ -361,7 +355,6 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     tools_.SetCut_DoMVAPhotonID(DoMVAPhotonID);
     tools_.SetCut_MVAPhotonID(MVAPhotonID);
     tools_.SetCut_PhotonMVAEstimator(PhotonMVAEstimator);
-    if(doCustomPhotonMVA) tools_.SetCut_PhotonMVAEstimator(std::string("EGMMVAID"));
 
     tools_.SetPhotonCR(doPhotonCR);
     tools_.SetCut_PhotonPtOverDiPhotonMass( ph_pt );
@@ -685,10 +678,8 @@ void
     }
     //Extra scale on data
     if (iEvent.isRealData() && doPhotonExtraScale > -10) {
-        edm::Handle<EcalRecHitCollection> _ebRecHits;
-        iEvent.getByToken(ebRecHits_token, _ebRecHits);
         phoCorr_.setVariation(doPhotonScale);
-        phoCorr_.ExtraScalePhotonsInDiPhotons(diphotonCollection, *_ebRecHits);
+        phoCorr_.ExtraScalePhotonsInDiPhotons(diphotonCollection);
     }
 
     //Trigger preselection on diphoton candidates:
@@ -707,21 +698,8 @@ void
     if( KinDiPhoton.size() < 1) return;
     h_Efficiencies->Fill(3, genTotalWeight);
 
-    //Calculate Custom MVA ID
-    if( doCustomPhotonMVA ) {
-        edm::Handle<edm::ValueMap<float> > mvaValues;
-        iEvent.getByToken(mvaValuesMapToken_,mvaValues);
-        phoCorr_.SetCustomPhotonIDMVA(KinDiPhoton, mvaValues);
-        if(DEBUG) {
-           for (unsigned int iy = 0; iy < KinDiPhoton.size(); iy++) {
-               std::cout << "[bbggTree] Leading Custom MVA : " << KinDiPhoton[iy].leadingPhoton()->userFloat("EGMMVAID") << std::endl;
-               std::cout << "[bbggTree] SubLeading Custom MVA : " << KinDiPhoton[iy].subLeadingPhoton()->userFloat("EGMMVAID") << std::endl;
-           }
-        }
-    }
-
     //Evaluate photon IDs
-    vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton );
+    vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA );
     vector<flashgg::DiPhotonCandidate> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
     vector<flashgg::DiPhotonCandidate> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
 
@@ -908,8 +886,8 @@ void
     Phi0 = PhiAngles[0];
     Phi1 = PhiAngles[1];
     
-    customLeadingPhotonMVA = diphoCand.leadingPhoton()->userFloat("EGMMVAID");
-    customSubLeadingPhotonMVA = diphoCand.subLeadingPhoton()->userFloat("EGMMVAID");
+    customLeadingPhotonMVA = diphoCand.leadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() );
+    customSubLeadingPhotonMVA = diphoCand.subLeadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() );
     leadingPhotonIDMVA = diphoCand.leadingPhoton()->userFloat(PhotonMVAEstimator);
     subleadingPhotonIDMVA = diphoCand.subLeadingPhoton()->userFloat(PhotonMVAEstimator);
 

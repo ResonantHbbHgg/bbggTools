@@ -706,7 +706,7 @@ vector<flashgg::DiPhotonCandidate> bbggTools::GetDiPhotonsInCategory( vector<pai
     return catDiPhotons;
 }
 
-vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( vector<flashgg::DiPhotonCandidate> diphoCol)
+vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID)
 {
    vector<pair<flashgg::DiPhotonCandidate, int > > PreselDiPhotons;
     //Begin DiPhoton Loop/Selection -----------------------------------------------------------
@@ -723,8 +723,13 @@ vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( ve
 	 double pho2_eta = dipho.subLeadingPhoton()->superCluster()->eta();
 
          float pho_mvas[2];
-         pho_mvas[0] = dipho.leadingPhoton()->userFloat(_PhotonMVAEstimator);
-         pho_mvas[1] = dipho.subLeadingPhoton()->userFloat(_PhotonMVAEstimator);
+         if( doCustomID ) {
+            pho_mvas[0] = dipho.leadingPhoton()->phoIdMvaDWrtVtx( dipho.vtx() );
+            pho_mvas[1] = dipho.subLeadingPhoton()->phoIdMvaDWrtVtx( dipho.vtx() );
+         } else {
+            pho_mvas[0] = dipho.leadingPhoton()->userFloat(_PhotonMVAEstimator);
+            pho_mvas[1] = dipho.subLeadingPhoton()->userFloat(_PhotonMVAEstimator);
+         }
 
          int pho_ids[2];
          pho_ids[0] = 1;

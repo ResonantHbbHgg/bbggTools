@@ -117,5 +117,9 @@ if customize.doDoubleCountingMitigation is True:
 if customize.doDoubleCountingMitigation is False:
 	process.bbggtree.doDoubleCountingMitigation = cms.untracked.uint32(0)
 
+from flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi import flashggUpdatedIdMVADiPhotons
 
-process.p = cms.Path(process.dataRequirements*flashggTags.flashggUnpackedJets*process.bbggtree)
+process.p = cms.Path( process.dataRequirements
+                      * flashggUpdatedIdMVADiPhotons
+                      * flashggTags.flashggUnpackedJets
+                      * process.bbggtree)
