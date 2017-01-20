@@ -1,6 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 from flashgg.bbggTools.pColors import *
-import flashgg.Taggers.flashggTags_cff as flashggTags
 
 process = cms.Process("bbggtree")
 process.load("flashgg.bbggTools.bbggTree_cfi")
@@ -75,21 +74,6 @@ if customize.outputFile:
 
 print customize.inputFiles, customize.outputFile, customize.maxEvents, customize.doSelection, customize.doDoubleCountingMitigation, customize.nPromptPhotons
 
-## Prepare photon ID
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-dataFormat = DataFormat.MiniAOD
-switchOnVIDPhotonIdProducer(process, dataFormat)
-my_id_modules = ['RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring16_nonTrig_V1_cff']
-process.egmPhotonIDs.physicsObjectSrc = cms.InputTag('flashggRandomizedPhotons')
-process.photonMVAValueMapProducer.src = cms.InputTag('flashggRandomizedPhotons')
-process.egmPhotonIsolation.srcToIsolate = cms.InputTag('flashggRandomizedPhotons')
-for idmod in my_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
-#    getattr(process, idmod).physicsObjectSrc = cms.InputTag('flashggPhotons')
-
-print "I'M HERE 3"
-
-process.load("flashgg.Taggers.flashggTags_cff")
 process.bbggtree.OutFileName = cms.untracked.string(outputFile)
 
 print bcolors.OKBLUE + "########################################################################" + bcolors.ENDC
@@ -115,25 +99,12 @@ if customize.doDoubleCountingMitigation is True:
 if customize.doDoubleCountingMitigation is False:
 	process.bbggtree.doDoubleCountingMitigation = cms.untracked.uint32(0)
 
-#process.p = cms.Path(process.bbggtree)
+import flashgg.Taggers.flashggTags_cff as flashggTags
+process.load("flashgg.Taggers.flashggTags_cff")
 
-process.dump=cms.EDAnalyzer('EventContentAnalyzer')
+import flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi as flashggPhotonMVA
+process.load("flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi")
 
-# Load the producer module to build full 5x5 cluster shapes and whatever 
-# else is needed for IDs
-#process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
-#process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
-#process.load("Geometry.CaloEventSetup.CaloGeometry_cfi")
-#process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
-#process.load("Configuration.Geometry.GeometryECALHCAL_cff")
-#from RecoEgamma.PhotonIdentification.PhotonIDValueMapProducer_cfi import *
-# Load the producer for MVA IDs. Make sure it is also added to the sequence!
-#from RecoEgamma.PhotonIdentification.PhotonMVAValueMapProducer_cfi import *
-#process.photonMVAValueMapProducer.src = cms.InputTag('flashggRandomizedPhotons')
-#process.photonIDValueMapProducer.src = cms.InputTag('flashggRandomizedPhotons')
-
-from flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi import flashggUpdatedIdMVADiPhotons
-
-process.p = cms.Path( flashggUpdatedIdMVADiPhotons
+process.p = cms.Path( flashggPhotonMVA.flashggUpdatedIdMVADiPhotons
                       * flashggTags.flashggUnpackedJets
                       * process.bbggtree)

@@ -125,9 +125,9 @@ _jetScale					=	cms.untracked.int32(0)
 
 ##Photon corrections
 _doPhotonScale		=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
-_doPhotonExtraScale	=	cms.untracked.int32(-10) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonSmearing	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/80X_ichepV2_2016_pho")
 _doCustomPhotonMVA	=	cms.untracked.uint32(1)
-_mvaValuesMap		=	cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring16NonTrigV1Values")
-
+if _doCustomPhotonMVA:
+   _MVAPhotonID = cms.untracked.vdouble(0.07, -0.03)

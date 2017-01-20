@@ -724,6 +724,7 @@ vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( ve
 
          float pho_mvas[2];
          if( doCustomID ) {
+            if(DEBUG) std::cout << "[bbggTools::EvaluatePhotonIDs] doing custom MVA cut " << std::endl;
             pho_mvas[0] = dipho.leadingPhoton()->phoIdMvaDWrtVtx( dipho.vtx() );
             pho_mvas[1] = dipho.subLeadingPhoton()->phoIdMvaDWrtVtx( dipho.vtx() );
          } else {
@@ -746,6 +747,7 @@ vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( ve
 
              if(_DoMVAPhotonID){
 		if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] Doing MVA ID!" << std::endl;
+                if(DEBUG) std::cout << pho_mvas[whichPho] << " " <<  _MVAPhotonID[pho1Index];
                 if( pho_mvas[whichPho] < _MVAPhotonID[pho1Index] ){
                     pho_ids[whichPho] = 0;
                 }

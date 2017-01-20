@@ -69,7 +69,7 @@ Implementation:
 // class declaration
 //
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 class bbggTree : public edm::EDAnalyzer {
 public:
@@ -106,6 +106,7 @@ private:
 
     //Efficiency histogram
     TH1F* h_Efficiencies = new TH1F("h_Efficiencies", "Efficiencies;Cut Level;Number of events", 10, 0, 10);
+    TH1F* h_hggid = new TH1F("h_hggid", "", 100, -1, 1);
     //Tree objects
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
@@ -122,6 +123,8 @@ private:
     float CosThetaStar, CosThetaStar_CS, CosTheta_bb, CosTheta_gg, CosTheta_bbgg, CosTheta_ggbb, Phi0, Phi1;
     std::map<std::string, int> myTriggerResults;
     float leadingPhotonR9full5x5, subleadingPhotonR9full5x5, customLeadingPhotonMVA, customSubLeadingPhotonMVA;
+    int leadingPhotonHasGain1, leadingPhotonHasGain6;
+    int subLeadingPhotonHasGain1, subLeadingPhotonHasGain6;
 
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -240,7 +243,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     def_jt_doID.push_back(0); def_n_bJets = 0; def_dijt_pt.push_back(10.); def_dijt_pt.push_back(10.);
     def_dijt_eta.push_back(20.); def_dijt_eta.push_back(20.); def_dijt_mass.push_back(0.); def_dijt_mass.push_back(1000.);
     def_jt_drPho.push_back(0.5); def_cand_pt.push_back(0.); def_cand_eta.push_back(20.); def_cand_mass.push_back(0.);
-    def_cand_mass.push_back(2000.); def_dr_cands.push_back(0.11); def_doCustomPhotonMVA = 0;
+    def_cand_mass.push_back(2000.); def_dr_cands.push_back(0.11); def_doCustomPhotonMVA = 1;
     def_doPhotonScale = -10; def_doPhotonExtraScale = -10; def_doPhotonSmearing = -10;
     def_PhotonScaleFile = "EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV2_2016_pho";
     unsigned int def_nPromptPhotons = 0;
@@ -443,6 +446,12 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
     jetReg_.SetupRegression("BDTG method",  bRegFile.fullPath().data());
 
+    //Prepare scales and smearings
+    if (doPhotonSmearing > -10 || doPhotonScale > -10) {
+        phoCorr_.SetupCorrector(PhotonScaleFile);
+        phoCorr_.setRandomLabel(std::string("rnd_g_E"));
+    }
+
     std::cout << "Parameters initialized... \n ############ Doing selection tree!" <<  std::endl;
 
 }
@@ -507,6 +516,10 @@ void
     subleadingPhotonR9full5x5 = -999;
     customLeadingPhotonMVA = -999;
     customSubLeadingPhotonMVA = -999;
+    leadingPhotonHasGain1 = -10;
+    leadingPhotonHasGain6 = -10;
+    subLeadingPhotonHasGain1 = -10;
+    subLeadingPhotonHasGain6 = -10;
 
     dEta_VBF = -999; 
     Mjj_VBF = 0;
@@ -661,11 +674,6 @@ void
     }
 
     ////Do scale and smearing
-    //Prepare scales and smearings
-    if (doPhotonSmearing > -10 || doPhotonScale > -10) {
-        phoCorr_.SetupCorrector(PhotonScaleFile);
-        phoCorr_.setRandomLabel(std::string("rnd_g_E"));
-    }
     //Smear MC
     if (!iEvent.isRealData() && doPhotonSmearing > -10) {
         phoCorr_.setVariation(doPhotonSmearing);
@@ -822,6 +830,14 @@ void
         nPromptInDiPhoton = _mcTools.CheckNumberOfPromptPhotons(diphoCand, genParticles);
     }
 
+    if ( iEvent.isRealData() ) {
+        leadingPhotonHasGain1 = diphoCand.leadingPhoton()->checkStatusFlag( flashgg::Photon::kHasSwitchToGain1 );
+        leadingPhotonHasGain6 = diphoCand.leadingPhoton()->checkStatusFlag( flashgg::Photon::kHasSwitchToGain6 );
+        subLeadingPhotonHasGain1 = diphoCand.subLeadingPhoton()->checkStatusFlag( flashgg::Photon::kHasSwitchToGain1 );
+        subLeadingPhotonHasGain6 = diphoCand.subLeadingPhoton()->checkStatusFlag( flashgg::Photon::kHasSwitchToGain6 );
+
+    }
+
     leadingPhotonR9full5x5 = diphoCand.leadingPhoton()->full5x5_r9();
     subleadingPhotonR9full5x5 = diphoCand.subLeadingPhoton()->full5x5_r9();
 
@@ -887,9 +903,12 @@ void
     Phi1 = PhiAngles[1];
     
     customLeadingPhotonMVA = diphoCand.leadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() );
+    h_hggid->Fill(diphoCand.leadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() ));
     customSubLeadingPhotonMVA = diphoCand.subLeadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() );
     leadingPhotonIDMVA = diphoCand.leadingPhoton()->userFloat(PhotonMVAEstimator);
     subleadingPhotonIDMVA = diphoCand.subLeadingPhoton()->userFloat(PhotonMVAEstimator);
+    if(DEBUG) std::cout << "customLeadingPhotonMVA: " << diphoCand.leadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() ) << std::endl;
+    if(DEBUG) std::cout << "leadingPhotonIDMVA: " << diphoCand.leadingPhoton()->userFloat(PhotonMVAEstimator) << std::endl;
 
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
 
@@ -990,14 +1009,20 @@ bbggTree::beginJob()
     tree->Branch("leadingPhotonID", &leadingPhotonID);
     tree->Branch("leadingPhotonISO", &leadingPhotonISO);
     tree->Branch("leadingPhotonEVeto", &leadingPhotonEVeto, "leadingPhotonEVeto/I");
-    tree->Branch("leadingPhotonIDMVA", &leadingPhotonIDMVA, "leadingPhotonIDMVA/f");
+    tree->Branch("leadingPhotonIDMVA", &leadingPhotonIDMVA, "leadingPhotonIDMVA/F");
+    tree->Branch("customLeadingPhotonIDMVA", &customLeadingPhotonMVA, "customLeadingPhotonIDMVA/F");
     tree->Branch("leadingPhotonR9full5x5", &leadingPhotonR9full5x5, "leadingPhotonR9full5x5/F");
+    tree->Branch("leadingPhotonHasGain1", &leadingPhotonHasGain1, "leadingPhotonHasGain1/I");
+    tree->Branch("leadingPhotonHasGain6", &leadingPhotonHasGain6, "leadingPhotonHasGain6/I");
     tree->Branch("subleadingPhoton", &subleadingPhoton);
     tree->Branch("subleadingPhotonID", &subleadingPhotonID);
     tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
     tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
-    tree->Branch("subleadingPhotonIDMVA", &subleadingPhotonIDMVA, "subleadingPhotonIDMVA/f");
+    tree->Branch("subleadingPhotonIDMVA", &subleadingPhotonIDMVA, "subleadingPhotonIDMVA/F");
+    tree->Branch("customSubLeadingPhotonMVA", &customSubLeadingPhotonMVA, "customSubLeadingPhotonMVA/F");
     tree->Branch("subleadingPhotonR9full5x5", &subleadingPhotonR9full5x5, "subleadingPhotonR9full5x5/F");
+    tree->Branch("subLeadingPhotonHasGain1", &subLeadingPhotonHasGain1, "subLeadingPhotonHasGain1/I");
+    tree->Branch("subLeadingPhotonHasGain6", &subLeadingPhotonHasGain6, "subLeadingPhotonHasGain6/I");
     tree->Branch("diphotonCandidate", &diphotonCandidate);
     tree->Branch("nPromptInDiPhoton", &nPromptInDiPhoton, "nPromptInDiPhoton/I");
     tree->Branch("leadingJet", &leadingJet);
@@ -1055,6 +1080,7 @@ bbggTree::endJob()
 outFile->cd();
 //tree->Write();
 h_Efficiencies->Write();
+h_hggid->Write();
 outFile->Write();
 outFile->Close();
 }
