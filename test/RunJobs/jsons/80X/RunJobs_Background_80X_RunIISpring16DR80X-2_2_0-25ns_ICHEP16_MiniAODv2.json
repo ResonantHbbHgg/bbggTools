@@ -10,10 +10,10 @@
             ["/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=0", "PURW=True"]}]
         ],
         "GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8" : [
-            ["/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=1", "PURW=True"]}]
+            ["/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=0", "PURW=True"]}]
         ],
         "GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8" : [
-            ["/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=1", "PURW=True"]}]
+            ["/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=0", "PURW=True"]}]
         ],
 	"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8" : [
 	    ["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/ferrif-RunIISpring16DR80X-2_2_0-25ns_ICHEP16_MiniAODv2-2_2_0-v0-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1-94d03017ce60e1991044b8807b85a209/USER",{"args" : [ "doDoubleCountingMitigation=0", "PURW=True"]}]

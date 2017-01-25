@@ -10,10 +10,10 @@
             ["/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=0", "PURW=True"]}]
         ],
         "GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8" : [
-            ["/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=1", "PURW=True"]}]
+            ["/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=0", "PURW=True"]}]
         ],
         "GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8" : [
-            ["/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=1", "PURW=True"]}]
+            ["/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8",{"args" : [ "doDoubleCountingMitigation=1", "nPromptPhotons=0", "PURW=True"]}]
         ],
 	"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8" : [
 	    ["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/ferrif-RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2-2_3_0-v0-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1-bf57eb1b86ac7305c9534d71b2c279d5/USER",{"args" : [ "doDoubleCountingMitigation=0", "PURW=True"]}]
@@ -30,7 +30,13 @@
 	],
 	"ttHJetToGG_M125_13TeV_amcatnloFXFX_madspin_pythia8_v2" : [
 	    ["/ttHJetToGG_M125_13TeV_amcatnloFXFX_madspin_pythia8_v2", {"args" : [ "doDoubleCountingMitigation=0", "PURW=True"]}]
-	]
+	],
+        "bbHToGG_M-125_4FS_yb2_13TeV_amcatnlo" : [
+            ["/bbHToGG_M-125_4FS_yb2_13TeV_amcatnlo", {"args" : [ "doDoubleCountingMitigation=0", "PURW=True"]}]
+        ],
+        "bbHToGG_M-125_4FS_ybyt_13TeV_amcatnlo" : [
+            ["/bbHToGG_M-125_4FS_ybyt_13TeV_amcatnlo", {"args" : [ "doDoubleCountingMitigation=0", "PURW=True"]}]
+        ]
    },
-	"cmdLine" : "campaign=RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2 targetLumi=37.51e+3 doSelection=1 PURW=True puTarget=2.51e+05,1.15e+06,2.47e+06,3.72e+06,5.19e+06,6.79e+06,8.67e+06,2.31e+07,5.89e+07,1.38e+08,3.12e+08,5.71e+08,8.76e+08,1.21e+09,1.56e+09,1.87e+09,2.08e+09,2.19e+09,2.24e+09,2.28e+09,2.29e+09,2.24e+09,2.15e+09,2.03e+09,1.88e+09,1.71e+09,1.54e+09,1.36e+09,1.19e+09,1.01e+09,8.48e+08,6.94e+08,5.57e+08,4.38e+08,3.37e+08,2.53e+08,1.85e+08,1.31e+08,8.96e+07,5.87e+07,3.68e+07,2.2e+07,1.25e+07,6.75e+06,3.46e+06,1.68e+06,7.79e+05,3.44e+05,1.46e+05,6.13e+04,2.68e+04,1.33e+04,8.25e+03,6.3e+03,5.45e+03,4.97e+03,4.59e+03,4.25e+03,3.92e+03,3.58e+03,3.25e+03,2.93e+03,2.62e+03,2.33e+03,2.05e+03,1.79e+03,1.56e+03,1.34e+03,1.14e+03,969,815,680,563,463,378"
+	"cmdLine" : "campaign=RunIISpring16DR80X-2_3_0-25ns_Moriond17_MiniAODv2 targetLumi=37.51e+3 doSelection=1 PURW=True puTarget=5.49e+04,4.58e+05,1.55e+06,2.72e+06,3.7e+06,5.61e+06,1.62e+07,3.89e+07,7.41e+07,1.64e+08,3.18e+08,5.21e+08,7.33e+08,9.76e+08,1.24e+09,1.43e+09,1.55e+09,1.59e+09,1.59e+09,1.56e+09,1.5e+09,1.42e+09,1.32e+09,1.19e+09,1.05e+09,9.08e+08,7.63e+08,6.27e+08,5.01e+08,3.87e+08,2.89e+08,2.08e+08,1.45e+08,9.66e+07,6.19e+07,3.8e+07,2.22e+07,1.23e+07,6.51e+06,3.26e+06,1.55e+06,7.01e+05,3.03e+05,1.27e+05,5.27e+04,2.34e+04,1.23e+04,8.3e+03,6.87e+03,6.29e+03" 
 }

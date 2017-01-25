@@ -16,7 +16,7 @@ if not os.path.exists(dirName):
         if os.path.exists(dirName):
                 print dirName, "now exists!"
 
-datasets = json.load(open("datasets/datasets80X_mod.json", "r"))
+datasets = json.load(data_file)
 
 Trees = {}
 
@@ -62,7 +62,9 @@ for plot in plots:
 
     backgroundHists = []
     for background in datasets["background"]:
-        if "QCD" in background or 'bbH' in background: continue
+        if not addbbH and 'bbH' in background: continue
+        if not dyjets and "DYJ" in background: continue
+        if "QCD" in background: continue
         print background
         thisName = plot[0]+"_hist"+"_"+background
         thisHist = modelHist.Clone(thisName)
@@ -79,10 +81,19 @@ for plot in plots:
                 SetOwnership( Trees[thisTreeLoc], True )
             locName = thisName+str(i)
             locHist = thisHist.Clone(locName)
-            Trees[thisTreeLoc].Draw(plot[1]+">>"+locName, weightedCut)
+            thisWeightedCut = weightedCut
+            if "QCD" in thisTreeLoc:
+                thisWeightedCut = TCut(weightedcut.replace("isSignal == 1", "isSignal == 0"))
+            Trees[thisTreeLoc].Draw(plot[1]+">>"+locName, thisWeightedCut)
             locHist.Scale(MCSF*lumi*fi["xsec"]*fi["sfactor"]/fi["weight"])
             thisHist.Add(locHist)
             Histos.append(locHist)
+#            thisFile = TFile(plot[0]+"_"+fi["file"], "RECREATE")
+#            thisFile.cd()
+#            thisHist.Write()
+#            thisFile.Close()
+#            dummyTFile.cd()
+            
         backgroundHists.append([thisHist, datasets["background"][background]["legend"], datasets["background"][background]["position"]])
         del thisHist
     OrderedBackgrounds = sorted(backgroundHists, key=lambda x: x[2], reverse=True)
@@ -105,7 +116,7 @@ for plot in plots:
             Trees[thisTreeLoc].AddFile(signalLocation+thisTreeLoc)
             SetOwnership( Trees[thisTreeLoc], True )
         Trees[thisTreeLoc].Draw(plot[1]+">>"+thisName, cut_signal)
-#        thisHist.Scale(lumi*signal["xsec"]*signal["sfactor"]/signal["weight"])
+        thisHist.Scale(lumi*signal["xsec"]*signal["sfactor"]/signal["weight"])
         Histos.append(thisHist)
         thisStack.addSignal(thisHist, signal["legend"], lumi*signal["xsec"]*signal["sfactor"]/signal["weight"])
         del thisHist
@@ -129,8 +140,14 @@ for plot in plots:
     dataHist.SetLineColor(1)
     dataHist.SetLineWidth(2)
     thisStack.addData(dataHist, "Data")
-    
+#    thisFile = TFile(plot[0]+"_data.root", "RECREATE")
+#    thisFile.cd()
+#    dataHist.Write()
+#    thisFile.Close()
+#    dummyTFile.cd()
+
     thisStack.drawStack(prefix + plot[0])
+    
     del thisStack 
 
 
