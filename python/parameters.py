@@ -131,3 +131,8 @@ _PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/
 _doCustomPhotonMVA	=	cms.untracked.uint32(1)
 if _doCustomPhotonMVA:
    _MVAPhotonID = cms.untracked.vdouble(0.07, -0.03)
+
+_addNonResMVA = cms.untracked.uint32(1)
+_NonResMVAWeights_LowMass = cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml")
+_NonResMVAWeights_HighMass = cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml")
+_NonResMVAVars = cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')

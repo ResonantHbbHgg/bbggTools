@@ -64,6 +64,7 @@ Implementation:
 #include "flashgg/bbggTools/interface/bbggJetRegression.h"
 #include "flashgg/bbggTools/interface/bbggJetSystematics.h"
 #include "flashgg/bbggTools/interface/bbggPhotonCorrector.h"
+#include "flashgg/bbggTools/interface/bbggNonResMVA.h"
 
 //
 // class declaration
@@ -92,6 +93,7 @@ private:
     bbggJetRegression jetReg_;
     bbggJetSystematics jetSys_;
     bbggPhotonCorrector phoCorr_;
+    bbggNonResMVA nonresMVA_;
     flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
@@ -119,12 +121,14 @@ private:
     vector<int> leadingPhotonID, leadingPhotonISO, subleadingPhotonID, subleadingPhotonISO;
     vector<double> genWeights;
     float leadingJet_bDis, subleadingJet_bDis, jet1PtRes, jet1EtaRes, jet1PhiRes, jet2PtRes, jet2EtaRes, jet2PhiRes;
+    float leadingJet_CSVv2, leadingJet_cMVA, subleadingJet_CSVv2, subleadingJet_cMVA;
     float leadingPhotonIDMVA, subleadingPhotonIDMVA, DiJetDiPho_DR, PhoJetMinDr;
     float CosThetaStar, CosThetaStar_CS, CosTheta_bb, CosTheta_gg, CosTheta_bbgg, CosTheta_ggbb, Phi0, Phi1;
     std::map<std::string, int> myTriggerResults;
     float leadingPhotonR9full5x5, subleadingPhotonR9full5x5, customLeadingPhotonMVA, customSubLeadingPhotonMVA;
     int leadingPhotonHasGain1, leadingPhotonHasGain6;
     int subLeadingPhotonHasGain1, subLeadingPhotonHasGain6;
+    float HHTagger, HHTagger_LM, HHTagger_HM;
 
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -174,6 +178,9 @@ private:
     unsigned int is2016, doCustomPhotonMVA;
     int doPhotonScale, doPhotonExtraScale, doPhotonSmearing;
     std::string PhotonScaleFile;
+    int addNonResMVA;
+    edm::FileInPath NonResMVAWeights_LowMass, NonResMVAWeights_HighMass;
+    std::vector<std::string> NonResMVAVars;
 
     int jetSmear;
     int jetScale;
@@ -206,6 +213,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     jetReg_ = bbggJetRegression();
     jetSys_ = bbggJetSystematics();
     phoCorr_ = bbggPhotonCorrector();
+    nonresMVA_ = bbggNonResMVA();
     //    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
@@ -227,6 +235,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     unsigned int def_n_bJets, def_doCustomPhotonMVA;
     int def_doPhotonScale, def_doPhotonExtraScale, def_doPhotonSmearing;
     std::string def_PhotonScaleFile;
+    int def_addNonResMVA ;
+    edm::FileInPath def_NonResMVAWeights_LowMass, def_NonResMVAWeights_HighMass;
+    std::vector<std::string> def_NonResMVAVars;
     //std::string def_bRegFile;
     edm::FileInPath def_bRegFile;
 
@@ -254,7 +265,10 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     int def_jetSmear = 0;
     int def_jetScale = 0;
     std::string def_randomLabel = "";
-
+    def_addNonResMVA = 0;
+    def_NonResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
+    def_NonResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
+    def_NonResMVAVars.push_back("");
 
     edm::FileInPath def_resFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_PtResolution_AK4PFchs.txt");
     edm::FileInPath def_sfFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_SF_AK4PFchs.txt");
@@ -340,6 +354,11 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
 
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
+
+    addNonResMVA = iConfig.getUntrackedParameter<unsigned int>("addNonResMVA", def_addNonResMVA);
+    NonResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_LowMass", def_NonResMVAWeights_LowMass);
+    NonResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_HighMass", def_NonResMVAWeights_HighMass);
+    NonResMVAVars = iConfig.getUntrackedParameter<std::vector<std::string > >("NonResMVAVars", NonResMVAVars);
 
     //tokens and labels
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
@@ -452,6 +471,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
         phoCorr_.setRandomLabel(std::string("rnd_g_E"));
     }
 
+    if(addNonResMVA)
+        nonresMVA_.SetupNonResMVA( NonResMVAWeights_LowMass.fullPath().data(), NonResMVAWeights_HighMass.fullPath().data(), NonResMVAVars);
+
     std::cout << "Parameters initialized... \n ############ Doing selection tree!" <<  std::endl;
 
 }
@@ -520,6 +542,9 @@ void
     leadingPhotonHasGain6 = -10;
     subLeadingPhotonHasGain1 = -10;
     subLeadingPhotonHasGain6 = -10;
+    HHTagger = -10;
+    HHTagger_LM = -10;
+    HHTagger_HM = -10;
 
     dEta_VBF = -999; 
     Mjj_VBF = 0;
@@ -535,6 +560,10 @@ void
     subleadingJet_flavour = 0;//SubLeadingJet->partonFlavour();
     dijetCandidate.SetPxPyPzE(0,0,0,0);// = leadingJet + subleadingJet;
     diHiggsCandidate.SetPxPyPzE(0,0,0,0);// = diphotonCandidate + dijetCandidate;
+    leadingJet_CSVv2 = 0;
+    leadingJet_cMVA = 0;
+    subleadingJet_CSVv2 = 0;
+    subleadingJet_cMVA = 0;
 
     leadingJet_VBF.SetPxPyPzE(0,0,0,0);// = LeadingJet->p4();
     subleadingJet_VBF.SetPxPyPzE(0,0,0,0);// = LeadingJet->p4();
@@ -854,6 +883,11 @@ void
     subleadingJet_flavour = SubLeadingJet.partonFlavour();
     subleadingJet_hadFlavour = SubLeadingJet.hadronFlavour();
 
+    leadingJet_CSVv2 = LeadingJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+    leadingJet_cMVA = LeadingJet.bDiscriminator("pfCombinedMVAV2BJetTags");
+    subleadingJet_CSVv2 = SubLeadingJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+    subleadingJet_cMVA = SubLeadingJet.bDiscriminator("pfCombinedMVAV2BJetTags");;
+
     dijetCandidate = leadingJet + subleadingJet;
     diHiggsCandidate = diphotonCandidate + dijetCandidate;
 
@@ -909,6 +943,22 @@ void
     subleadingPhotonIDMVA = diphoCand.subLeadingPhoton()->userFloat(PhotonMVAEstimator);
     if(DEBUG) std::cout << "customLeadingPhotonMVA: " << diphoCand.leadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() ) << std::endl;
     if(DEBUG) std::cout << "leadingPhotonIDMVA: " << diphoCand.leadingPhoton()->userFloat(PhotonMVAEstimator) << std::endl;
+
+    //Fill HHTagger
+    if(addNonResMVA) {
+        std::map<std::string, float> HHVars;
+        HHVars["leadingJet_bDis"] = leadingJet_bDis;
+        HHVars["subleadingJet_bDis"] = subleadingJet_bDis;
+        HHVars["diphotonCandidate.Pt()/(diHiggsCandidate.M())"] = diphotonCandidate.Pt()/(diHiggsCandidate.M());
+        HHVars["fabs(CosThetaStar_CS)"] = fabs(CosThetaStar_CS);
+        HHVars["fabs(CosTheta_bb)"] = fabs(CosTheta_bb);
+        HHVars["fabs(CosTheta_gg)"] = fabs(CosTheta_gg);
+        HHVars["dijetCandidate.Pt()/(diHiggsCandidate.M())"] = dijetCandidate.Pt()/(diHiggsCandidate.M());
+        std::vector<float> myHHTagger = nonresMVA_.mvaDiscriminants(HHVars);
+        HHTagger_LM = myHHTagger[0];
+        HHTagger_HM = myHHTagger[1];
+        HHTagger = ( (diHiggsCandidate.M()-dijetCandidate.M()+125)<350 ) ? HHTagger_LM : HHTagger_HM;
+    }
 
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
 
@@ -1030,6 +1080,8 @@ bbggTree::beginJob()
     tree->Branch("leadingJet_Reg", &leadingJet_Reg);
     tree->Branch("leadingJet_RegKF", &leadingJet_RegKF);
     tree->Branch("leadingJet_bDis", &leadingJet_bDis, "leadingJet_bDis/F");
+    tree->Branch("leadingJet_CSVv2", &leadingJet_CSVv2, "leadingJet_CSVv2/F");
+    tree->Branch("leadingJet_cMVA", &leadingJet_cMVA, "leadingJet_cMVA/F");
     tree->Branch("leadingJet_flavour", &leadingJet_flavour, "leadingJet_flavour/I");
     tree->Branch("leadingJet_hadFlavour", &leadingJet_hadFlavour, "leadingJet_hadFlavour/I");
     tree->Branch("subleadingJet", &subleadingJet);
@@ -1037,6 +1089,8 @@ bbggTree::beginJob()
     tree->Branch("subleadingJet_Reg", &subleadingJet_Reg);
     tree->Branch("subleadingJet_RegKF", &subleadingJet_RegKF);
     tree->Branch("subleadingJet_bDis", &subleadingJet_bDis, "subleadingJet_bDis/F");
+    tree->Branch("subleadingJet_CSVv2", &subleadingJet_CSVv2, "subleadingJet_CSVv2/F");
+    tree->Branch("subleadingJet_cMVA", &subleadingJet_cMVA, "subleadingJet_cMVA/F");
     tree->Branch("subleadingJet_flavour", &subleadingJet_flavour, "subleadingJet_flavour/I");
     tree->Branch("subleadingJet_hadFlavour", &subleadingJet_hadFlavour, "subleadingJet_hadFlavour/I");
     tree->Branch("dijetCandidate", &dijetCandidate);
@@ -1064,6 +1118,9 @@ bbggTree::beginJob()
     tree->Branch("subleadingJet_VBF", &subleadingJet_VBF);
     tree->Branch("dEta_VBF", &dEta_VBF, "dEta_VBF/F");
     tree->Branch("Mjj_VBF", &Mjj_VBF, "Mjj_VBF/F");
+    tree->Branch("HHTagger", &HHTagger, "HHTagger/F"); 
+    tree->Branch("HHTagger_LM", &HHTagger_LM, "HHTagger_LM/F"); 
+    tree->Branch("HHTagger_HM", &HHTagger_HM, "HHTagger_HM/F"); 
 
 
     std::map<std::string, std::string> replacements;

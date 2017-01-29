@@ -74,6 +74,10 @@ bbggtree = cms.EDAnalyzer('bbggTree',
         doPhotonExtraScale=param._doPhotonExtraScale,
         doPhotonSmearing=param._doPhotonSmearing,
         PhotonCorrectionFile=param._PhotonCorrectionFile,
-        doCustomPhotonMVA=param._doCustomPhotonMVA
+        doCustomPhotonMVA=param._doCustomPhotonMVA,
+        addNonResMVA=param._addNonResMVA,
+        NonResMVAWeights_LowMass=param._NonResMVAWeights_LowMass,
+        NonResMVAWeights_HighMass=param._NonResMVAWeights_HighMass,
+        NonResMVAVars=param._NonResMVAVars
 #	doSelectionTree=param._doSelectionTree
 )

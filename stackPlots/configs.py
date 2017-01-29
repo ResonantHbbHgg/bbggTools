@@ -52,6 +52,8 @@ dataLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_Moriond17/CMSS
 
 #plots to be made
 plots = []
+plots.append(["MXprime", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250.", "#tilde{M}_{X} (GeV)", 40, 200, 1000])
+'''
 plots.append(["diPho_Mass", "diphotonCandidate.M()", "M(#gamma#gamma) [GeV]", 50, 100, 180])
 plots.append(["CosTheta_bb", "CosTheta_bb", "Cos(#theta_{bb})", nbin, -1, 1])
 plots.append(["MX", "diHiggsCandidate.M() - dijetCandidate.M() + 125.", "#tilde{M}_{X} (GeV)", 40, 200, 1000])
@@ -95,6 +97,7 @@ plots.append(["subleadingPhoton_eta", "subleadingPhoton.eta()", "#eta(#gamma_{2}
 plots.append(["dr_photons", dr, "#DeltaR between photons", nbin, 0, 10])
 plots.append(["leadingPho_MVA", "customLeadingPhotonIDMVA", "Leading Photon #gammaMVA discriminant", nbin, 0, 1])
 plots.append(["subleadingPho_MVA", "customSubLeadingPhotonIDMVA", "SubLeading Photon #gammaMVA discriminant", nbin, 0, 1])
+'''
 
 #cuts to be used to make plots
 Cut = " diphotonCandidate.M() > 100 && diphotonCandidate.M() < 180"
