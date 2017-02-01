@@ -123,3 +123,16 @@ _randomLabel				=	cms.untracked.string("rnd_g_JER")
 
 _jetScale					=	cms.untracked.int32(0)
 
+##Photon corrections
+_doPhotonScale		=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonSmearing	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/80X_ichepV2_2016_pho")
+_doCustomPhotonMVA	=	cms.untracked.uint32(1)
+if _doCustomPhotonMVA:
+   _MVAPhotonID = cms.untracked.vdouble(0.07, -0.03)
+
+_addNonResMVA = cms.untracked.uint32(1)
+_NonResMVAWeights_LowMass = cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml")
+_NonResMVAWeights_HighMass = cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml")
+_NonResMVAVars = cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')

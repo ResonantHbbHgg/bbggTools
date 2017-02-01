@@ -122,16 +122,15 @@ bool bbggTools::passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho,
 }
 
 
-std::vector<edm::Ptr<flashgg::DiPhotonCandidate>>
-bbggTools::DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults)
+std::vector<flashgg::DiPhotonCandidate> bbggTools::DiPhoton76XPreselection(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults)
 {
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> selDiPhos;
+    std::vector<flashgg::DiPhotonCandidate> selDiPhos;
 
     for ( unsigned int dp = 0; dp < diphoCol.size(); dp++)
     {
-      edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[dp];
+      flashgg::DiPhotonCandidate dipho = diphoCol[dp];
 
-      if (passHgg76XPreselection(dipho.get(), myTriggersResults)){
+      if (passHgg76XPreselection(&dipho, myTriggersResults)){
 	selDiPhos.push_back(dipho);
 	continue;
       }
@@ -141,20 +140,18 @@ bbggTools::DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> 
     return selDiPhos;
 }
 
-std::vector<edm::Ptr<flashgg::DiPhotonCandidate>>
-bbggTools::DiPhotonPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol)
+std::vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonPreselection(vector<flashgg::DiPhotonCandidate> diphoCol)
 {
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> selDiPhos;
+    std::vector<flashgg::DiPhotonCandidate> selDiPhos;
 
     for ( unsigned int dp = 0; dp < diphoCol.size(); dp++)
     {
-      edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[dp];
+      flashgg::DiPhotonCandidate dipho = diphoCol[dp];
 
-      if (passHggPreselection(dipho.get())){
+      if (passHggPreselection(&dipho)){
 	selDiPhos.push_back(dipho);
 	continue;
       }
-
     }
 
     return selDiPhos;
@@ -633,9 +630,9 @@ flashgg::Jet bbggTools::GetSelected_subleadingJetCandidate_Ref()
 	return subleadingJetCandidate_Ref;
 }
 
-vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonKinematicSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, bool DoMassCut)
+vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonKinematicSelection( vector<flashgg::DiPhotonCandidate> diphoCol, bool DoMassCut)
 {
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreselDiPhotons;
+    vector<flashgg::DiPhotonCandidate> PreselDiPhotons;
     //Begin DiPhoton Loop/Selection -----------------------------------------------------------
     for( unsigned int diphoIndex = 0; diphoIndex < diphoCol.size(); diphoIndex++ )
     {
@@ -644,11 +641,11 @@ vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonKinematicSelecti
 
          if(_DiPhotonOnlyFirst && diphoIndex > 0 ) break;
 
-         edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[ diphoIndex ];
+         flashgg::DiPhotonCandidate dipho = diphoCol[ diphoIndex ];
 
-         double dipho_pt = dipho->pt();
-         double dipho_eta = dipho->eta();
-         double dipho_mass = dipho->mass();
+         double dipho_pt = dipho.pt();
+         double dipho_eta = dipho.eta();
+         double dipho_mass = dipho.mass();
 
      //Cuts on diphoton object
          if(DoMassCut){
@@ -659,16 +656,16 @@ vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonKinematicSelecti
          if(dipho_pt < _DiPhotonPt[0] ) continue;
 
      //Cuts on photons
-         double pho1_pt = dipho->leadingPhoton()->pt();
+         double pho1_pt = dipho.leadingPhoton()->pt();
          if( pho1_pt < dipho_mass*_PhotonPtOverDiPhotonMass[0] ) continue;
 
-         double pho2_pt = dipho->subLeadingPhoton()->pt();
-         if( pho2_pt < dipho->mass()*_PhotonPtOverDiPhotonMass[1] ) continue;
+         double pho2_pt = dipho.subLeadingPhoton()->pt();
+         if( pho2_pt < dipho_mass*_PhotonPtOverDiPhotonMass[1] ) continue;
 
-         double pho1_eta = dipho->leadingPhoton()->superCluster()->eta();
+         double pho1_eta = dipho.leadingPhoton()->superCluster()->eta();
          if( fabs(pho1_eta) > _PhotonEta[1] ) continue;
 
-         double pho2_eta = dipho->subLeadingPhoton()->superCluster()->eta();
+         double pho2_eta = dipho.subLeadingPhoton()->superCluster()->eta();
          if( fabs(pho2_eta) > _PhotonEta[1] ) continue;
 
 	 PreselDiPhotons.push_back(dipho);
@@ -679,27 +676,27 @@ vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonKinematicSelecti
 
 }
 
-vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::DiPhotonIDSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol)
+vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonIDSelection( vector<flashgg::DiPhotonCandidate> diphoCol)
 {
-    vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > SelectedDiPhotons = bbggTools::EvaluatePhotonIDs( diphoCol);
+    vector<pair<flashgg::DiPhotonCandidate, int > > SelectedDiPhotons = bbggTools::EvaluatePhotonIDs( diphoCol);
     if (DEBUG){
 	std::cout << "[bbggTools::DiPhotonIDSelection] Selected photons" << std::endl;
 	int di = 0;
-	for ( vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > >::const_iterator it = SelectedDiPhotons.begin();
+	for ( vector<pair<flashgg::DiPhotonCandidate, int > >::const_iterator it = SelectedDiPhotons.begin();
             it != SelectedDiPhotons.end(); it++){
 		std::cout << "\t Diphoton " << di << " -- ID: " << it->second << std::endl;
 		di++;
    	}
     }
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> SignalDiPhotons = bbggTools::GetDiPhotonsInCategory(SelectedDiPhotons, 2);
+    vector<flashgg::DiPhotonCandidate> SignalDiPhotons = bbggTools::GetDiPhotonsInCategory(SelectedDiPhotons, 2);
 
     return SignalDiPhotons;
 }
 
-vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::GetDiPhotonsInCategory( vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > SelectedDiPhotons, int category )
+vector<flashgg::DiPhotonCandidate> bbggTools::GetDiPhotonsInCategory( vector<pair<flashgg::DiPhotonCandidate, int > > SelectedDiPhotons, int category )
 {
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> catDiPhotons;
-    for ( vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > >::const_iterator it = SelectedDiPhotons.begin();
+    vector<flashgg::DiPhotonCandidate> catDiPhotons;
+    for ( vector<pair<flashgg::DiPhotonCandidate, int > >::const_iterator it = SelectedDiPhotons.begin();
             it != SelectedDiPhotons.end(); it++){
         if(it->second == category){
             catDiPhotons.push_back(it->first);
@@ -709,25 +706,31 @@ vector<edm::Ptr<flashgg::DiPhotonCandidate>> bbggTools::GetDiPhotonsInCategory( 
     return catDiPhotons;
 }
 
-vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > bbggTools::EvaluatePhotonIDs( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol)
+vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID)
 {
-    vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > PreselDiPhotons;
+   vector<pair<flashgg::DiPhotonCandidate, int > > PreselDiPhotons;
     //Begin DiPhoton Loop/Selection -----------------------------------------------------------
    for( unsigned int diphoIndex = 0; diphoIndex < diphoCol.size(); diphoIndex++ )
    {
          if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Photon loop 2..." << std::endl;
-         edm::Ptr<flashgg::DiPhotonCandidate> dipho = diphoCol[ diphoIndex ];
+         flashgg::DiPhotonCandidate dipho = diphoCol[ diphoIndex ];
 
          int pho_elv[2];
-         pho_elv[0] = dipho->leadingPhoton()->passElectronVeto();
-         pho_elv[1] = dipho->subLeadingPhoton()->passElectronVeto();
+         pho_elv[0] = dipho.leadingPhoton()->passElectronVeto();
+         pho_elv[1] = dipho.subLeadingPhoton()->passElectronVeto();
 
-         double pho1_eta = dipho->leadingPhoton()->superCluster()->eta();
-	     double pho2_eta = dipho->subLeadingPhoton()->superCluster()->eta();
+         double pho1_eta = dipho.leadingPhoton()->superCluster()->eta();
+	 double pho2_eta = dipho.subLeadingPhoton()->superCluster()->eta();
 
          float pho_mvas[2];
-         pho_mvas[0] = dipho->leadingPhoton()->userFloat(_PhotonMVAEstimator);
-         pho_mvas[1] = dipho->subLeadingPhoton()->userFloat(_PhotonMVAEstimator);
+         if( doCustomID ) {
+            if(DEBUG) std::cout << "[bbggTools::EvaluatePhotonIDs] doing custom MVA cut " << std::endl;
+            pho_mvas[0] = dipho.leadingPhoton()->phoIdMvaDWrtVtx( dipho.vtx() );
+            pho_mvas[1] = dipho.subLeadingPhoton()->phoIdMvaDWrtVtx( dipho.vtx() );
+         } else {
+            pho_mvas[0] = dipho.leadingPhoton()->userFloat(_PhotonMVAEstimator);
+            pho_mvas[1] = dipho.subLeadingPhoton()->userFloat(_PhotonMVAEstimator);
+         }
 
          int pho_ids[2];
          pho_ids[0] = 1;
@@ -744,19 +747,20 @@ vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > bbggTools::EvaluatePho
 
              if(_DoMVAPhotonID){
 		if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] Doing MVA ID!" << std::endl;
+                if(DEBUG) std::cout << pho_mvas[whichPho] << " " <<  _MVAPhotonID[pho1Index];
                 if( pho_mvas[whichPho] < _MVAPhotonID[pho1Index] ){
                     pho_ids[whichPho] = 0;
                 }
                 continue;
              }
-
+/*
              if( _PhotonDoID[whichPho] && _DoMVAPhotonID == 0)
              {
  		 if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] Doing Cut Based ID!" << std::endl;
                  std::map<int, vector<double> > theIDWP = bbggTools::getWhichID(_phoWhichID[whichPho]);
                  if(theIDWP.size() < 1) break;
 
-                 int pho1_id = (whichPho) ? bbggTools::isPhoID(dipho->subLeadingPhoton(), theIDWP[pho1Index]) : bbggTools::isPhoID(dipho->leadingPhoton(), theIDWP[pho1Index]) ;
+                 int pho1_id = (whichPho) ? bbggTools::isPhoID(dipho.subLeadingPhoton(), theIDWP[pho1Index]) : bbggTools::isPhoID(dipho.leadingPhoton(), theIDWP[pho1Index]) ;
                  if (!pho1_id) pho_ids[whichPho] = 0;
 		 if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] \t Result: " << pho_ids[whichPho] << std::endl;
              }
@@ -770,6 +774,7 @@ vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > bbggTools::EvaluatePho
                  if (!pho1_id) pho_ids[whichPho] = 0;
 		 if(DEBUG) std::cout << "[bbggTools::::EvaluatePhotonIDs] \t Result: " << pho_ids[whichPho] << std::endl;
              }//here
+*/
          }
          if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] After Photon loop..." << std::endl;
 
@@ -782,74 +787,6 @@ vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > bbggTools::EvaluatePho
      return PreselDiPhotons;
 }
 
-/*
-std::vector<edm::Ptr<flashgg::Jet>> bbggTools::DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets, bool DoMassCut)
-{
-
-
-    edm::Ptr<flashgg::Jet> jet1, jet2;
-    std::vector<edm::Ptr<flashgg::Jet>> SelDijet;
-    bbggTools::LorentzVector DiJet(0,0,0,0);
-    double sumbtag_ref = 0;
-    double sumpt_ref = 0;
-    bool hasDiJet = false;
-    sumbtag_ref = sumbtag_ref;
-    sumpt_ref = sumpt_ref;
-
-    if(DEBUG) std::cout << "Jet sorting... " << std::endl;
-    for(unsigned int iJet = 0; iJet < Jets.size(); iJet++)
-    {
- 		unsigned int isbjet = 0;
-        if( Jets[iJet]->bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet = 1;
- 		for(unsigned int jJet = iJet+1; jJet < Jets.size(); jJet++)
- 		{
- 	  	 	unsigned int isbjet2 = 0;
-            if( Jets[jJet]->bDiscriminator(_bTagType) > _JetBDiscriminant[1] ) isbjet2 = 1;
- 	  		unsigned int totalbjet = isbjet + isbjet2;
- 	  		if(_n_bJets && totalbjet != _n_bJets) continue;
-
-            bbggTools::LorentzVector dijet = Jets[iJet]->p4() + Jets[jJet]->p4();
-            		if(DoMassCut){
-		                if(dijet.mass() < _DiJetMassWindow[0] || dijet.mass() > _DiJetMassWindow[1]) continue;
-		        }
-
-			double sumbtag = Jets[iJet]->bDiscriminator(_bTagType) + Jets[jJet]->bDiscriminator(_bTagType);
-
-
-//			if( bbggTools::DeltaR(Jets[iJet]->p4(), Jets[jJet]->p4()) < 0.5)
-//				continue;
-
-//			if( Jets[iJet]->pt() < _JetPt[1]*dijet.mass() && Jets[jJet]->pt() < _JetPt[1]*dijet.mass()) continue;
-//			if( Jets[iJet]->pt() < _JetPt[1]*dijet.mass() && Jets[jJet]->pt() < _JetPt[1]*dijet.mass()) continue;
-
-            double sumpt = Jets[iJet]->pt() + Jets[jJet]->pt();
-// 	  		if(dijet.pt() > dijetPt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
- 	  		if(sumbtag > sumbtag_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
-// 	  		if(sumpt > sumpt_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
- 	  		{
-				hasDiJet = true;
-//				dijetPt_ref = dijet.pt();
-				sumbtag_ref = sumbtag;
-				sumpt_ref = sumpt;
-                if( Jets[iJet]->pt() > Jets[jJet]->pt() ) {
-					jet1 = Jets.at(iJet);
-					jet2 = Jets.at(jJet);
-				} else {
-					jet2 = Jets.at(iJet);
-					jet1 = Jets.at(jJet);
-				}
-			}
-		}
-	}
-
-	if(hasDiJet){
-		SelDijet.push_back(jet1);
-		SelDijet.push_back(jet2);
-	}
-	return SelDijet;
-
-}
-*/
 
 std::vector<flashgg::Jet> bbggTools::DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut)
 {
@@ -964,56 +901,7 @@ std::vector<flashgg::Jet> bbggTools::DiJetVBFSelection(std::vector<flashgg::Jet>
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-std::vector<edm::Ptr<flashgg::Jet>> bbggTools::JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate)
-{
-
-    //Begin Jets Loop/Selection ------------------------------------------------------------
-    std::vector<edm::Ptr<flashgg::Jet>> Jets;
-    if(DEBUG) std::cout << "Begin Jet selection..." << std::endl;
-    unsigned int jetCollectionIndex = diphoCandidate->jetCollectionIndex();
-    for( unsigned int jetIndex = 0; jetIndex < jetsCol[jetCollectionIndex]->size(); jetIndex++ )
-    {
-    	edm::Ptr<flashgg::Jet> jet = jetsCol[jetCollectionIndex]->ptrAt( jetIndex );
-
-    	bool isJet = true;
-
-        if(_JetDoID[0] && !(bbggTools::isJetID(jet)))
-            isJet = false;
-    	if(fabs(jet->eta()) > _JetEta[0] )
-            isJet = false;
-        // if( _JetDoPUID[0]  )
-        //            isJet = false;
-    	if(jet->pt() < _JetPt[0])
-            isJet = false;
- 	    if(jet->bDiscriminator(_bTagType) < _JetBDiscriminant[0])
-            isJet = false;
- 	    if( !isJet )
-            continue;
- 	    if( bbggTools::DeltaR(jet->p4(), diphoCandidate->leadingPhoton()->p4()) < _JetDrPho[0]
-             || bbggTools::DeltaR(jet->p4(), diphoCandidate->subLeadingPhoton()->p4()) < _JetDrPho[0] ) continue;
-
-        Jets.push_back(jet);
-     }
-
-return Jets;
-}
-*/
-
-
-std::vector<flashgg::Jet> bbggTools::JetVBFPreSelection(std::vector<flashgg::Jet> jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> dCand, std::vector<flashgg::Jet> DiJet)
+std::vector<flashgg::Jet> bbggTools::JetVBFPreSelection(std::vector<flashgg::Jet> jetsCol, flashgg::DiPhotonCandidate dCand, std::vector<flashgg::Jet> DiJet)
 {
 
     //Begin Jets Loop/Selection ------------------------------------------------------------
@@ -1034,8 +922,8 @@ std::vector<flashgg::Jet> bbggTools::JetVBFPreSelection(std::vector<flashgg::Jet
             isJet = false;
  	if( !isJet )
             continue;
- 	if( bbggTools::DeltaR(jet->p4(), dCand->leadingPhoton()->p4()) < _JetDrPho[0]
-	    || bbggTools::DeltaR(jet->p4(), dCand->subLeadingPhoton()->p4()) < _JetDrPho[0] ) {
+ 	if( bbggTools::DeltaR(jet->p4(), dCand.leadingPhoton()->p4()) < _JetDrPho[0]
+	    || bbggTools::DeltaR(jet->p4(), dCand.subLeadingPhoton()->p4()) < _JetDrPho[0] ) {
 	  //	  cout << "Matched to photon" << endl;
 	  continue;
 	}
@@ -1056,7 +944,7 @@ return Jets;
 
 
 
-std::vector<flashgg::Jet> bbggTools::JetPreSelection(std::vector<flashgg::Jet> jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> dCand)
+std::vector<flashgg::Jet> bbggTools::JetPreSelection(std::vector<flashgg::Jet> jetsCol, flashgg::DiPhotonCandidate dCand)
 {
 
     //Begin Jets Loop/Selection ------------------------------------------------------------
@@ -1064,42 +952,32 @@ std::vector<flashgg::Jet> bbggTools::JetPreSelection(std::vector<flashgg::Jet> j
     if(DEBUG) std::cout << "Begin Jet selection..." << std::endl;
     for( unsigned int jetIndex = 0; jetIndex < jetsCol.size(); jetIndex++ )
     {
-      //flashgg::Jet jet = jetsCol[jetIndex];
-      const flashgg::Jet *jet = &(jetsCol[jetIndex]);
+        const flashgg::Jet *jet = &(jetsCol[jetIndex]);
 
-    	bool isJet = true;
+        if(_JetDoID[0] && !(bbggTools::isJetID(jet))) continue;
+    	if(fabs(jet->eta()) > _JetEta[0] ) continue;
+    	if(jet->pt() < _JetPt[0]) continue;
+ 	if(jet->bDiscriminator(_bTagType) < _JetBDiscriminant[0]) continue;
 
-        if(_JetDoID[0] && !(bbggTools::isJetID(jet)))
-            isJet = false;
-    	if(fabs(jet->eta()) > _JetEta[0] )
-            isJet = false;
-        // if( _JetDoPUID[0]  )
-        //            isJet = false;
-    	if(jet->pt() < _JetPt[0])
-            isJet = false;
- 	if(jet->bDiscriminator(_bTagType) < _JetBDiscriminant[0])
-            isJet = false;
- 	if( !isJet )
-            continue;
- 	if( bbggTools::DeltaR(jet->p4(), dCand->leadingPhoton()->p4()) < _JetDrPho[0]
-             || bbggTools::DeltaR(jet->p4(), dCand->subLeadingPhoton()->p4()) < _JetDrPho[0] ) continue;
+ 	if( bbggTools::DeltaR(jet->p4(), dCand.leadingPhoton()->p4()) < _JetDrPho[0]
+             || bbggTools::DeltaR(jet->p4(), dCand.subLeadingPhoton()->p4()) < _JetDrPho[0] ) continue;
 
- 	    Jets.push_back(*jet );
+        Jets.push_back(*jet );
      }
 
 return Jets;
 }
 
 
-edm::Ptr<flashgg::DiPhotonCandidate> bbggTools::MVAIDDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons)
+flashgg::DiPhotonCandidate bbggTools::MVAIDDiPhotonSelection( vector<flashgg::DiPhotonCandidate> DiPhotons)
 {
 	float sumMVA_ref = -999;
 	unsigned int maxId = -1;
 	if(DEBUG) std::cout << "[bbggTools::MVAIDDiPhotonSelection] Number of diphotons: " << DiPhotons.size() << std::endl;
 	for( unsigned int p = 0; p < DiPhotons.size(); p++  )
 	{
-		edm::Ptr<flashgg::DiPhotonCandidate> it = DiPhotons[p];
-		float sumMVA = it->leadingPhoton()->userFloat(_PhotonMVAEstimator) + it->subLeadingPhoton()->userFloat(_PhotonMVAEstimator);
+		flashgg::DiPhotonCandidate it = DiPhotons[p];
+		float sumMVA = it.leadingPhoton()->userFloat(_PhotonMVAEstimator) + it.subLeadingPhoton()->userFloat(_PhotonMVAEstimator);
 		if(DEBUG) std::cout << "[bbggTools::MVAIDDiPhotonSelection] Diphoton " << p << " sum mva: " << sumMVA << std::endl;
 		if(sumMVA > sumMVA_ref){
 			sumMVA_ref = sumMVA;
@@ -1111,14 +989,14 @@ edm::Ptr<flashgg::DiPhotonCandidate> bbggTools::MVAIDDiPhotonSelection( vector<e
 	return DiPhotons[maxId];
 }
 
-edm::Ptr<flashgg::DiPhotonCandidate> bbggTools::PtSumDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons)
+flashgg::DiPhotonCandidate bbggTools::PtSumDiPhotonSelection( vector<flashgg::DiPhotonCandidate> DiPhotons)
 {
 	float sumPt_ref = 0;
 	unsigned int maxId = -1;
 	for( unsigned int p = 0; p < DiPhotons.size(); p++  )
 	{
-		edm::Ptr<flashgg::DiPhotonCandidate> it = DiPhotons[p];
-		float sumPt = it->leadingPhoton()->pt() + it->subLeadingPhoton()->pt();
+		flashgg::DiPhotonCandidate it = DiPhotons[p];
+		float sumPt = it.leadingPhoton()->pt() + it.subLeadingPhoton()->pt();
 		if(sumPt > sumPt_ref){
 			sumPt_ref = sumPt;
 			maxId = p;
@@ -1128,94 +1006,3 @@ edm::Ptr<flashgg::DiPhotonCandidate> bbggTools::PtSumDiPhotonSelection( vector<e
 	return DiPhotons[maxId];
 }
 
-/*
-bool bbggTools::AnalysisSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol,
-                                    JetCollectionVector jetsCol)
-{
-	bool cutsChecked = bbggTools::CheckCuts();
-	if(!cutsChecked) {
-		std::cout << "You haven't filled all the cuts correctly!" << std::endl;
-		return 0;
-	}
-
-    //Begin DiPhoton Loop/Selection -----------------------------------------------------------
-    //1st: do diphoton kinematic selection, including diphoton mass window
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> KinDiPhoton = bbggTools::DiPhotonKinematicSelection( diphoCol, 1);
-    if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of kinematically selected diphotons:" << KinDiPhoton.size() << std::endl;
-    if( KinDiPhoton.size() < 1) return 0;
-    //2nd: evaluate photon ID on kinematic selected diphotons
-    vector<pair<edm::Ptr<flashgg::DiPhotonCandidate>, int> > KinDiPhotonWithID = bbggTools::EvaluatePhotonIDs( KinDiPhoton );
-    //3rd: select signal diphoton (2 passing ID)
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> SignalDiPhotons = bbggTools::GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
-    //4th: select CR diphoton (if doing CR)
-    vector<edm::Ptr<flashgg::DiPhotonCandidate>> CRDiPhotons = bbggTools::GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
-
-    if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of signal diphotons:" << SignalDiPhotons.size() << std::endl;
-    if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of CR diphotons:" << CRDiPhotons.size() << std::endl;
-
-    if(SignalDiPhotons.size() < 1 && CRDiPhotons.size() < 1) return 0;
-    if(SignalDiPhotons.size() < 1 && !_doPhotonCR) return 0;
-
-    //5th: Select diphoton for event (diphoCandidate)
-    //if there's a signal photon, pick it, if not (and doing CR) pick one from there
-    hasDiPho = true;
-    _isSignal = 0;
-    _isPhotonCR = 0;
-    if(SignalDiPhotons.size() > 0) {
-//        diphoCandidate = bbggTools::MVAIDDiPhotonSelection(SignalDiPhotons);//SignalDiPhotons[0];
-        diphoCandidate = bbggTools::PtSumDiPhotonSelection(SignalDiPhotons);//SignalDiPhotons[0];
-        _isSignal = 1;
-        _isPhotonCR = 0;
-    }
-    if(SignalDiPhotons.size() < 1 && _doPhotonCR && CRDiPhotons.size() > 0) {
-//        diphoCandidate = bbggTools::MVAIDDiPhotonSelection(CRDiPhotons);//CRDiPhotons[0];
-        diphoCandidate = bbggTools::PtSumDiPhotonSelection(CRDiPhotons);//CRDiPhotons[0];
-        _isSignal = 0;
-        _isPhotonCR = 1;
-    }
-    if(!_isSignal && !_isPhotonCR) return 0;
-    if(DEBUG) std::cout << "Passed diphoton selection..." << std::endl;
-    //End DiPhoton Loop/Selection -----------------------------------------------------------
-
-    //Begin Jets Loop/Selection ------------------------------------------------------------
-    if(DEBUG) std::cout << "Begin Jet selection..." << std::endl;
-    hasLeadJet = 0;
-    hasSubJet = 0;
-    //1st: do single jet kinematic selection:
-
-    //Here I have my diphoton candidate and my jets collections.
-    unsigned int jetCollectionIndex = diphoCandidate->jetCollectionIndex();
-    //can I create a std::vector<flashgg::Jet>?
-    std::vector<flashgg::Jet> testCollection;
-    for( unsigned int jetIndex = 0; jetIndex < jetsCol[jetCollectionIndex]->size(); jetIndex++ )
-    {
-        edm::Ptr<flashgg::Jet> thisJetPtr = jetsCol[jetCollectionIndex]->ptrAt( jetIndex );
-        flashgg::Jet * thisJetPointer = const_cast<flashgg::Jet *>(thisJetPtr.get());
-        testCollection.push_back(*thisJetPointer);
-    }
-    cout << testCollection.size() << std::endl;
-    //Here I can apply smearing to my jets
-
-    std::vector<edm::Ptr<flashgg::Jet>> KinJets = bbggTools::JetPreSelection(jetsCol, diphoCandidate);
-
-    if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of preselected jets:" << KinJets.size() << std::endl;
-
-    if( KinJets.size() < 2 ) return 0;
-
-    //2nd: select dijet with mass window cut:
-    std::vector<edm::Ptr<flashgg::Jet>> SelJets = bbggTools::DiJetSelection(KinJets, 1);
-
-    if(DEBUG) std::cout << "[bbggTools::AnalysisSelection] Number of selected jets:" << SelJets.size() << std::endl;
-
-    if( SelJets.size() < 2 ) return 0;
-
-    if( SelJets.size() > 1 ){
-        hasLeadJet = 1;
-        leadingJetCandidate = SelJets[0];
-        hasSubJet = 1;
-        subleadingJetCandidate = SelJets[1];
-    }
-
-    return 1;
-}
-*/

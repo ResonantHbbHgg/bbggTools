@@ -32,33 +32,28 @@ public:
     typedef math::XYZTLorentzVector LorentzVector;
     typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotonKinematicSelection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, bool DoMassCut = 0);
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotonIDSelection( std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> GetDiPhotonsInCategory( std::vector<std::pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > SelectedDiPhotons, int category );
-    std::vector<std::pair<edm::Ptr<flashgg::DiPhotonCandidate>, int > > EvaluatePhotonIDs( std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol);
-    
-//    std::vector<edm::Ptr<flashgg::Jet>> DiJetSelection(std::vector<edm::Ptr<flashgg::Jet>> Jets, bool DoMassCut = 0);
-    std::vector<flashgg::Jet> DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut = 0);
-    
-    std::vector<flashgg::Jet> DiJetVBFSelection(std::vector<flashgg::Jet> Jets, std::vector<flashgg::Jet> DiJet);
-
-//    std::vector<edm::Ptr<flashgg::Jet>> JetPreSelection(JetCollectionVector jetsCol, edm::Ptr<flashgg::DiPhotonCandidate> diphoCandidate);
-    std::vector<flashgg::Jet> JetPreSelection(std::vector<flashgg::Jet>, edm::Ptr<flashgg::DiPhotonCandidate> dCand);
-    std::vector<flashgg::Jet> JetVBFPreSelection(std::vector<flashgg::Jet>, edm::Ptr<flashgg::DiPhotonCandidate> dCand, std::vector<flashgg::Jet> DiJet);
-
+    //Photon selection
+    std::vector<flashgg::DiPhotonCandidate> DiPhotonKinematicSelection(vector<flashgg::DiPhotonCandidate> diphoCol, bool DoMassCut = 0);
+    std::vector<flashgg::DiPhotonCandidate> DiPhotonIDSelection( std::vector<flashgg::DiPhotonCandidate> diphoCol);
+    std::vector<flashgg::DiPhotonCandidate> GetDiPhotonsInCategory( std::vector<std::pair<flashgg::DiPhotonCandidate, int > > SelectedDiPhotons, int category );
+    std::vector<std::pair<flashgg::DiPhotonCandidate, int > > EvaluatePhotonIDs( std::vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID = 0);
     bool passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
     bool passHggPreselection(const flashgg::DiPhotonCandidate * dipho);
-	
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhoton76XPreselection(vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol, std::map<std::string, int> myTriggersResults);
-    std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotonPreselection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> diphoCol );
-
-    edm::Ptr<flashgg::DiPhotonCandidate> MVAIDDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons);
-    edm::Ptr<flashgg::DiPhotonCandidate> PtSumDiPhotonSelection( vector<edm::Ptr<flashgg::DiPhotonCandidate>> DiPhotons);
+    std::vector<flashgg::DiPhotonCandidate> DiPhoton76XPreselection(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults);
+    std::vector<flashgg::DiPhotonCandidate> DiPhotonPreselection( vector<flashgg::DiPhotonCandidate> diphoCol );
+    flashgg::DiPhotonCandidate MVAIDDiPhotonSelection( vector<flashgg::DiPhotonCandidate> DiPhotons);
+    flashgg::DiPhotonCandidate PtSumDiPhotonSelection( vector<flashgg::DiPhotonCandidate> DiPhotons);
     
-    std::map<std::string,int> TriggerSelection(std::vector<std::string> myTriggers, const edm::TriggerNames &names, edm::Handle<edm::TriggerResults> triggerBits);
+    //Jet selection
+    std::vector<flashgg::Jet> DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut = 0);
+    std::vector<flashgg::Jet> JetPreSelection(std::vector<flashgg::Jet>, flashgg::DiPhotonCandidate dCand);
+    std::vector<flashgg::Jet> JetVBFPreSelection(std::vector<flashgg::Jet>, flashgg::DiPhotonCandidate dCand, std::vector<flashgg::Jet> DiJet);
 
-    std::map<int, vector<double> > getWhichID (std::string wpoint);
-    std::map<int, vector<double> > getWhichISO (std::string wpoint);
+    //VBF selection
+    std::vector<flashgg::Jet> DiJetVBFSelection(std::vector<flashgg::Jet> Jets, std::vector<flashgg::Jet> DiJet);
+
+    //Trigger
+    std::map<std::string,int> TriggerSelection(std::vector<std::string> myTriggers, const edm::TriggerNames &names, edm::Handle<edm::TriggerResults> triggerBits);
 
     //Angular Functions
     float getCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, float ebeam = 6500);
@@ -66,27 +61,25 @@ public:
     std::vector<float> CosThetaAngles(const flashgg::DiPhotonCandidate * DiPhoton, flashgg::Jet LeadingJet, flashgg::Jet SubleadingJet);
     std::vector<TVector3> norm_planes_hi(std::vector<TLorentzVector> partons,  TLorentzVector H);
     std::vector<double> getPhi(const flashgg::DiPhotonCandidate * DiPhoton, flashgg::Jet LeadingJet, flashgg::Jet SubleadingJet);
-//TLorentzVector leadingPhoton, TLorentzVector subleadingPhoton, TLorentzVector leadingJet, TLorentzVector subleadingJet, 
-//		       TLorentzVector diphoton, TLorentzVector dihiggs);
-    
+   
+
+    //Photon ID 
+    std::map<int, vector<double> > getWhichID (std::string wpoint);
+    std::map<int, vector<double> > getWhichISO (std::string wpoint);
     double getCHisoToCutValue(const flashgg::DiPhotonCandidate * dipho, int whichPho);
-    double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho);
-    
+    double getCHisoToCutValue(edm::Ptr<flashgg::DiPhotonCandidate> dipho, int whichPho); 
     double getNHisoToCutValue(const flashgg::Photon* pho);
-    double getPHisoToCutValue(const flashgg::Photon* pho);
-    
+    double getPHisoToCutValue(const flashgg::Photon* pho);    
     double getNHisoToCutValue(const flashgg::Photon* pho, vector<double> nhCorr);
-    double getPHisoToCutValue(const flashgg::Photon* pho, vector<double> phCorr);
-    
+    double getPHisoToCutValue(const flashgg::Photon* pho, vector<double> phCorr);    
     double getEA( float eta, int whichEA);
-    double DeltaR( bbggTools::LorentzVector vec1, bbggTools::LorentzVector vec2);
-    
+    double DeltaR( bbggTools::LorentzVector vec1, bbggTools::LorentzVector vec2);    
     bool isPhoID(edm::Ptr<flashgg::Photon> pho, vector<double> cuts);
-    bool isPhoID(const flashgg::Photon* pho, vector<double> cuts);
-    
+    bool isPhoID(const flashgg::Photon* pho, vector<double> cuts);    
     bool isPhoISO(edm::Ptr<flashgg::DiPhotonCandidate> pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
     bool isPhoISO(const flashgg::DiPhotonCandidate * pho, int whichPho, vector<double> cuts, vector<double> nhCorr, vector<double> phCorr);
     
+    //Jet ID
     bool isJetID(edm::Ptr<flashgg::Jet> jet, bool useTight=false);
     bool isJetID(const flashgg::Jet *jet, bool useTight=false);
     

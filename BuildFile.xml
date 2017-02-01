@@ -8,37 +8,7 @@
 <use name="roofit"/>
 <use name="rootcore"/>
 <use name="roostats"/>
-<!--<use name="rootcling"/>
-<use name="rooteve"/>
-<use name="rootgeompainter"/>
-<use name="rootguihtml"/>
-<use name="rootinteractive"/>
-<use name="rootminuit"/>
-<use name="rootphysics"/>
-<use name="rootrgl"/>
-<use name="rootspectrum"/>
-<use name="rootxml"/>
-<use name="root_cxxdefaults"/>
-<use name="rootcore"/>
-<use name="rootfoam"/>
-<use name="rootgpad"/>
-<use name="roothistmatrix"/>
-<use name="rootmath"/>
-<use name="rootminuit2"/>
-<use name="rootpy"/>
-<use name="rootrint"/>
-<use name="rootthread"/>
-<use name="rootxmlio"/>
-<use name="root_interface"/>
-<use name="rooteg"/>
-<use name="rootgeom"/>
-<use name="rootgraphics"/>
-<use name="roothtml"/>
-<use name="rootmathcore"/>
-<use name="rootmlp"/> -->
 <use name="rootrflx"/>
-<!--<use name="rootrio"/>
-<use name="roottmva"/> -->
 <use name="boost"/>
 <use name="boost_header"/>
 <use name="DataFormats/Candidate"/>
@@ -53,12 +23,12 @@
 <use name="FWCore/TFWLiteSelector"/>
 <use name="PhysicsTools/KinFitter"/>
 <use name="JetMETCorrections/Modules"/>
-<!--<flags EDM_PLUGIN="1"/>-->
+<use name="EgammaAnalysis/ElectronTools"/>
+<use name="DataFormats/EcalRecHit"/>
+<use name="DataFormats/EcalDetId"/>
+<use name="DataFormats/DetId"/>
+
 <export>
 
     <lib name="1"/>
-<!--    <lib name="bbggTools"/>
-    <lib name="bbggMC"/>
-    <lib name="bbggLTMaker"/>
-    <lib name="bbgg2DFitter"/> -->
 </export>

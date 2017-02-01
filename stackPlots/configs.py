@@ -11,7 +11,8 @@ doJetCR = False
 isPhoCR = False
 addHiggs = True
 hideData = False
-addbbH = False
+addbbH = True
+dyjets = False
 
 #do pile up reweighting
 doPUweight = True
@@ -27,14 +28,10 @@ doSignal = True
 BTAG = 0.46
 
 #Luminosity to normalize backgrounds
-lumi = 22370#pb
+lumi = 36500#pb
 MCSF = 1.0
 #List of datasets to be used (cross section information defined there)
 data_file = open("datasets/datasets80X_mod.json")
-
-#List of different processes in stack plot (number in each contribution reflects the number of datasets to be stacked together)
-#bkgsToAdd = [['vbf', " VBF H(#gamma#gamma)", 1], ['vh', " VH(#gamma#gamma)", 1], ['ggf', " ggH(#gamma#gamma)", 1], ['tth', " ttH(#gamma#gamma)", 1], ["DYJet", " Z/#gamma*+Jets", 1], ["GJets", " #gamma+Jets", 2], ["DiPhoJet", " #gamma#gamma+Jets", 1], ["QCD", " QCD", 2] ]
-bkgsToAdd = [['vbf', " VBF H(#gamma#gamma)", 1], ['vh', " VH(#gamma#gamma)", 1], ['ggf', " ggH(#gamma#gamma)", 1], ['tth', " ttH(#gamma#gamma)", 1], ["DYJet", " Z/#gamma*+Jets", 1],["QCD", " j#gamma+Jets/jj+Jets", 2], ["GJets", " j#gamma+Jets/jj+Jets", 2], ["DiPhoJet", " #gamma#gamma+Jets", 1] ]
 
 #number of bins in histograms
 nbin = 30
@@ -42,23 +39,28 @@ dr = "sqrt( (leadingPhoton.Eta() - subleadingPhoton.Eta())*(leadingPhoton.Eta() 
 
 #plots will be saved in dirName
 prefix = ""
-dirSuffix = "Nov24_22ifb_Angles"
+dirSuffix = "Jan20_37ifb_Moriond_SR_Blind_QCD"
 dirPrefix = "/afs/cern.ch/user/r/rateixei/www/HHBBGG/ControlPlots/"
 dirName = dirPrefix + dirSuffix
 
 #Location of root files for each invidivual samples. Name of the root files is defined in datasets/datasets(76).json
-higgsLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/dev-rafael-Nov4/CMSSW_8_0_20/src/flashgg/bbggTools/test/RunJobs/Background_Nov24/Hadd/"
-bkgLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/dev-rafael-Nov4/CMSSW_8_0_20/src/flashgg/bbggTools/test/RunJobs/Background_Nov24/Hadd/"
-signalLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/dev-rafael-Nov4/CMSSW_8_0_20/src/flashgg/bbggTools/test/RunJobs/Signal_Nov24/Hadd/"
-dataLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/dev-rafael-Nov4/CMSSW_8_0_20/src/flashgg/bbggTools/test/RunJobs/Data_Nov24/Hadd/"
+higgsLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_Moriond17/CMSSW_8_0_25/src/flashgg/bbggTools/test/RunJobs/BackgroundJan20ICHEP/Hadd/"
+bkgLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_Moriond17/CMSSW_8_0_25/src/flashgg/bbggTools/test/RunJobs/BackgroundJan20ICHEP/Hadd/"
+signalLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_Moriond17/CMSSW_8_0_25/src/flashgg/bbggTools/test/RunJobs/SignalJan20/Hadd/"
+dataLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_Moriond17/CMSSW_8_0_25/src/flashgg/bbggTools/test/RunJobs/DataJan20/Hadd/"
 
 
 #plots to be made
 plots = []
+plots.append(["MXprime", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250.", "#tilde{M}_{X} (GeV)", 40, 200, 1000])
+'''
+plots.append(["diPho_Mass", "diphotonCandidate.M()", "M(#gamma#gamma) [GeV]", 50, 100, 180])
+plots.append(["CosTheta_bb", "CosTheta_bb", "Cos(#theta_{bb})", nbin, -1, 1])
+plots.append(["MX", "diHiggsCandidate.M() - dijetCandidate.M() + 125.", "#tilde{M}_{X} (GeV)", 40, 200, 1000])
+plots.append(["binnedMX", "diHiggsCandidate.M() - dijetCandidate.M() + 125.", "#tilde{M}_{X} (GeV)", nbin, 100, 1000])
+plots.append(["CosTheta_gg", "CosTheta_gg", "Cos(#theta_{#gamma#gamma})", nbin, -1, 1])
 plots.append(["CosThetaStar", "CosThetaStar", "Cos(#theta*)", nbin, -1, 1])
 plots.append(["CosThetaStar_CS", "CosThetaStar_CS", "Cos(#theta*)^{CS}", nbin, -1, 1])
-plots.append(["CosTheta_bb", "CosTheta_bb", "Cos(#theta_{bb})", nbin, -1, 1])
-plots.append(["CosTheta_gg", "CosTheta_gg", "Cos(#theta_{#gamma#gamma})", nbin, -1, 1])
 plots.append(["CosTheta_bbgg", "CosTheta_bbgg", "Cos(#theta_{jj#gamma#gamma})", nbin, -1, 1])
 plots.append(["CosTheta_ggbb", "CosTheta_ggbb", "Cos(#theta_{#gamma#gammajj})", nbin, -1, 1])
 plots.append(["Phi", "Phi0", "#Phi", nbin, -3.5, 3.5])
@@ -68,8 +70,6 @@ plots.append(["PhotonIDMVA", "(leadingPhotonIDMVA+subleadingPhotonIDMVA)", "Sum 
 plots.append(["PhotonIDMVA1", "(leadingPhotonIDMVA)", "1 Photon #gammaMVA discriminant", nbin, 0.2, 1])
 plots.append(["PhotonIDMVA2", "(subleadingPhotonIDMVA)", "2 Photon #gammaMVA discriminant", nbin, 0.2, 1])
 plots.append(["nvtx", "nvtx", "Number of vertices", 50, 0, 50])
-plots.append(["diPho_Mass", "diphotonCandidate.M()", "M(#gamma#gamma) [GeV]", 80, 100, 180])
-plots.append(["MX", "diHiggsCandidate.M() - dijetCandidate.M() + 125.", "#tilde{M}_{X} (GeV)", 80, 200, 1000])
 plots.append(["diJet_Mass", "dijetCandidate.M()", "M(jj) [GeV]", 40, 80, 200])
 plots.append(["dicandidate_Mass", "diHiggsCandidate.M()", "M(jj#gamma#gamma) [GeV]", nbin, 100, 1000])
 plots.append(["costhetastar_cs", "fabs(CosThetaStar_CS)", "|cos#theta*|_{CS}", nbin, 0, 1])
@@ -95,9 +95,9 @@ plots.append(["btagSum", "leadingJet_bDis+subleadingJet_bDis", "Sum of b-tag of 
 plots.append(["subleadingPhoton_pt", "subleadingPhoton.pt()", "p_{T}(#gamma_{2}) [GeV]", nbin, 30, 150])
 plots.append(["subleadingPhoton_eta", "subleadingPhoton.eta()", "#eta(#gamma_{2})", nbin, -3, 3])
 plots.append(["dr_photons", dr, "#DeltaR between photons", nbin, 0, 10])
-plots.append(["leadingPho_MVA", "leadingPhotonIDMVA", "Leading Photon #gammaMVA discriminant", nbin, 0, 1])
-plots.append(["subleadingPho_MVA", "subleadingPhotonIDMVA", "SubLeading Photon #gammaMVA discriminant", nbin, 0, 1])
-
+plots.append(["leadingPho_MVA", "customLeadingPhotonIDMVA", "Leading Photon #gammaMVA discriminant", nbin, 0, 1])
+plots.append(["subleadingPho_MVA", "customSubLeadingPhotonIDMVA", "SubLeading Photon #gammaMVA discriminant", nbin, 0, 1])
+'''
 
 #cuts to be used to make plots
 Cut = " diphotonCandidate.M() > 100 && diphotonCandidate.M() < 180"

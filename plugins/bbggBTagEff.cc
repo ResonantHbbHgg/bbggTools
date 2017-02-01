@@ -549,14 +549,23 @@ passed1 = 1;
 //Trigger
 std::map<std::string, int> myTriggerResults;
 bool triggerAccepted = false;
-vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDipho = diphoVec;
+
+std::vector<flashgg::DiPhotonCandidate> diphotonCollection;
+for( unsigned int dpIndex = 0; dpIndex < diphoVec.size(); dpIndex++ )
+{
+    edm::Ptr<flashgg::DiPhotonCandidate> thisDPPtr = diphoVec[ dpIndex ];
+    flashgg::DiPhotonCandidate * thisDPPointer = const_cast<flashgg::DiPhotonCandidate *>(thisDPPtr.get());
+    diphotonCollection.push_back(*thisDPPointer);
+}
+
+vector<flashgg::DiPhotonCandidate> PreSelDipho = diphotonCollection;
 if(myTriggers.size() > 0){
     Handle<edm::TriggerResults> trigResults;
     iEvent.getByToken(triggerToken_, trigResults);
     const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);        
     myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
     
-    PreSelDipho = tools_.DiPhoton76XPreselection( diphoVec, myTriggerResults);
+    PreSelDipho = tools_.DiPhoton76XPreselection( diphotonCollection, myTriggerResults);
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() > 0 ) triggerAccepted = 1;
     
@@ -574,19 +583,19 @@ if( !triggerAccepted ) {return;}
 passed2 = 1;
 
 //Check photon kinematic selection:
-std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> PreSelDiPhos = tools_.DiPhotonKinematicSelection(PreSelDipho);
+std::vector<flashgg::DiPhotonCandidate> PreSelDiPhos = tools_.DiPhotonKinematicSelection(PreSelDipho);
 if(PreSelDiPhos.size() < 1 ) {return;}
 //Efficiencies->Fill(3);
 passed3 = 1;
 
 //Check photon ID:
-std::vector<edm::Ptr<flashgg::DiPhotonCandidate>> SelDiPhos = tools_.DiPhotonIDSelection(PreSelDiPhos);
+std::vector<flashgg::DiPhotonCandidate> SelDiPhos = tools_.DiPhotonIDSelection(PreSelDiPhos);
 if(SelDiPhos.size() < 1) {return;}
 //Efficiencies->Fill(4);
 passed4 = 1;
 
-edm::Ptr<flashgg::DiPhotonCandidate> diphoCand = SelDiPhos[0];
-unsigned int jetCollectionIndex = diphoCand->jetCollectionIndex();
+flashgg::DiPhotonCandidate diphoCand = SelDiPhos[0];
+unsigned int jetCollectionIndex = diphoCand.jetCollectionIndex();
 std::vector<flashgg::Jet> testCollection;
 for( unsigned int jetIndex = 0; jetIndex < theJetsCols[jetCollectionIndex]->size(); jetIndex++ )
 {

@@ -50,6 +50,13 @@ public:
 
 	unsigned int CheckNumberOfPromptPhotons(edm::Ptr<flashgg::DiPhotonCandidate> dipho, 
 											edm::Handle<edm::View<reco::GenParticle> > genCol);
+
+	unsigned int CheckNumberOfPromptPhotons(flashgg::DiPhotonCandidate dipho, 
+											edm::Handle<edm::View<pat::PackedGenParticle> > genCol);
+//											edm::Handle<edm::View<reco::GenParticle> > genCol);
+
+	unsigned int CheckNumberOfPromptPhotons(flashgg::DiPhotonCandidate dipho, 
+											edm::Handle<edm::View<reco::GenParticle> > genCol);
 												
 	//Other
 	double DeltaR(bbggMC::LorentzVector vec1, bbggMC::LorentzVector vec2);
