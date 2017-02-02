@@ -45,8 +45,11 @@ public:
     flashgg::DiPhotonCandidate PtSumDiPhotonSelection( vector<flashgg::DiPhotonCandidate> DiPhotons);
     
     //Jet selection
+    bool SingleJetPreSelection(flashgg::Jet jet, flashgg::DiPhotonCandidate dipho);
     std::vector<flashgg::Jet> DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut = 0);
+    std::vector<flashgg::Jet> DiJetSelection(std::vector<std::pair<flashgg::Jet,flashgg::Jet>> Jets, bool DoMassCut = 0);
     std::vector<flashgg::Jet> JetPreSelection(std::vector<flashgg::Jet>, flashgg::DiPhotonCandidate dCand);
+    std::vector<std::pair<flashgg::Jet, flashgg::Jet>> JetPreSelection(std::vector<std::pair<flashgg::Jet, flashgg::Jet>>, flashgg::DiPhotonCandidate dCand);
     std::vector<flashgg::Jet> JetVBFPreSelection(std::vector<flashgg::Jet>, flashgg::DiPhotonCandidate dCand, std::vector<flashgg::Jet> DiJet);
 
     //VBF selection

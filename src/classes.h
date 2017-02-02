@@ -37,6 +37,8 @@
 
 namespace {
 	struct dictionary {
+           std::pair<flashgg::Jet, flashgg::Jet> dummy_jetpair;
+           std::vector<std::pair<flashgg::Jet, flashgg::Jet>> dummy_jetpair_vec;
 //		bbggTools dummy_tools;
 //       bbggLTMaker dummy_ltree;
 //        bbggMC dummy_mc;

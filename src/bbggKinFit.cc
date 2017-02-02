@@ -92,6 +92,7 @@ float bbggKinFit::GetPtResolution(bbggKinFit::LorentzVector j)
     }
     if(a == -1) {
         std::cout << "[bbggKinFit::GetPtResolution] Unset Kin Fit parameter!" << std::endl;
+        std::cout << "\t jet pt: " << Et << " jet eta: " << eta << std::endl;
         return -1;
     }
     
@@ -121,6 +122,7 @@ float bbggKinFit::GetEtaResolution(bbggKinFit::LorentzVector j)
     }
     if(a == -1) {
         std::cout << "[bbggKinFit::GetEtaResolution] Unset Kin Fit parameter!" << std::endl;
+        std::cout << "\t jet pt: " << Et << " jet eta: " << eta << std::endl;
         return -1;
     }
     
@@ -149,6 +151,7 @@ float bbggKinFit::GetPhiResolution(bbggKinFit::LorentzVector j)
     }
     if(a == -1) {
         std::cout << "[bbggKinFit::GetPhiResolution] Unset Kin Fit parameter!" << std::endl;
+        std::cout << "\t jet pt: " << Et << " jet eta: " << eta << std::endl;
         return -1;
     }
     

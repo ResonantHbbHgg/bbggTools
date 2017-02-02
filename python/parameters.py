@@ -9,7 +9,7 @@ _myTriggers				=	cms.untracked.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_
 _DiPhotonTag				=	cms.untracked.InputTag('flashggDiPhotons')
 #_DiPhotonTag				=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag						=	cms.untracked.InputTag('flashggJets')
-_metTag					=	cms.InputTag('slimmedMETs')
+_metTag					=	cms.InputTag('flashggMets')
 
 #_inputTagJets					=	flashggTags.UnpackedJetCollectionVInputTag,
 _rhoFixedGridCollection		=	cms.InputTag('fixedGridRhoAll')
@@ -112,10 +112,11 @@ _MVAPhotonID				=	cms.untracked.vdouble(0.374, 0.336)
 #MVA user float
 _PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
 
-_doJetRegression			=	cms.untracked.uint32(0)
+_doJetRegression			=	cms.untracked.uint32(1)
 
 
-_bRegFile      =  cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/BDTG_16plus2_jetGenJet_nu_7_6.weights.xml")
+_bRegFileLeading      =  cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/2016/BDTG_16plus3-JEC_jetGenJet_nu_80X_leading_2_1.weights.xml")
+_bRegFileSubLeading      =  cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/2016/BDTG_16plus3-JEC_jetGenJet_nu_80X_trailing_2_1.weights.xml")
  
 _jetSmear					=	cms.untracked.int32(0)
 
@@ -133,6 +134,6 @@ if _doCustomPhotonMVA:
    _MVAPhotonID = cms.untracked.vdouble(0.07, -0.03)
 
 _addNonResMVA = cms.untracked.uint32(1)
-_NonResMVAWeights_LowMass = cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml")
-_NonResMVAWeights_HighMass = cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml")
+_NonResMVAWeights_LowMass = cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass400.xml")
+_NonResMVAWeights_HighMass = cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass400.xml")
 _NonResMVAVars = cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')

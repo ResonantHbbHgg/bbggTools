@@ -1,4 +1,6 @@
 <lcgdict>
+<class name="std::pair<flashgg::Jet, flashgg::Jet>"/>
+<class name="std::vector<std::pair<flashgg::Jet, flashgg::Jet>>"/>
 <!--	<class name="bbggTools"/>
 	<class name="bbggMC"/> -->
 </lcgdict>
