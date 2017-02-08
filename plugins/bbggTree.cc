@@ -746,7 +746,7 @@ void
 
     
     //Kinematic selection
-    std::vector<flashgg::DiPhotonCandidate> KinDiPhoton = tools_.DiPhotonKinematicSelection( diphotonCollection, 1);
+    std::vector<flashgg::DiPhotonCandidate> KinDiPhoton = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
     if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: " << KinDiPhoton.size() << std::endl;
     if( KinDiPhoton.size() < 1) return;
     h_Efficiencies->Fill(3, genTotalWeight);
@@ -768,8 +768,8 @@ void
         isSignal = 0;
         isPhotonCR = 1;
     }
-    if(!isSignal && !isPhotonCR) return; //if event is not signal and is not photon control region, skip
-    if(!isSignal && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
+    if(SignalDiPhotons.size() < 1 && CRDiPhotons.size() < 1) return; //if event is not signal and is not photon control region, skip
+    if(SignalDiPhotons.size() < 1 && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
 
     if(isSignal) h_Efficiencies->Fill(4, genTotalWeight);
     if(DEBUG) std::cout << "[bbggTree::analyze] Is signal region: " << isSignal << "; Is control region: " << isPhotonCR << std::endl;
