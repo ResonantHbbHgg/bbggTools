@@ -108,9 +108,11 @@ _JetDoID					=	cms.untracked.vint32(1, 1)
 #Do MVA photon ID instead of cut based
 _DoMVAPhotonID				=	cms.untracked.uint32(1)
 #MVA cut EB/EE, values from Ming: (0.374, 0.472), EGM values: (0.374, 0.336)
-_MVAPhotonID				=	cms.untracked.vdouble(0.374, 0.336)
+#_MVAPhotonID				=	cms.untracked.vdouble(0.374, 0.336)
+_MVAPhotonID				=	cms.untracked.vdouble(0.2, 0.2)
 #MVA user float
-_PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
+#_PhotonMVAEstimator			=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values")
+_PhotonMVAEstimator			=	cms.untracked.string("EGMPhotonMVA")
 
 _doJetRegression			=	cms.untracked.uint32(1)
 
