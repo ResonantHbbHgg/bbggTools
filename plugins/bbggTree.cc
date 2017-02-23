@@ -491,6 +491,13 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
       NRW->LoadHists(fileNameWei1, fileNameWei2);
       for (UInt_t n=0; n<13; n++) 
 	NRWeights[n]=1;
+
+      // Check that provided benchmark number is in range 1-12
+      if (BenchNum>12){
+	std::cout<<"\t ** warning** Provided BenchNum is out of range (1-12): "<<BenchNum<<std::endl;
+	std::cout<<"I'm gonna set it to 0 to avoid problems"<<std::endl;
+	BenchNum=0;
+      }
     }
 
     std::cout << "Parameters initialized... \n ############ Doing selection tree!" <<  std::endl;
@@ -687,8 +694,7 @@ void
 	    NRWeights[n] = NRW->GetWeight(1506+n, gen_mHH, gen_cosTheta);
 	  
 	  gen_NRW =  NRWeights[BenchNum];
-
-	}
+      }
 
       // --- End of gen HH info
       
