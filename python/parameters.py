@@ -2,6 +2,7 @@
 import FWCore.ParameterSet.Config as cms
 import flashgg.Taggers.flashggTags_cff as flashggTags
 
+_benchmark                              =       cms.untracked.uint32(0),
 _is2016					=	cms.untracked.uint32(1)
 _doPhotonCR				=	cms.untracked.uint32(1)
 _triggerTag				=	cms.InputTag("TriggerResults", "", "HLT2")
@@ -127,7 +128,10 @@ _jetScale					=	cms.untracked.int32(0)
 _doPhotonScale		=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonSmearing	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
-_PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/80X_ichepV2_2016_pho")
+# APZ: temporarily changing just to make it run in old release:
+_PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015")
+#_PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/80X_ichepV2_2016_pho")
+
 _doCustomPhotonMVA	=	cms.untracked.uint32(1)
 if _doCustomPhotonMVA:
    _MVAPhotonID = cms.untracked.vdouble(0.07, -0.03)
