@@ -23,18 +23,18 @@ print 'Adding signal cross sections to flashgg cross sections list'
 mycross = file(bbggMetaData+'HHSignalCrossSections.txt', 'r')
 flashggcross = file(flashggMetaData+'cross_sections.json')
 outcross = ''
-
-for l in flashggcross:
- outcross += l
- if '{' in l and '}' not in l:
-   for c in mycross:
-      outcross += c
-
-os.system('mv ' + flashggMetaData+'cross_sections.json ' + flashggMetaData+'old_cross_sections.json')
-
-newcross = file(flashggMetaData+'cross_sections.json', 'w+')
-newcross.write(outcross)
-newcross.close()
+if flashggcross.read().find('GluGluToHHTo2B2G'):
+  print '\t HH signal cross sections already in flashgg cross sections, only need to run after build once!'
+else:
+  for l in flashggcross:
+   outcross += l
+   if '{' in l and '}' not in l:
+     for c in mycross:
+        outcross += c
+  os.system('mv ' + flashggMetaData+'cross_sections.json ' + flashggMetaData+'old_cross_sections.json')
+  newcross = file(flashggMetaData+'cross_sections.json', 'w+')
+  newcross.write(outcross)
+  newcross.close()
 
 print '###########'
 print '## Done! ##'
