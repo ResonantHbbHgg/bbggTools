@@ -9,7 +9,8 @@ files = [
 #["roc_HHTagger_Rad300.root", "All Nodes HM", kOrange],
 #["roc_ResTrain_Rad300.root", "Low Mass Res Training", kViolet]
 ["roc_HHTagger_HM_BSR.root", "Control Region Training", kOrange],
-["roc_HBSRTrain_HM_BSR.root", "Blinded SR Training", kViolet]
+["roc_HBCRTrain_HM_BSR.root", "Blinded CR Training", kViolet],
+["roc_HBSRTrain_HM_BSR.root", "Blinded SR Training", kGreen+2]
 ]
 
 dummy = TFile("dummy.root", "RECREATE")
@@ -41,4 +42,4 @@ for ig,g in enumerate(grs):
   c.Update()
   leg.AddEntry(g[0], g[1], "l")
 leg.Draw("same")
-c.SaveAs("ROC_BSR.pdf")
+c.SaveAs("ROC_BCR.pdf")

@@ -8,6 +8,9 @@ parser.add_argument('-b', '--background', dest='bac', required=True, type=str)
 parser.add_argument('-v', '--var', dest='var', required=True, type=str)
 parser.add_argument('-c', '--cut', dest='cut', required=True, type=str)
 parser.add_argument('-o', '--output', dest='out', required=True, type=str)
+parser.add_argument('-e', '--backEff', dest='beff', action='store_true', default=False)
+parser.add_argument('--BCR', dest='bcr', action='store_true', default=False)
+parser.add_argument('--BSR', dest='bsr', action='store_true', default=False)
 
 opt = parser.parse_args()
 
@@ -33,7 +36,12 @@ h_sig = TH1F("h_sig", ";"+var_n+";",int(var_b), float(var_min), float(var_max))
 h_bac = TH1F("h_bac", ";"+var_n+";",int(var_b), float(var_min), float(var_max)) 
 
 t_sig.Draw(var_n+">>h_sig", opt.cut+ " && isSignal==1", "goff")
-t_bac.Draw(var_n+">>h_bac", opt.cut+ " && isSignal==1 && !(diphotonCandidate.M()>115 && diphotonCandidate.M()<135)", "goff")
+if opt.bcr:
+  t_bac.Draw(var_n+">>h_bac", opt.cut+ " && isSignal==0 && !(diphotonCandidate.M()>115 && diphotonCandidate.M()<135)", "goff")
+elif opt.bsr:
+  t_bac.Draw(var_n+">>h_bac", opt.cut+ " && isSignal==1 && !(diphotonCandidate.M()>115 && diphotonCandidate.M()<135)", "goff")
+else:
+  t_bac.Draw(var_n+">>h_bac", opt.cut+ " && isSignal==0", "goff")
 
 h_sig.Sumw2()
 tot_sig = h_sig.Integral()
@@ -52,6 +60,7 @@ for x in range(0, int(var_b)):
 #  bRej = h_bac.Integral(float(var_min), tst)
   sEff = h_sig.Integral(x+1, int(var_b)+1)
   bRej = h_bac.Integral(1, x+1)
+  if opt.beff: bRej = h_bac.Integral(x+1, int(var_b)+1)
   eff_sig.SetBinContent(x+1, sEff)
   rej_bac.SetBinContent(x+1, bRej)
   ROC.SetPoint(x, sEff, bRej)

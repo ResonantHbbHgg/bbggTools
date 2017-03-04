@@ -50,7 +50,7 @@ for f in FilesToRedo:
   infile = TFile(infilename)
   intree = infile.Get("bbggSelectionTree")
 
-  outfile = TFile(opt.Out+"_"+f.split("/")[len(f.split("/"))-1], "RECREATE")
+  outfile = TFile(opt.Out+f.split("/")[len(f.split("/"))-1], "RECREATE")
   outtree = intree.CloneTree(0)
   bdt_lm = array('f', [0])
   bdt_hm = array('f', [0])
