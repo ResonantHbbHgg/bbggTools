@@ -810,6 +810,8 @@ std::vector<flashgg::Jet> bbggTools::DiJetSelection(std::vector<std::pair<flashg
        if(diJet.pt() < _DiJetPt[0]) continue;
        if(fabs(diJet.eta()) > _DiJetEta[0]) continue;
 
+//       if( lJet.pt() < 50 && sJet.pt() < 50) continue;
+
        double sumbtag = lJet.bDiscriminator(_bTagType) + sJet.bDiscriminator(_bTagType);
        if (sumbtag > sumbtag_ref) {
          sumbtag_ref = sumbtag;
