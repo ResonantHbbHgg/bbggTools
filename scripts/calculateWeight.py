@@ -24,24 +24,31 @@ def main(argv):
 		print 'showAvailableDatasets.py -c <campaign>'
 		return
 
-	campaignFile = '../../MetaData/data/' + campaign + '/datasets.json'
-	data_file = open(campaignFile)
-	data = json.load(data_file)
 
-	sWeights = {}
+	arrr = [1,2,3,4]
+	for nn in arrr:
+		campaignFile = '../../MetaData/data/' + campaign + '/datasets_'+str(nn)+'.json'
+		data_file = open(campaignFile)
+		data = json.load(data_file)
 
-	for x in data:
-		if sample not in x: continue
-#		print data[x]
-		sWeights[x] = {}
-		sWeights[x]['weight'] = 0
-		sWeights[x]['events'] = 0
-		for w in data[x]['files']:
-#			print sWeights[x]['weight']
-			sWeights[x]['weight'] += w['weights']
-			sWeights[x]['events'] += w['totEvents']
+		sWeights = {}
 
-	print sWeights
+		for x in data:
+			if sample not in x: continue
+	#		print data[x]
+			sWeights[x] = {}
+			sWeights[x]['weight'] = 0
+			sWeights[x]['events'] = 0
+			for w in data[x]['files']:
+	#			print sWeights[x]['weight']
+	#			for ww in w: print ww,w[ww], w['weights']
+				if 'weights' not in w:
+					print w['name']
+					continue
+				sWeights[x]['weight'] += w['weights']
+				sWeights[x]['events'] += w['totEvents']
+
+		print sWeights
 
 if __name__ == "__main__":
 	main(sys.argv[1:])

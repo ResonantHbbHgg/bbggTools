@@ -38,7 +38,7 @@ _DoMVAPhotonID			=	cms.untracked.uint32(1) #Do MVA photon ID instead of cut base
 _MVAPhotonID			=	cms.untracked.vdouble(0.2, 0.2)
 #_PhotonMVAEstimator		=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values") #MVA user float
 _PhotonMVAEstimator		=	cms.untracked.string("EGMPhotonMVA")
-_doCustomPhotonMVA		=	cms.untracked.uint32(1)
+_doCustomPhotonMVA		=	cms.untracked.uint32(0)
 if _doCustomPhotonMVA:
    _MVAPhotonID = cms.untracked.vdouble(0.07, -0.03)
 

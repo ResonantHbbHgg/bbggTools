@@ -180,9 +180,64 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	bkg.SetTitle("")
 	bkg.SetMinimum(0.001)
 	print bkg.GetNhists()
+	bkg.GetYaxis().SetTitle("Events")
+	if "GeV" in varName:
+		nbins = bkg.GetXaxis().GetNbins()
+		binslow = bkg.GetXaxis().GetBinLowEdge(1)
+		binsup = bkg.GetXaxis().GetBinUpEdge(nbins)
+		perbin = (float(binsup) - float(binslow))/float(nbins)
+		thisLabel = "Events/("+str(perbin)+" GeV)"
+		bkg.GetYaxis().SetTitle(thisLabel)
+
+	bkg.GetYaxis().SetTitleOffset(1.75)
 
 	#### Configure thstack
 	bkg.GetHistogram().GetXaxis().SetNdivisions(515)
+
+	cs = TCanvas("cs", "cs", 800, 600)
+	bkg.Draw('hist')
+	bkg.GetHistogram().GetXaxis().SetTitle(varName)
+	bkg.GetHistogram().GetYaxis().SetTitleOffset(1.25)
+	GenMax = max(data.GetMaximum(), bkg.GetMaximum())*1.65
+	bkg.SetMaximum(GenMax)
+	bkg.SetTitle("")
+	bkg.SetMinimum(0.001)	
+	SUM.Draw("E2 same")
+	data.Draw('E same')
+	tlatex = TLatex()
+	baseSize = 25
+	tlatex.SetNDC()
+	tlatex.SetTextAngle(0)
+	tlatex.SetTextColor(kBlack)
+	tlatex.SetTextFont(63)
+	tlatex.SetTextAlign(11)
+	tlatex.SetTextSize(25)
+	tlatex.DrawLatex(0.11, 0.91, "CMS")
+	tlatex.SetTextFont(53)
+	tlatex.DrawLatex(0.18, 0.91, "Preliminary")
+	tlatex.SetTextFont(43)
+	tlatex.SetTextSize(23)
+#	tlatex.DrawLatex(0.65, 0.91,"L = 2.70 fb^{-1} (13 TeV)")
+	Lumi = "" + str(lumi) + " pb^{-1} (13 TeV)"#, "+ year + ")"
+	if lumi > 1000:
+		llumi = float(lumi)/1000.
+		Lumi = "" + str(llumi) + " fb^{-1} (13 TeV)"#, "+year+")"
+#	tlatex.DrawLatex(0.14, 0.82, Lumi)
+	tlatex.SetTextAlign(31)
+	tlatex.DrawLatex(0.9, 0.91, Lumi)
+	tlatex.SetTextAlign(11)
+
+	if ControlRegion != "":
+		tlatex.SetTextFont(63)
+		tlatex.DrawLatex(0.14, 0.78, ControlRegion)
+
+	for leg in legend:
+		leg.Draw('same')
+
+	for h in signals:
+		h[0].Draw("same hist")
+	cs.SaveAs(dirName+"/NP_" + fileName + ".pdf")
+	cs.SaveAs(dirName+"/NP_" + fileName + ".png")
 
 
 	ratio = 0.2
@@ -224,16 +279,6 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	bkg.GetYaxis().SetTitleSize(titleSize)
 	bkg.GetYaxis().SetLabelFont(Font)
 	bkg.GetYaxis().SetLabelSize(labelSize)
-	bkg.GetYaxis().SetTitle("Events")
-	if "GeV" in varName:
-		nbins = bkg.GetXaxis().GetNbins()
-		binslow = bkg.GetXaxis().GetBinLowEdge(1)
-		binsup = bkg.GetXaxis().GetBinUpEdge(nbins)
-		perbin = (float(binsup) - float(binslow))/float(nbins)
-		thisLabel = "Events/("+str(perbin)+" GeV)"
-		bkg.GetYaxis().SetTitle(thisLabel)
-
-	bkg.GetYaxis().SetTitleOffset(1.75)
 
 	pullE.GetXaxis().SetLabelFont(Font)
 	pullE.GetXaxis().SetLabelSize(labelSize)
@@ -308,7 +353,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	Line.SetLineColor(kRed)
 	if(hideData==False):
 		Line.Draw()
-		pullH.Draw("Psame")
+		pullH.Draw("PE0same")
 	c1.cd()
 	p2.Draw()
 	p1.Draw()
