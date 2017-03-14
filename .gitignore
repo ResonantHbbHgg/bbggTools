@@ -22,7 +22,6 @@ crabConfig_*
 AutoDict_*
 
 # Other temp files
-*.txt
 *.log
 *.png
 *.pdf

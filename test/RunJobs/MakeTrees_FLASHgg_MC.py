@@ -117,8 +117,17 @@ import flashgg.Taggers.flashggTags_cff as flashggTags
 process.load("flashgg.Taggers.flashggTags_cff")
 
 import flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi as flashggPhotonMVA
+flashggPhotonMVA.flashggUpdatedIdMVADiPhotons.reRunRegression = cms.bool(False)
 process.load("flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi")
 
+import flashgg.Taggers.flashggPreselectedDiPhotons_cfi as flashggPreSelection
+process.load("flashgg.Taggers.flashggPreselectedDiPhotons_cfi")
+
 process.p = cms.Path( flashggPhotonMVA.flashggUpdatedIdMVADiPhotons
+                      * flashggPreSelection.flashggPreselectedDiPhotons
                       * flashggTags.flashggUnpackedJets
-                      * process.bbggtree)
+                      * process.bbggtree )
+
+#process.p = cms.Path( flashggPhotonMVA.flashggUpdatedIdMVADiPhotons
+#                      * flashggTags.flashggUnpackedJets
+#                      * process.bbggtree)

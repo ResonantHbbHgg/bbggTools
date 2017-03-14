@@ -120,7 +120,16 @@ if customize.doDoubleCountingMitigation is False:
 import flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi as flashggPhotonMVA
 process.load("flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi")
 
+import flashgg.Taggers.flashggPreselectedDiPhotons_cfi as flashggPreSelection
+process.load("flashgg.Taggers.flashggPreselectedDiPhotons_cfi")
+
 process.p = cms.Path( process.dataRequirements
                       * flashggPhotonMVA.flashggUpdatedIdMVADiPhotons
+                      * flashggPreSelection.flashggPreselectedDiPhotons
                       * flashggTags.flashggUnpackedJets
-                      * process.bbggtree)
+                      * process.bbggtree )
+
+#process.p = cms.Path( process.dataRequirements
+#                      * flashggPhotonMVA.flashggUpdatedIdMVADiPhotons
+#                      * flashggTags.flashggUnpackedJets
+#                      * process.bbggtree)

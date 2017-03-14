@@ -10,7 +10,7 @@ root_sig.AddFile('AllNonRes.root')
 print 'Background events:',root_sig.GetEntries()
 
 # Useful output information will be stored in a new root file:
-f_out = ROOT.TFile("LearningOutput_BDT_LM_GradBoost.root","RECREATE")
+f_out = ROOT.TFile("LearningOutput_BDT_HM400_GradBoost.root","RECREATE")
 
 # Create the TMVA factory
 ROOT.TMVA.Tools.Instance()
@@ -40,8 +40,8 @@ factory.AddSignalTree(root_sig)
 factory.AddBackgroundTree(root_bkg)
 
 # cuts defining the signal and background sample
-sigCut = ROOT.TCut("(isSignal == 1 && (diHiggsCandidate.M() - dijetCandidate.M() + 125) < 350) && leadingJet_bDis > -1 && subleadingJet_bDis > -1")
-bkgCut = ROOT.TCut("(isSignal == 0 && (diHiggsCandidate.M() - dijetCandidate.M() + 125) < 350) && leadingJet_bDis > -1 && subleadingJet_bDis > -1")
+sigCut = ROOT.TCut("(isSignal == 1 && (diHiggsCandidate.M() - dijetCandidate.M() + 125) > 400) && leadingJet_bDis > -1 && subleadingJet_bDis > -1")
+bkgCut = ROOT.TCut("(isSignal == 0 && (diHiggsCandidate.M() - dijetCandidate.M() + 125) > 400) && leadingJet_bDis > -1 && subleadingJet_bDis > -1")
 #sigCut = ROOT.TCut("(isSignal == 1 && (diHiggsCandidate.M() - dijetCandidate.M() + 125) > 350) ")
 #bkgCut = ROOT.TCut("(isSignal == 0 && (diHiggsCandidate.M() - dijetCandidate.M() + 125) > 350) ")
 

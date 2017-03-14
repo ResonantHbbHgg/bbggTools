@@ -787,6 +787,71 @@ vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( ve
      return PreselDiPhotons;
 }
 
+std::vector<flashgg::Jet> bbggTools::DiJetSelection(std::vector<std::pair<flashgg::Jet, flashgg::Jet>> Jets, bool DoMassCut)
+{
+
+
+    flashgg::Jet jet1, jet2;
+    std::vector<flashgg::Jet> SelDijet;
+    bbggTools::LorentzVector DiJet(0,0,0,0);
+    double sumbtag_ref = -999;
+//    bool hasDiJet = false;
+    sumbtag_ref = sumbtag_ref;
+
+    if(DEBUG) std::cout << "Jet sorting... " << std::endl;
+    for(unsigned int dj = 0; dj < Jets.size(); dj++)
+    {
+       flashgg::Jet lJet = Jets[dj].first;
+       flashgg::Jet sJet = Jets[dj].second;
+       bbggTools::LorentzVector diJet = lJet.p4() + sJet.p4();
+       if(DoMassCut){
+         if(diJet.mass() < _DiJetMassWindow[0] || diJet.mass() > _DiJetMassWindow[1]) continue;
+       }
+       if(diJet.pt() < _DiJetPt[0]) continue;
+       if(fabs(diJet.eta()) > _DiJetEta[0]) continue;
+
+//       if( lJet.pt() < 50 && sJet.pt() < 50) continue;
+
+       double sumbtag = lJet.bDiscriminator(_bTagType) + sJet.bDiscriminator(_bTagType);
+       if (sumbtag > sumbtag_ref) {
+         sumbtag_ref = sumbtag;
+         jet1 = lJet;
+         jet2 = sJet;
+       }
+
+/*
+ 		for(unsigned int jJet = iJet+1; jJet < Jets.size(); jJet++)
+ 		{
+ 	  		bbggTools::LorentzVector dijet = Jets[iJet].p4() + Jets[jJet].p4();
+            		if(DoMassCut){
+		                if(dijet.mass() < _DiJetMassWindow[0] || dijet.mass() > _DiJetMassWindow[1]) continue;
+		        }
+
+			double sumbtag = Jets[iJet].bDiscriminator(_bTagType) + Jets[jJet].bDiscriminator(_bTagType);
+
+ 	  		if(sumbtag > sumbtag_ref && dijet.pt() > _DiJetPt[0] && fabs(dijet.Eta()) < _DiJetEta[0] )
+ 	  		{
+				hasDiJet = true;
+				sumbtag_ref = sumbtag;
+				if( Jets[iJet].pt() > Jets[jJet].pt() ) {
+					jet1 = Jets.at(iJet);
+					jet2 = Jets.at(jJet);
+				} else {
+					jet2 = Jets.at(iJet);
+					jet1 = Jets.at(jJet);
+				}
+			}
+		}
+*/
+	}
+
+	if(sumbtag_ref > -999){
+		SelDijet.push_back(jet1);
+		SelDijet.push_back(jet2);
+	}
+	return SelDijet;
+
+}
 
 std::vector<flashgg::Jet> bbggTools::DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut)
 {
@@ -941,7 +1006,18 @@ std::vector<flashgg::Jet> bbggTools::JetVBFPreSelection(std::vector<flashgg::Jet
 return Jets;
 }
 
+bool bbggTools::SingleJetPreSelection(flashgg::Jet jet, flashgg::DiPhotonCandidate dipho)
+{
+   bool isSel = 1;
+   if (jet.pt() < _JetPt[0]) isSel = 0;
+   if (fabs(jet.eta()) > _JetEta[0]) isSel = 0;
+   if (_JetDoID[0] && !(bbggTools::isJetID(&jet))) isSel = 0;
+   if (jet.bDiscriminator(_bTagType) < _JetBDiscriminant[0]) isSel = 0;
+   if( bbggTools::DeltaR(jet.p4(), dipho.leadingPhoton()->p4()) < _JetDrPho[0]
+             || bbggTools::DeltaR(jet.p4(), dipho.subLeadingPhoton()->p4()) < _JetDrPho[0] ) isSel = 0;
 
+   return isSel;
+}
 
 
 std::vector<flashgg::Jet> bbggTools::JetPreSelection(std::vector<flashgg::Jet> jetsCol, flashgg::DiPhotonCandidate dCand)
@@ -952,8 +1028,8 @@ std::vector<flashgg::Jet> bbggTools::JetPreSelection(std::vector<flashgg::Jet> j
     if(DEBUG) std::cout << "Begin Jet selection..." << std::endl;
     for( unsigned int jetIndex = 0; jetIndex < jetsCol.size(); jetIndex++ )
     {
-        const flashgg::Jet *jet = &(jetsCol[jetIndex]);
-
+        const flashgg::Jet jet = jetsCol[jetIndex];
+/*
         if(_JetDoID[0] && !(bbggTools::isJetID(jet))) continue;
     	if(fabs(jet->eta()) > _JetEta[0] ) continue;
     	if(jet->pt() < _JetPt[0]) continue;
@@ -961,8 +1037,28 @@ std::vector<flashgg::Jet> bbggTools::JetPreSelection(std::vector<flashgg::Jet> j
 
  	if( bbggTools::DeltaR(jet->p4(), dCand.leadingPhoton()->p4()) < _JetDrPho[0]
              || bbggTools::DeltaR(jet->p4(), dCand.subLeadingPhoton()->p4()) < _JetDrPho[0] ) continue;
+*/      bool isSel = bbggTools::SingleJetPreSelection(jet, dCand);
+        if(isSel) Jets.push_back(jet);
+     }
 
-        Jets.push_back(*jet );
+return Jets;
+}
+
+std::vector<std::pair<flashgg::Jet, flashgg::Jet>> bbggTools::JetPreSelection(std::vector<std::pair<flashgg::Jet,flashgg::Jet>> jetsCol, flashgg::DiPhotonCandidate dCand)
+{
+
+    //Begin Jets Loop/Selection ------------------------------------------------------------
+    std::vector<std::pair<flashgg::Jet, flashgg::Jet>> Jets;
+    if(DEBUG) std::cout << "Begin Jet selection..." << std::endl;
+    for( unsigned int jetIndex = 0; jetIndex < jetsCol.size(); jetIndex++ )
+    {
+        const flashgg::Jet ljet = jetsCol[jetIndex].first;
+        const flashgg::Jet sjet = jetsCol[jetIndex].second;
+
+        bool isLSel = bbggTools::SingleJetPreSelection(ljet, dCand);
+        bool isSSel = bbggTools::SingleJetPreSelection(sjet, dCand);
+
+        if(isLSel && isSSel ) Jets.push_back( jetsCol[jetIndex]  );
      }
 
 return Jets;

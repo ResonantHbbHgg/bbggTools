@@ -83,7 +83,7 @@ class myStack:
 		self.SUM.SetLineWidth(0)
 		self.SUM.SetFillColorAlpha(kGray+2, 0.5)
 		self.SUM.SetMarkerColorAlpha(0,0)
-		self.SUM.SetLineColorAlpha(kGray+2,0.5)
+#		self.SUM.SetLineColorAlpha(kGray+2,0.5)
 		self.SUM.SetFillStyle(1001)
 		legend = MakeLegend(self.myHistograms, self.myData, self.lumi, self.mySignals, self.SUM)
 		ControlRegion = ""
