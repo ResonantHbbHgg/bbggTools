@@ -25,7 +25,7 @@ for n,i in enumerate(xaxis):
     for ss,st in enumerate(extraSteps):
         thisName = "thisHisto"
         thisHisto = TH1F(thisName, "thisHisto", 1000, -1000, 1000)
-        thisTree.Draw("leadingJet_bDis>>"+thisName, "("+st+")")
+        thisTree.Draw("leadingJet_bDis>>"+thisName, "gen_NRW*("+st+")")
         thisIndex = len(steps)+ss
         effs[extraStepsN[ss]].append(thisHisto.Integral()/float(totalEvs))
 

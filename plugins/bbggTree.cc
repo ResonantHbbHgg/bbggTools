@@ -66,6 +66,7 @@ Implementation:
 #include "flashgg/bbggTools/interface/bbggJetSystematics.h"
 #include "flashgg/bbggTools/interface/bbggPhotonCorrector.h"
 #include "flashgg/bbggTools/interface/bbggNonResMVA.h"
+#include "flashgg/bbggTools/interface/NonResWeights.h"
 
 //
 // class declaration
@@ -148,7 +149,7 @@ private:
 
     Double_t gen_mHH;
     Double_t gen_cosTheta;
-
+  Double_t gen_NRW;
   // -- End of Tree objects --
   // --    ---        --
 
@@ -196,7 +197,12 @@ private:
     edm::FileInPath resFile, sfFile, scaleFile;
 
 
-    Bool_t getNonResGenInfo;
+  Bool_t getNonResGenInfo;
+  // Class for NonRes re-weighting:
+  NonResWeights *NRW;
+  // Array to store the weights of 12 benchmarks and [0] is always 1:
+  float  NRWeights[13];
+  unsigned int BenchNum;
 
     //OutFile & Hists
     TFile* outFile;
@@ -222,6 +228,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     jetSys_ = bbggJetSystematics();
     phoCorr_ = bbggPhotonCorrector();
     nonresMVA_ = bbggNonResMVA();
+    NRW    = new NonResWeights();
     //    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
@@ -265,6 +272,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     def_cand_mass.push_back(2000.); def_dr_cands.push_back(0.11); def_doCustomPhotonMVA = 1;
     def_doPhotonScale = -10; def_doPhotonExtraScale = -10; def_doPhotonSmearing = -10;
     def_PhotonScaleFile = "EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV2_2016_pho";
+
     unsigned int def_nPromptPhotons = 0;
     unsigned int def_doDoubleCountingMitigation = 0;
     unsigned int def_doPhotonCR = 0;
@@ -315,6 +323,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     phCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEE");
 
     is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
+
+    BenchNum = iConfig.getUntrackedParameter<unsigned int>("benchmark", 0);
 
     //photon selection parameters
     ph_pt     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonPtOverDiPhotonMass", def_ph_pt);
@@ -494,6 +504,22 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     if(addNonResMVA)
         nonresMVA_.SetupNonResMVA( NonResMVAWeights_LowMass.fullPath().data(), NonResMVAWeights_HighMass.fullPath().data(), NonResMVAVars);
 
+
+    if (getNonResGenInfo){
+      std::string fileNameWei1 = edm::FileInPath("flashgg/bbggTools/data/NonResReWeight/weights_v1_1507_points.root").fullPath();
+      std::string fileNameWei2 = edm::FileInPath("flashgg/bbggTools/data/NonResReWeight/weights_v3_bench12_points.root").fullPath();
+      NRW->LoadHists(fileNameWei1, fileNameWei2);
+      for (UInt_t n=0; n<13; n++) 
+	NRWeights[n]=1;
+
+      // Check that provided benchmark number is in range 1-12
+      if (BenchNum>12){
+	std::cout<<"\t ** warning** Provided BenchNum is out of range (1-12): "<<BenchNum<<std::endl;
+	std::cout<<"I'm gonna set it to 0 to avoid problems"<<std::endl;
+	BenchNum=0;
+      }
+    }
+
     std::cout << "Parameters initialized... \n ############ Doing selection tree!" <<  std::endl;
 
 }
@@ -593,6 +619,7 @@ void
     gen_mHH = 0;
     gen_cosTheta = -99;
 
+    gen_NRW = 1;
     //Get Jets collections!
     JetCollectionVector theJetsCols( inputTagJets_.size() );
     for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
@@ -657,6 +684,7 @@ void
 
     if (! iEvent.isRealData()){
 
+
       // ---- Gen HH info
       // Here we get gen level mHH and costheta for non-resonant samples
       TLorentzVector H1, H2;
@@ -686,14 +714,25 @@ void
 	  //gen_ptH2 = H2.Pt();
 	  gen_mHH  = (H1+H2).M();
 	  gen_cosTheta = tools_.getCosThetaStar_CS(H1,H2,6500);
-	}
+
+	  // Now, lets fill in the weigts for the 12 benchmarks.
+	  for (UInt_t n=1; n<13; n++)
+	    NRWeights[n] = NRW->GetWeight(1506+n, gen_mHH, gen_cosTheta);
+	  
+	  gen_NRW =  NRWeights[BenchNum];
+      }
 
       // --- End of gen HH info
+      
     }
+
+    //Eff step 0
+    if(DEBUG) std::cout << "Number of diphoton candidates: " << diphoVec.size() << std::endl;
+    h_Efficiencies->Fill(0.0, genTotalWeight*gen_NRW);
 
     if (diphoVec.size() < 1) return;
     //Eff step 1
-    h_Efficiencies->Fill(1, genTotalWeight);
+    h_Efficiencies->Fill(1, genTotalWeight*gen_NRW);
     if (theJetsCols.size() < 1) return;
 
     bool cutsChecked = tools_.CheckCuts();
@@ -746,14 +785,14 @@ void
     if(DEBUG) std::cout << "[bbggTree::analyze] Number of pre-selected diphotons: " << PreSelDipho.size() << std::endl;
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() < 1 ) return;
-    h_Efficiencies->Fill(2, genTotalWeight);
+    h_Efficiencies->Fill(2, genTotalWeight*gen_NRW);
 
     
     //Kinematic selection
     std::vector<flashgg::DiPhotonCandidate> KinDiPhoton = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
     if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: " << KinDiPhoton.size() << std::endl;
     if( KinDiPhoton.size() < 1) return;
-    h_Efficiencies->Fill(3, genTotalWeight);
+    h_Efficiencies->Fill(3, genTotalWeight*gen_NRW);
 
     //Evaluate photon IDs
     vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA );
@@ -775,7 +814,7 @@ void
     if(SignalDiPhotons.size() < 1 && CRDiPhotons.size() < 1) return; //if event is not signal and is not photon control region, skip
     if(SignalDiPhotons.size() < 1 && !doPhotonCR) return; //if event is not signal and you don't want to save photon control region, skip
 
-    if(isSignal) h_Efficiencies->Fill(4, genTotalWeight);
+    if(isSignal) h_Efficiencies->Fill(4, genTotalWeight*gen_NRW);
     if(DEBUG) std::cout << "[bbggTree::analyze] Is signal region: " << isSignal << "; Is control region: " << isPhotonCR << std::endl;
 
     ///////////// JETS
@@ -784,7 +823,7 @@ void
     flashgg::Jet LeadingJet, SubLeadingJet;
     unsigned int jetCollectionIndex = diphoCandidate.jetCollectionIndex();
     if( theJetsCols[jetCollectionIndex]->size() < 2) return;
-    if(isSignal) h_Efficiencies->Fill(5, genTotalWeight);
+    if(isSignal) h_Efficiencies->Fill(5, genTotalWeight*gen_NRW);
 
     std::vector<flashgg::Jet> testCollection;
     for( unsigned int jetIndex = 0; jetIndex < theJetsCols[jetCollectionIndex]->size(); jetIndex++ )
@@ -835,14 +874,15 @@ void
 
 //    if(jetSmear!=0 || jetScale!=0 || doJetRegression!=0){
     if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - PreSel" << std::endl;
+
     KinJets = tools_.JetPreSelection(myDiJetCandidates, diphoCandidate);
     if( KinJets.size() < 1 ) return;
-    if(isSignal) h_Efficiencies->Fill(6, genTotalWeight);
+    if(isSignal) h_Efficiencies->Fill(6, genTotalWeight*gen_NRW);
 
     if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - KinSel" << KinJets.size() << std::endl;
     SelJets = tools_.DiJetSelection(KinJets, 1);
     if( SelJets.size() < 1 ) return;
-    if(isSignal) h_Efficiencies->Fill(7, genTotalWeight);
+    if(isSignal) h_Efficiencies->Fill(7, genTotalWeight*gen_NRW);
 
     if(DEBUG) std::cout << "DOING SELECTION AFTER JET MANIPULATION - DiJetSel" << SelJets.size() << std::endl;
 
@@ -1087,6 +1127,7 @@ bbggTree::beginJob()
     tree->Branch("genTotalWeight", &genTotalWeight, "genTotalWeight/D");
     tree->Branch("gen_mHH", &gen_mHH, "gen_mHH/D");
     tree->Branch("gen_cosTheta", &gen_cosTheta, "cosTheta/D");
+    tree->Branch("gen_NRW", &gen_NRW, "NRW/D");
     tree->Branch("leadingPhoton", &leadingPhoton);
     tree->Branch("leadingPhotonID", &leadingPhotonID);
     tree->Branch("leadingPhotonISO", &leadingPhotonISO);

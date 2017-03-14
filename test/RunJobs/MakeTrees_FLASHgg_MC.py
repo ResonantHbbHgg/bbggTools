@@ -51,14 +51,28 @@ customize.register('PURW',
 				VarParsing.VarParsing.varType.bool,
 				"Do PU reweighting? Doesn't work on 76X")
 
+customize.register('bench',
+				0,
+				VarParsing.VarParsing.multiplicity.singleton,
+				VarParsing.VarParsing.varType.int,
+				"Benchmark number for Non-Res weight. SHould be in range 1-12")
+
 
 # call the customization
 customize(process)
 
-process.bbggtree.puReWeight=cms.bool( customize.PURW )
+process.bbggtree.puReWeight=cms.bool( bool(customize.PURW) )
 if customize.PURW == False:
 	process.bbggtree.puTarget = cms.vdouble()
-print "I'M HERE 2"
+print "I'M HERE 2.0"
+
+
+process.bbggtree.benchmark=cms.untracked.uint32(customize.bench)
+if customize.bench>0:
+  print "I'M HERE 2.1"
+  process.bbggtree.getNonResGenInfo=cms.untracked.bool(True)
+
+print "I'M HERE 2.2"
 
 maxEvents = 5
 if customize.maxEvents:

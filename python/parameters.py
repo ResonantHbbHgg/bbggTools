@@ -2,6 +2,7 @@
 import FWCore.ParameterSet.Config as cms
 import flashgg.Taggers.flashggTags_cff as flashggTags
 
+_benchmark  = cms.untracked.uint32(0)
 _is2016			=	cms.untracked.uint32(1)
 _doPhotonCR		=	cms.untracked.uint32(1)
 _doSelectionTree	=	cms.untracked.uint32(1) 
@@ -17,6 +18,7 @@ _metTag		=	cms.InputTag('flashggMets')
 #_inputTagJets	= 	flashggTags.UnpackedJetCollectionVInputTag
 #_inputTagJets 	= 	flashggTags.UnpackedJetCollectionVInputTag
 _GenTag		=	cms.untracked.InputTag('flashggGenPhotons')
+
 _rhoFixedGridCollection		=	cms.InputTag('fixedGridRhoAll')
 
 ##Photon selection
@@ -93,6 +95,7 @@ _jetScale		=	cms.untracked.int32(0)
 _doPhotonScale		=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonSmearing	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+
 #_PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/80X_ichepV2_2016_pho")
 _PhotonCorrectionFile	=	cms.untracked.string("flashgg/Systematics/data/Moriond17_74x_pho")
 
@@ -101,3 +104,4 @@ _addNonResMVA 			=	cms.untracked.uint32(1)
 _NonResMVAWeights_LowMass 	=	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass_MX400_Mjj60.xml")
 _NonResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass_MX400_Mjj60.xml")
 _NonResMVAVars 			=	cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')
+
