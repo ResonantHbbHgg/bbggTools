@@ -1,26 +1,7 @@
 #include "flashgg/bbggTools/interface/bbggPhotonCorrector.h"
-//FLASHgg files
-#include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
-#include "flashgg/DataFormats/interface/SinglePhotonView.h"
-#include "flashgg/DataFormats/interface/Photon.h"
-#include "flashgg/DataFormats/interface/Jet.h"
-#include "flashgg/DataFormats/interface/Electron.h"
-#include "flashgg/DataFormats/interface/Muon.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/Math/interface/LorentzVector.h"
-#include "DataFormats/Math/interface/deltaR.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
 
 #include "TVector3.h"
 #include "TLorentzVector.h"
-
-#include "EgammaAnalysis/ElectronTools/interface/EnergyScaleCorrection_class.hh"
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/DetId/interface/DetId.h"
-#include "DataFormats/EcalDetId/interface/EBDetId.h"
-#include "DataFormats/EcalDetId/interface/EEDetId.h"
 
 
 using namespace std;
@@ -79,7 +60,7 @@ void bbggPhotonCorrector::ExtraScalePhotonsInDiPhotons(std::vector<flashgg::DiPh
 
 void bbggPhotonCorrector::SmearPhoton(flashgg::Photon & photon)
 {
-    auto sigma = scaler_.getSmearingSigma(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(), photon.et(), variation_,variation_);
+  auto sigma = scaler_.getSmearingSigma(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(), photon.et(), 1, variation_,variation_);
     float rnd = photon.userFloat(randomLabel_);
     float smearing = (1. + rnd * sigma);
     if( DEBUG ) {
@@ -94,7 +75,8 @@ void bbggPhotonCorrector::ScalePhoton(flashgg::Photon & photon)
 {
 
     auto shift_val = scaler_.ScaleCorrection(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(), photon.et());
-    auto shift_err = scaler_.ScaleCorrectionUncertainty(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(), photon.et());
+    auto shift_err = scaler_.ScaleCorrectionUncertainty(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(),
+							photon.et(), 1, 0);
     if (abs(variation_)) shift_val = 1.;
     float scale = shift_val + variation_ * shift_err;
 
