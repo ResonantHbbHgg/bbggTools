@@ -682,9 +682,8 @@ void
     h_Efficiencies->Fill(0.0, genTotalWeight);
 
 
-    if (! iEvent.isRealData()){
-
-
+    if (getNonResGenInfo){
+      
       // ---- Gen HH info
       // Here we get gen level mHH and costheta for non-resonant samples
       TLorentzVector H1, H2;

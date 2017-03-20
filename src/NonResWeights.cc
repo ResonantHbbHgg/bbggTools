@@ -8,7 +8,7 @@ void NonResWeights::LoadHists(std::string f1, std::string f2){
 
   // This file should incude the 1507 hists for full grid re-weighting
   _w1507grid = new TFile(f1.c_str(), "OPEN");
-  
+
   // This file should contain 12 benchmark hists of weights.
   _w12bench = new TFile(f2.c_str(), "OPEN");
 
@@ -42,6 +42,7 @@ void NonResWeights::LoadHists(std::string f1, std::string f2){
 
 float NonResWeights::GetWeight(UInt_t n, Float_t mhh, Float_t cs){
   float w = 0;
+
   if (n==324 || n==910 || n==985 || n==990){
     // The points above do not exist in the input file provided by Alexandra (and wont ever be added)
     //cout<<"This one was not existing in the input file: "<<n<<endl;
@@ -51,5 +52,6 @@ float NonResWeights::GetWeight(UInt_t n, Float_t mhh, Float_t cs){
     UInt_t binNum = _NR_Wei_Hists[n]->FindBin(mhh, fabs(cs));
     w = _NR_Wei_Hists[n]->GetBinContent(binNum);
   }
+  
   return w;
 }
