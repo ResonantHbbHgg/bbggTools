@@ -8,10 +8,15 @@
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "flashgg/DataFormats/interface/Electron.h"
 #include "flashgg/DataFormats/interface/Muon.h"
+// Other DataFormats
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
+#include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+
 // system include files
 #include <memory>
 #include <vector>
@@ -26,8 +31,12 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/Common/interface/PtrVector.h"
 #include "DataFormats/Common/interface/ValueMap.h"
-#include "EgammaAnalysis/ElectronTools/interface/EnergyScaleCorrection_class.hh"
+#include "EgammaAnalysis/ElectronTools/interface/EnergyScaleCorrection_class.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+
 
 using namespace std;
 
@@ -38,7 +47,7 @@ public:
     typedef math::XYZTLorentzVector LorentzVector;
  
     void setRandomLabel(std::string randomLabel) { randomLabel_ = randomLabel;};
-    void setVariation(int variation) {variation_ = variation;};
+    void setVariation(float variation) {variation_ = variation;};
 
     void SetupCorrector(std::string CorrectionFile);
 
@@ -55,7 +64,7 @@ public:
 
 private:
     bool isSet;
-    int variation_;
+    float variation_;
     int runNumber_;
     std::string randomLabel_;
     EnergyScaleCorrection_class scaler_;
