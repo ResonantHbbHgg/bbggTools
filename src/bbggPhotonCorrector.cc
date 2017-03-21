@@ -60,7 +60,10 @@ void bbggPhotonCorrector::ExtraScalePhotonsInDiPhotons(std::vector<flashgg::DiPh
 
 void bbggPhotonCorrector::SmearPhoton(flashgg::Photon & photon)
 {
-  auto sigma = scaler_.getSmearingSigma(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(), photon.et(), 1, variation_,variation_);
+    unsigned int gain=12;
+    if(photon.hasSwitchToGain1()) gain=1;
+    if(photon.hasSwitchToGain6()) gain=6;
+    auto sigma = scaler_.getSmearingSigma(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(), photon.et(), gain, variation_,variation_);
     float rnd = photon.userFloat(randomLabel_);
     float smearing = (1. + rnd * sigma);
     if( DEBUG ) {
@@ -73,10 +76,19 @@ void bbggPhotonCorrector::SmearPhoton(flashgg::Photon & photon)
 
 void bbggPhotonCorrector::ScalePhoton(flashgg::Photon & photon)
 {
+    unsigned int gain=12;
+    if(photon.hasSwitchToGain1()) gain=1;
+    if(photon.hasSwitchToGain6()) gain=6;
 
     auto shift_val = scaler_.ScaleCorrection(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(), photon.et());
+
+    std::bitset<EnergyScaleCorrection_class::scAll> source_all(std::string("111"));
+//    std::bitset<EnergyScaleCorrection_class::scAll> stat(std::string("001"));
+//    std::bitset<EnergyScaleCorrection_class::scAll> syst(std::string("010"));
+//    std::bitset<EnergyScaleCorrection_class::scAll> gain(std::string("100"));
+
     auto shift_err = scaler_.ScaleCorrectionUncertainty(runNumber_, photon.isEB(), photon.full5x5_r9(), photon.superCluster()->eta(),
-							photon.et(), 1, 0);
+							photon.et(), gain, source_all);
     if (abs(variation_)) shift_val = 1.;
     float scale = shift_val + variation_ * shift_err;
 
@@ -90,6 +102,7 @@ void bbggPhotonCorrector::ScalePhoton(flashgg::Photon & photon)
 
 void bbggPhotonCorrector::ExtraScalePhoton(flashgg::Photon & photon)//, EcalRecHitCollection _ebrechits)
 {
+/*
     float seedEnergy = photon.seedEnergy();
     bool isEB = (fabs(photon.superCluster()->eta()) < 1.5) ? 0 : 1;
     double Ecorr = 1;
@@ -99,7 +112,7 @@ void bbggPhotonCorrector::ExtraScalePhoton(flashgg::Photon & photon)//, EcalRecH
         else if(seedEnergy > 300 && seedEnergy < 400) Ecorr=  1.052 + variation_*0.003;
         else if(seedEnergy > 400 && seedEnergy < 500) Ecorr = 1.015 + variation_*0.006;
     }
-
+*/
 /* 
     DetId detid = photon.superCluster()->seed()->seed();
     const EcalRecHit * rh = NULL;
@@ -116,7 +129,7 @@ void bbggPhotonCorrector::ExtraScalePhoton(flashgg::Photon & photon)//, EcalRecH
         else if(rh->energy()>400 && rh->energy()<500) Ecorr = 1.015 + variation_*0.006;
     }
 */
-
+    double Ecorr = 1; //This is not used anymore!
     bbggPhotonCorrector::LorentzVector thisp4 = photon.p4();
     photon.setP4( Ecorr*thisp4);
 }

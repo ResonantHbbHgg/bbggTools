@@ -1,7 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-from flashgg.bbggTools.microAOD_RadFiles import *
-from flashgg.bbggTools.microAOD_GravFiles import *
-from flashgg.bbggTools.More_microAOD_DJet40Inf import *
 from flashgg.bbggTools.pColors import *
 import flashgg.Taggers.flashggTags_cff as flashggTags
 
@@ -118,6 +115,7 @@ if customize.doDoubleCountingMitigation is False:
 	process.bbggtree.doDoubleCountingMitigation = cms.untracked.uint32(0)
 
 import flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi as flashggPhotonMVA
+#flashggPhotonMVA.flashggUpdatedIdMVADiPhotons.reRunRegression = cms.bool(False)
 process.load("flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi")
 
 import flashgg.Taggers.flashggPreselectedDiPhotons_cfi as flashggPreSelection
