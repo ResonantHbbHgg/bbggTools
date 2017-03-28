@@ -36,8 +36,7 @@ _DiPhotonOnlyFirst		=	cms.untracked.uint32(0)#If you only want to look at first 
 _PhotonWhichID			=	cms.untracked.vstring("loose", "loose") #Which photon ID working point? loose, medium or tight
 _PhotonWhichISO			=	cms.untracked.vstring("loose", "loose") #Which photon ISO working point? loose, medium or tight
 _DoMVAPhotonID			=	cms.untracked.uint32(1) #Do MVA photon ID instead of cut based
-#_MVAPhotonID			=	cms.untracked.vdouble(0.374, 0.336) #MVA cut EB/EE, values from Ming: (0.374, 0.472), EGM values: (0.374, 0.336)
-_MVAPhotonID			=	cms.untracked.vdouble(0.2, 0.2)
+_MVAPhotonID			=	cms.untracked.vdouble(0.2, 0.2)#tight: (0.68, 0.60); loose: (0.2, 0.2) (2016 values)
 #_PhotonMVAEstimator		=	cms.untracked.string("PhotonMVAEstimatorRun2Spring15NonTrig25nsV2p1Values") #MVA user float
 _PhotonMVAEstimator		=	cms.untracked.string("EGMPhotonMVA")
 _doCustomPhotonMVA		=	cms.untracked.uint32(0)
@@ -61,8 +60,8 @@ _JetDrPho		=	cms.untracked.vdouble(0.4, 0.4) #DeltaR between jets and photon
 _CandidatesDeltaR	=	cms.untracked.vdouble(0.0) #DeltaR between dijet and diphoton candidates
 _JetDoID		=	cms.untracked.vint32(1, 1) #Do jet ID? 0: jet1, 1: jet2
 _doJetRegression	=	cms.untracked.uint32(1)
-_bRegFileLeading      	=  	cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/2016/BDTG_16plus3-JEC_jetGenJet_nu_80X_leading_2_1.weights.xml")
-_bRegFileSubLeading     =  	cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/2016/BDTG_16plus3-JEC_jetGenJet_nu_80X_trailing_2_1.weights.xml")
+_bRegFileLeading      	=  	cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/2016/BDTG_15plus3_jetGenJet_nu_leading_summer16_2_26.weights.xml")
+_bRegFileSubLeading     =  	cms.untracked.FileInPath("flashgg/bbggTools/data/BRegression/2016/BDTG_15plus3_jetGenJet_nu_leading_summer16_2_26.weights.xml")
 
 
 #H/E, Sigma_iEtaiEta, R9, electron veto
