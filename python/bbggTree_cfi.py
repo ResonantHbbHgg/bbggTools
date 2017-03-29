@@ -80,6 +80,8 @@ bbggtree = cms.EDAnalyzer('bbggTree',
         addNonResMVA=param._addNonResMVA,
         NonResMVAWeights_LowMass=param._NonResMVAWeights_LowMass,
         NonResMVAWeights_HighMass=param._NonResMVAWeights_HighMass,
+        ResMVAWeights_LowMass=param._ResMVAWeights_LowMass,
+        ResMVAWeights_HighMass=param._ResMVAWeights_HighMass,
         NonResMVAVars=param._NonResMVAVars
 #	doSelectionTree=param._doSelectionTree
 )
