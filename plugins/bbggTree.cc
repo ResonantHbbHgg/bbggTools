@@ -102,6 +102,7 @@ private:
     bbggJetSystematics jetSys_;
     bbggPhotonCorrector phoCorr_;
     bbggNonResMVA nonresMVA_;
+    bbggNonResMVA resMVA_;
     flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
@@ -138,6 +139,8 @@ private:
     int leadingPhotonHasGain1, leadingPhotonHasGain6;
     int subLeadingPhotonHasGain1, subLeadingPhotonHasGain6;
     float HHTagger, HHTagger_LM, HHTagger_HM;
+    float ResHHTagger, ResHHTagger_LM, ResHHTagger_HM;
+    float MX;
 
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -189,6 +192,7 @@ private:
     std::string PhotonScaleFile;
     int addNonResMVA;
     edm::FileInPath NonResMVAWeights_LowMass, NonResMVAWeights_HighMass;
+    edm::FileInPath ResMVAWeights_LowMass, ResMVAWeights_HighMass;
     std::vector<std::string> NonResMVAVars;
 
     int jetSmear;
@@ -228,6 +232,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     jetSys_ = bbggJetSystematics();
     phoCorr_ = bbggPhotonCorrector();
     nonresMVA_ = bbggNonResMVA();
+    resMVA_ = bbggNonResMVA();
     NRW    = new NonResWeights();
     //    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
@@ -252,6 +257,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     std::string def_PhotonScaleFile;
     int def_addNonResMVA ;
     edm::FileInPath def_NonResMVAWeights_LowMass, def_NonResMVAWeights_HighMass;
+    edm::FileInPath def_ResMVAWeights_LowMass, def_ResMVAWeights_HighMass;
     std::vector<std::string> def_NonResMVAVars;
     //std::string def_bRegFile;
     edm::FileInPath def_bRegFileLeading, def_bRegFileSubLeading;
@@ -284,6 +290,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     def_addNonResMVA = 0;
     def_NonResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
     def_NonResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
+    def_ResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
+    def_ResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
     def_NonResMVAVars.push_back("");
 
 //    edm::FileInPath def_resFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_PtResolution_AK4PFchs.txt");
@@ -382,6 +390,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     addNonResMVA = iConfig.getUntrackedParameter<unsigned int>("addNonResMVA", def_addNonResMVA);
     NonResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_LowMass", def_NonResMVAWeights_LowMass);
     NonResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_HighMass", def_NonResMVAWeights_HighMass);
+    ResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_LowMass", def_ResMVAWeights_LowMass);
+    ResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_HighMass", def_ResMVAWeights_HighMass);
     NonResMVAVars = iConfig.getUntrackedParameter<std::vector<std::string > >("NonResMVAVars", NonResMVAVars);
 
     //tokens and labels
@@ -501,9 +511,10 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
         phoCorr_.setRandomLabel(std::string("rnd_g_E"));
     }
 
-    if(addNonResMVA)
+    if(addNonResMVA) {
         nonresMVA_.SetupNonResMVA( NonResMVAWeights_LowMass.fullPath().data(), NonResMVAWeights_HighMass.fullPath().data(), NonResMVAVars);
-
+        resMVA_.SetupNonResMVA( ResMVAWeights_LowMass.fullPath().data(), ResMVAWeights_HighMass.fullPath().data(), NonResMVAVars);
+    }
 
     if (getNonResGenInfo){
       std::string fileNameWei1 = edm::FileInPath("flashgg/bbggTools/data/NonResReWeight/weights_v1_1507_points.root").fullPath();
@@ -591,6 +602,9 @@ void
     HHTagger = -10;
     HHTagger_LM = -10;
     HHTagger_HM = -10;
+    ResHHTagger = -10;
+    ResHHTagger_LM = -10;
+    ResHHTagger_HM = -10;
 
     dEta_VBF = -999; 
     Mjj_VBF = 0;
@@ -962,6 +976,7 @@ void
     dijetCandidate = leadingJet + subleadingJet;
     diHiggsCandidate = diphotonCandidate + dijetCandidate;
 
+    MX = diHiggsCandidate.M() - diphotonCandidate.M() - dijetCandidate.M() + 250;
 
     // VBF definition
     if (SelVBFJets.size() > 1){
@@ -1026,9 +1041,13 @@ void
         HHVars["fabs(CosTheta_gg)"] = fabs(CosTheta_gg);
         HHVars["dijetCandidate.Pt()/(diHiggsCandidate.M())"] = dijetCandidate.Pt()/(diHiggsCandidate.M());
         std::vector<float> myHHTagger = nonresMVA_.mvaDiscriminants(HHVars);
+        std::vector<float> myResHHTagger = resMVA_.mvaDiscriminants(HHVars);
         HHTagger_LM = myHHTagger[0];
         HHTagger_HM = myHHTagger[1];
-        HHTagger = ( (diHiggsCandidate.M()-dijetCandidate.M()+125)<350 ) ? HHTagger_LM : HHTagger_HM;
+        HHTagger = ( (diHiggsCandidate.M()-dijetCandidate.M()-diphotonCandidate.M()+250)<350 ) ? HHTagger_LM : HHTagger_HM;
+        ResHHTagger_LM = myResHHTagger[0];
+        ResHHTagger_HM = myResHHTagger[1];
+        ResHHTagger = ( (diHiggsCandidate.M()-dijetCandidate.M()-diphotonCandidate.M()+250)<500 ) ? ResHHTagger_LM : ResHHTagger_HM;
     }
 
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
@@ -1193,6 +1212,10 @@ bbggTree::beginJob()
     tree->Branch("HHTagger", &HHTagger, "HHTagger/F"); 
     tree->Branch("HHTagger_LM", &HHTagger_LM, "HHTagger_LM/F"); 
     tree->Branch("HHTagger_HM", &HHTagger_HM, "HHTagger_HM/F"); 
+    tree->Branch("ResHHTagger", &ResHHTagger, "ResHHTagger/F"); 
+    tree->Branch("ResHHTagger_LM", &ResHHTagger_LM, "ResHHTagger_LM/F"); 
+    tree->Branch("ResHHTagger_HM", &ResHHTagger_HM, "ResHHTagger_HM/F"); 
+    tree->Branch("MX", &MX, "MX/F"); 
 
 
     std::map<std::string, std::string> replacements;

@@ -112,7 +112,7 @@ if not opt.ggh:
   dscb_mjj_mgg.SetParameter(12, 1.5)
   dscb_mjj_mgg.SetParameter(13, 2)
   dscb_mjj_mgg.SetParLimits(2, 5., 50.)
-  dscb_mjj_mgg.SetParLimits(3, 0.5, 5.)
+  dscb_mjj_mgg.SetParLimits(3, 0.1, 5.)
   dscb_mjj_mgg.SetParLimits(5, 1.0001, 5.)
   dscb_mjj_mgg.SetParLimits(9, 8.58766e-01, 9.166e-01)
   dscb_mjj_mgg.SetParLimits(10, 1.0001, 5.)

@@ -54,7 +54,7 @@ private:
 	bool TMVAReady;
     //Regression variables
     	float Jet_pt, Jet_corr, nPVs, Jet_eta, Jet_mt, Jet_leadTrackPt, Jet_leptonPtRel, Jet_leptonPt, Jet_leptonDeltaR;
-    	float Jet_chHEF_neHEF, Jet_neEmEF, Jet_vtxPt, Jet_vtxMass, Jet_vtx3dL, Jet_vtxNtrk, Jet_vtx3deL, Jet_totHEF;
+    	float Jet_chHEF_neHEF, Jet_neEmEF, Jet_vtxPt, Jet_vtxMass, Jet_vtx3dL, Jet_vtxNtrk, Jet_vtx3deL, Jet_totHEF, Jet_neHEF;
         float Jet_PFMET, Jet_METDPhi, Jet_JetDR;
 
 };
