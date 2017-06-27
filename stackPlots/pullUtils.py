@@ -1,8 +1,8 @@
-#!/bin/python
 from ROOT import *
 from copy import deepcopy
 from math import *
 from array import array
+from flashgg.bbggTools.MyCMSStyle import *
 
 def getRatio(hist1, hist2):
 	graph = TGraphAsymmErrors(hist1)
@@ -169,6 +169,7 @@ def SaveNoPull(data, bkg, fileName):
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".png")
 #	c0.Delete()
 
+
 def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM, ControlRegion, hideData, year):
 	gStyle.SetHatchesLineWidth(1)
 	data.SetStats(0)
@@ -203,7 +204,8 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	bkg.SetTitle("")
 	bkg.SetMinimum(0.001)	
 	SUM.Draw("E2 same")
-	data.Draw('E same')
+	if(hideData == False):
+		data.Draw('E same')
 	tlatex = TLatex()
 	baseSize = 25
 	tlatex.SetNDC()
@@ -238,6 +240,13 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 		h[0].Draw("same hist")
 	cs.SaveAs(dirName+"/NP_" + fileName + ".pdf")
 	cs.SaveAs(dirName+"/NP_" + fileName + ".png")
+
+	if hideData:
+		cs.SetLogy()
+		bkg.SetMinimum(0.01)
+	        cs.SaveAs(dirName+"/LOG_" + fileName + ".pdf")
+	        cs.SaveAs(dirName+"/LOG_" + fileName + ".png")
+		return
 
 
 	ratio = 0.2
@@ -437,8 +446,9 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 #	leg1.AddEntry(SUM, " Stat. Uncertainty", "lf")
 	
 	allLegs = []
-	allLegs.append([DataHist, "Data (" + str(llumi) + " fb^{-1})"])
-	allLegs.append([SUM,  "Stat. Uncertainty"])
+#	allLegs.append([DataHist, "Data (" + str(llumi) + " fb^{-1})"])
+	allLegs.append([DataHist, "Data"])
+	allLegs.append([SUM,  "Stat. Uncert."])
 	allLegs += newList + Signals
 
 	nMaxPerBox = (len(newList)+len(Signals)+2)/3
@@ -455,7 +465,7 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 		legends[iLeg].AddEntry(l[0], ' '+l[1], Type)
 
         textFont = 43
-        textSize = 20
+        textSize = 25
 	for leg in legends:
 		leg.SetFillStyle(0)
 		leg.SetLineWidth(0)

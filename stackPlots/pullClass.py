@@ -4,7 +4,7 @@ from copy import deepcopy
 from math import *
 from array import array
 from pullUtils import *
-
+from drawUtils import *
 
 class myStack:
 	myHistograms = []
@@ -60,6 +60,7 @@ class myStack:
 		else:
 			return 0
 	def drawStack(self, fileName):
+		print "HERE"
 		if len(self.myHistograms) < 1:
 			print 'Your list of histograms is empty!'
 			return 0
@@ -92,6 +93,8 @@ class myStack:
 		if self.isJetCR == 1:
 			ControlRegion = "Light Jets CR"
 		print self.tStack.GetNhists()
-		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM, ControlRegion, self.hideData_, self.year)
+		DrawNoPull(self.myData, self.tStack, legend, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM, ControlRegion, self.hideData_, self.year)
+#		SaveWithoutPull(self.myData, self.tStack, legend, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM, ControlRegion, self.hideData_, self.year)
+#		SaveWithPull(self.myData, self.tStack, legend, pullH, pullE, fileName, self.varName, self.dirName, self.lumi, self.mySignals, self.SUM, ControlRegion, self.hideData_, self.year)
 #		gROOT.EndOfProcessCleanups()
 

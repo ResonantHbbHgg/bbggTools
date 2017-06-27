@@ -256,8 +256,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     int def_doPhotonScale, def_doPhotonExtraScale, def_doPhotonSmearing;
     std::string def_PhotonScaleFile;
     int def_addNonResMVA ;
-    edm::FileInPath def_NonResMVAWeights_LowMass, def_NonResMVAWeights_HighMass;
-    edm::FileInPath def_ResMVAWeights_LowMass, def_ResMVAWeights_HighMass;
+//    edm::FileInPath def_NonResMVAWeights_LowMass, def_NonResMVAWeights_HighMass;
+//    edm::FileInPath def_ResMVAWeights_LowMass, def_ResMVAWeights_HighMass;
     std::vector<std::string> def_NonResMVAVars;
     //std::string def_bRegFile;
     edm::FileInPath def_bRegFileLeading, def_bRegFileSubLeading;
@@ -288,10 +288,10 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     int def_jetScale = 0;
     std::string def_randomLabel = "";
     def_addNonResMVA = 0;
-    def_NonResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
-    def_NonResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
-    def_ResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
-    def_ResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
+//    def_NonResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
+//    def_NonResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
+//    def_ResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
+//    def_ResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
     def_NonResMVAVars.push_back("");
 
 //    edm::FileInPath def_resFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_PtResolution_AK4PFchs.txt");
@@ -388,10 +388,14 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
 
     addNonResMVA = iConfig.getUntrackedParameter<unsigned int>("addNonResMVA", def_addNonResMVA);
-    NonResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_LowMass", def_NonResMVAWeights_LowMass);
-    NonResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_HighMass", def_NonResMVAWeights_HighMass);
-    ResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_LowMass", def_ResMVAWeights_LowMass);
-    ResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_HighMass", def_ResMVAWeights_HighMass);
+//    NonResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_LowMass", def_NonResMVAWeights_LowMass);
+//    NonResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_HighMass", def_NonResMVAWeights_HighMass);
+//    ResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_LowMass", def_ResMVAWeights_LowMass);
+//    ResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_HighMass", def_ResMVAWeights_HighMass);
+    NonResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_LowMass");
+    NonResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_HighMass");
+    ResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_LowMass");
+    ResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_HighMass");
     NonResMVAVars = iConfig.getUntrackedParameter<std::vector<std::string > >("NonResMVAVars", NonResMVAVars);
 
     //tokens and labels
@@ -512,6 +516,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     }
 
     if(addNonResMVA) {
+        std::cout << "Adding nonres MVA with files: " << NonResMVAWeights_LowMass.fullPath() << " and " << NonResMVAWeights_HighMass.fullPath() << std::endl;
         nonresMVA_.SetupNonResMVA( NonResMVAWeights_LowMass.fullPath().data(), NonResMVAWeights_HighMass.fullPath().data(), NonResMVAVars);
         resMVA_.SetupNonResMVA( ResMVAWeights_LowMass.fullPath().data(), ResMVAWeights_HighMass.fullPath().data(), NonResMVAVars);
     }
@@ -1040,6 +1045,7 @@ void
         HHVars["fabs(CosTheta_bb)"] = fabs(CosTheta_bb);
         HHVars["fabs(CosTheta_gg)"] = fabs(CosTheta_gg);
         HHVars["dijetCandidate.Pt()/(diHiggsCandidate.M())"] = dijetCandidate.Pt()/(diHiggsCandidate.M());
+        HHVars["diphotonCandidate.Pt()/dijetCandidate.Pt()"] = diphotonCandidate.Pt()/dijetCandidate.Pt();
         std::vector<float> myHHTagger = nonresMVA_.mvaDiscriminants(HHVars);
         std::vector<float> myResHHTagger = resMVA_.mvaDiscriminants(HHVars);
         HHTagger_LM = myHHTagger[0];

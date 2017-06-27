@@ -5,9 +5,42 @@ import shutil
 from configs import *
 import resource
 
+gStyle.SetOptStat(0)
+TGaxis.SetMaxDigits(3)
+
+#yellow 4aa6db 641555
+
 #SetMemoryPolicy( kMemoryStrict )
 
 dummyTFile = TFile("dummy.root", "RECREATE")
+
+NiceBlue = '#51A7F9'
+NiceBlueDark = '#2175E0'
+NiceGreen = '#6FBF41'
+NiceGreen2 = '#35DC3D'
+NiceYellow = '#FBE12A'
+NiceYellow2 = '#FEEA01'
+NiceOrange = '#F0951A'
+NiceRed = '#FA4912'
+NicePurple = '#885BB2'
+NicePaleYellow = '#FFFF66'
+NiceMidnight = '#000080'
+NiceTangerine = '#FF8000'
+cNiceBlue = TColor.GetColor('#51A7F9')
+cNiceBlueDark = TColor.GetColor('#2175E0')
+cNiceGreen = TColor.GetColor('#6FBF41')
+cNiceGreen2 = TColor.GetColor(NiceGreen2)
+cNiceGreenDark = TColor.GetColor('#008040')
+cNiceYellow = TColor.GetColor('#FBE12A')
+cNiceYellow2 = TColor.GetColor(NiceYellow2)
+cNiceOrange = TColor.GetColor('#F0951A')
+cNiceRed = TColor.GetColor('#FA4912')
+cNicePurple = TColor.GetColor('#885BB2')
+cNicePaleYellow = TColor.GetColor('#FFFF66')
+cNiceMidnight = TColor.GetColor('#000080')
+cNiceTangerine = TColor.GetColor('#FF8000')
+
+myCols = [cNiceMidnight, cNiceRed, cNiceGreenDark]
 
 if not os.path.exists(dirName):
         print dirName, "doesn't exist, creating it..."
@@ -100,7 +133,7 @@ for plot in plots:
     print OrderedBackgrounds
     for background in OrderedBackgrounds: thisStack.addHist(background[0], background[1], background[2])
     
-    for signal in datasets["signal"]:
+    for isi, signal in enumerate(datasets["signal"]):
         thisName = plot[0]+"_Signal_"+"_"+signal['name']
 #        modelHist.Clear()
 #        thisHist = 0
@@ -108,15 +141,16 @@ for plot in plots:
 #        thisHist.SetName(thisName)
 #        thisHist.Sumw2()
         thisHist = modelHist.Clone(thisName)
-        thisHist.SetLineColor(signal["color"])
-        thisHist.SetLineWidth(2)
+#        thisHist.SetLineColor(signal["color"])
+        thisHist.SetLineColor(myCols[isi])
+        thisHist.SetLineWidth(3)
         thisTreeLoc = signal["file"]
         if thisTreeLoc not in Trees:
             Trees[thisTreeLoc] = TChain("bbggSelectionTree")
             Trees[thisTreeLoc].AddFile(signalLocation+thisTreeLoc)
             SetOwnership( Trees[thisTreeLoc], True )
         Trees[thisTreeLoc].Draw(plot[1]+">>"+thisName, cut_signal)
-        thisHist.Scale(lumi*signal["xsec"]*signal["sfactor"]/signal["weight"])
+        thisHist.Scale(signalFactor*lumi*signal["xsec"]*signal["sfactor"]/signal["weight"])
         Histos.append(thisHist)
         thisStack.addSignal(thisHist, signal["legend"], lumi*signal["xsec"]*signal["sfactor"]/signal["weight"])
         del thisHist

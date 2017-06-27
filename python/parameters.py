@@ -51,7 +51,7 @@ _JetDoPUID		=	cms.untracked.vint32(1, 1) #0: jet1, 1: jet2
 _n_bJets		=	cms.untracked.uint32(0) #Number of required jets passing requirements in JetBDiscriminant
 _DiJetPt		=	cms.untracked.vdouble(0.) #0: lower boundary for dijet pt
 _DiJetEta		=	cms.untracked.vdouble(20000000.) #0: upper boundary for dijet pt
-_DiJetMassWindow	=	cms.untracked.vdouble(60., 180.) #0: DiJet mass window lower boundary, 1: upper boundary
+_DiJetMassWindow	=	cms.untracked.vdouble(70., 190.) #0: DiJet mass window lower boundary, 1: upper boundary
 _CandidateMassWindow	=	cms.untracked.vdouble(0., 25000.) #0: 4-candidate mass window lower boundary, 1: upper boundary
 _CandidatePt		=	cms.untracked.vdouble(0.) #0 4-candidate pt lower bound
 _CandidateEta		=	cms.untracked.vdouble(20000000.) #0 4-candidate eta upper bound
@@ -87,22 +87,22 @@ _nhCorrEE	=	cms.untracked.vdouble(0.0139, 0.000025)
 _phCorrEE	=	cms.untracked.vdouble(0.0034, 0.)
 
 ##Systematics
-_jetSmear		=	cms.untracked.int32(0)
+_jetSmear		=	cms.untracked.int32(1)
 _randomLabel		=	cms.untracked.string("rnd_g_JER")
-_jetScale		=	cms.untracked.int32(0)
+_jetScale		=	cms.untracked.int32(1)
 ##Photon corrections
-_doPhotonScale		=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonScale		=	cms.untracked.int32(1) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
-_doPhotonSmearing	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonSmearing	=	cms.untracked.int32(1) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 
 #_PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/80X_ichepV2_2016_pho")
 _PhotonCorrectionFile	=	cms.untracked.string("flashgg/Systematics/data/Moriond17_74x_pho")
 
 ##NonResCats
 _addNonResMVA 			=	cms.untracked.uint32(1)
-_NonResMVAWeights_LowMass 	=	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass_MX350_Mjj60.xml")
-_NonResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass_MX350_Mjj60.xml")
-_ResMVAWeights_LowMass 		=	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_ResLowMass_MX500_Mjj60.xml")
-_ResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_ResHighMass_MX500_Mjj60.xml")
-_NonResMVAVars 			=	cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')
+_NonResMVAWeights_LowMass 	=	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_LM350_GradBoost_Mjj70.xml")
+_NonResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_HM350_GradBoost_Mjj70.xml")
+_ResMVAWeights_LowMass 		=	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_LM500Res_GradBoost_Mjj70.xml")
+_ResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_HM500Res_GradBoost_Mjj70.xml")
+_NonResMVAVars 			=	cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','diphotonCandidate.Pt()/dijetCandidate.Pt()','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')
 
