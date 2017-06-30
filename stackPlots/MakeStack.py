@@ -40,7 +40,7 @@ cNicePaleYellow = TColor.GetColor('#FFFF66')
 cNiceMidnight = TColor.GetColor('#000080')
 cNiceTangerine = TColor.GetColor('#FF8000')
 
-myCols = [cNiceMidnight, cNiceRed, cNiceGreenDark]
+myCols = [cNiceMidnight, kRed, cNiceGreenDark]
 
 if not os.path.exists(dirName):
         print dirName, "doesn't exist, creating it..."
@@ -144,6 +144,7 @@ for plot in plots:
 #        thisHist.SetLineColor(signal["color"])
         thisHist.SetLineColor(myCols[isi])
         thisHist.SetLineWidth(3)
+        thisHist.SetLineStyle(signal["style"])
         thisTreeLoc = signal["file"]
         if thisTreeLoc not in Trees:
             Trees[thisTreeLoc] = TChain("bbggSelectionTree")

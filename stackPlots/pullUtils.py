@@ -420,16 +420,18 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 			newList.append(h)
 			newLegs.append(h[1])
 
-	nMaxPerBox = (len(newList)+len(Signals)+2)/3
-	if (3*nMaxPerBox < len(newList)+len(Signals)+2):
+#	nMaxPerBox = (len(newList)+len(Signals)+2)/3
+	nMaxPerBox = (len(newList)+2)/3
+#	if (3*nMaxPerBox < len(newList)+len(Signals)+2):
+	if (3*nMaxPerBox < len(newList)+2):
 		nMaxPerBox += 1
 	lenPerHist = 0.27/float(nMaxPerBox)
 
 	legends = []
 #	leg1 = TLegend(0.65, 0.65, 0.71, 0.65+lenPerHist*float(nMaxPerBox))
-	leg1 = TLegend(0.68, 0.85-lenPerHist*float(nMaxPerBox), 0.74, 0.89)
-#	if (3*nMaxPerBox > len(newList)+len(Signals)+2):
-#		nMaxPerBox -= 1
+	leg1 = TLegend(0.68, 0.85-lenPerHist*float(len(Signals)), 0.74, 0.89)
+	if (3*nMaxPerBox > len(newList)+2):
+		nMaxPerBox -= 1
 	leg2 = TLegend(0.43, 0.85-lenPerHist*float(nMaxPerBox), 0.49, 0.89)
 
 	leg3 = TLegend(0.13, 0.85-lenPerHist*float(nMaxPerBox), 0.19, 0.89)
@@ -456,6 +458,7 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 		nMaxPerBox += 1
 
 	for i,l in enumerate(allLegs):
+		if i > len(newList)+1: continue
 		Type = 'f'
 		if 'Data' in l[1]:
 			Type = 'lep'
@@ -463,6 +466,14 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 			Type = 'f'
 		iLeg = i//nMaxPerBox
 		legends[iLeg].AddEntry(l[0], ' '+l[1], Type)
+
+	for j,l in enumerate(Signals):
+		Type = 'f'
+		if 'Data' in l[1]:
+			Type = 'lep'
+		if 'Stat' in l[1]:
+			Type = 'f'
+		legends[len(legends)-1].AddEntry(l[0], ' '+l[1], Type)
 
         textFont = 43
         textSize = 25

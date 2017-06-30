@@ -8,7 +8,7 @@ cNicePurple = TColor.GetColor('#885BB2')
 
 masses = [280, 350, 450, 600, 800]
 
-filesLoc = '/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA/EGML_Signal_Mjj70_NewMVA/Hadd/output_GluGluToBulkGravitonToHHTo2B2G_M-MASS_narrow_13TeV-madgraph.root'
+filesLoc = '/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA/EGML_Signal_Mjj70_NewMVA/Hadd/output_GluGluToBulkGravitonToHHTo2B2G_M-MASS_narrow_13TeV-madgraph.root'
 
 axes = [
 [211, 349],
@@ -33,12 +33,13 @@ ofile = TFile("out.root", "RECREATE")
 
 for imm,mm in enumerate(masses):
   hh = TH1F('h_'+str(mm), ';;Normalized Yields [A.U.]', 40, axes[imm][0], axes[imm][1])
-  hh.SetLineWidth(2)
+  hh.SetLineWidth(3)
   hh.SetLineColor(cNiceRed)
   hh_org = TH1F('o_'+str(mm), ';;Normalized Yields [A.U.]', 40, axes[imm][0], axes[imm][1])
 #  hh_org.SetLineStyle(kDotted)
-  hh_org.SetLineWidth(2)
+  hh_org.SetLineWidth(3)
   hh_org.SetLineColor(cNicePurple)
+  hh_org.SetLineStyle(kDashed)
   tf = files[imm]
   tree = trees[imm]
   print tree.GetEntries("isSignal")
@@ -86,11 +87,11 @@ for mm,M in enumerate(masses):
   tlt.DrawLatexNDC(0.04, 0.84, "M = " + str(M) + ' GeV')
 #  else: tlt.DrawLatexNDC(0.04+0.035, 0.85, "M = " + str(M) + ' GeV')
   if mm == 0:
-    leg = TLegend(0.68, 0.7, 0.95, 0.85)
+    leg = TLegend(0.58, 0.65, 0.99, 0.88)
     leg.SetTextFont(43)
     leg.SetTextSize(15)
     leg.AddEntry(hists[mm], '#tilde{M}_{X}', 'l')
-    leg.AddEntry(hists_org[mm], 'M(#gamma#gammajj)', 'l')
+    leg.AddEntry(hists_org[mm], 'M(jj#gamma#gamma)', 'l')
     leg.SetBorderSize(0)
     legs.append(leg)
     legs[mm].Draw("same")
