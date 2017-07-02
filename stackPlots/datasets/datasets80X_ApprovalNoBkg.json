@@ -1,0 +1,114 @@
+{  
+   "data":"DoubleEG.root",
+   "signal":[
+         {
+            "name":"grav300",
+            "legend":"Grav. m_{X} = 300 GeV",
+            "color":924,
+            "style":2,
+            "weight":50000,
+            "file":"output_GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph.root",
+            "xsec" : 0.5,
+            "sfactor" : 1.0
+         },
+         {
+            "name":"rad600",
+            "legend":"Rad. m_{X} = 600 GeV",
+            "color":925,
+            "style":2,
+            "weight":50000,
+            "file":"output_GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph.root",
+            "xsec" : 0.5,
+            "sfactor" : 1.0
+         },
+         {
+            "name":"nrSM",
+            "legend":"SM HH (x5000)",
+            "color":926,
+            "style":1,
+            "weight":50000,
+            "file":"output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph.root",
+            "xsec" : 0.434850,
+            "sfactor" : 1.0
+         }
+   ],
+   "background":{  
+      "bbH":{  
+         "position":4,
+         "legend":"b#bar{b}H(#gamma#gamma)",
+         "color":"#ad395f",
+         "files":[  
+            {  
+               "file":"output_bbHToGG_M-125_4FS_yb2_13TeV_amcatnlo.root",
+               "xsec":0.534403,
+               "nevents":746400,
+               "weight":297462.02209472656,
+               "sfactor":2.27e-3
+            },
+            {  
+               "file":"output_bbHToGG_M-125_4FS_ybyt_13TeV_amcatnlo.root",
+               "xsec":0.0464028,
+               "nevents":750000,
+               "weight":-24582.49609375,
+               "sfactor":2.27e-3
+            }
+         ]
+      },
+      "ttH":{  
+         "position":3,
+         "legend":"t#bar{t}H(#gamma#gamma)",
+         "color":"#6a4c93",
+         "files":[  
+            {  
+               "file":"output_ttHToGG_M125_13TeV_powheg_pythia8_v2.root",
+               "xsec":0.5071,
+               "nevents":768410,
+               "weight":431817.3866882324,
+               "sfactor":2.27e-3
+            }
+         ]
+      },
+      "VH":{  
+         "position":2,
+         "legend":"VH(#gamma#gamma)",
+         "color":"#dd542e",
+         "files":[  
+            {  
+               "file":"output_VHToGG_M125_13TeV_amcatnloFXFX_madspin_pythia8.root",
+               "xsec":2.2496,
+               "nevents":278811,
+               "weight":1862202.21875,
+               "sfactor":2.27e-3
+            }
+         ]
+      },
+      "VBF":{  
+         "position":1,
+         "legend":"VBF H(#gamma#gamma)",
+         "color":"#472060",
+         "files":[  
+            {  
+               "file":"output_VBFHToGG_M-125_13TeV_powheg_pythia8.root",
+               "xsec":3.748,
+               "nevents":1000000,
+               "weight":3738258.272705078,
+               "sfactor":2.27e-3
+            }
+         ]
+      },
+      "ggH":{  
+         "position":0,
+         "legend":"ggH(#gamma#gamma)",
+         "color":"#EAAC27",
+         "files":[  
+            {  
+               "file":"output_GluGluHToGG_M-125_13TeV_powheg_pythia8.root",
+               "xsec":43.92,
+               "nevents":998200.0,
+               "weight":998200.0,
+               "sfactor":2.27e-3
+            }
+         ]
+      }
+   }
+}
