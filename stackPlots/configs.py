@@ -4,7 +4,7 @@
 ##################################################
 ##################################################
 
-doBlind = True
+doBlind = False
 doSignalRegion = True
 doJetCR = False
 
@@ -28,10 +28,11 @@ doSignal = True
 BTAG = 0.
 
 #Luminosity to normalize backgrounds
-lumi = 35870#pb
+lumi = 35900#pb
 MCSF = 1.0
+signalFactor = 1
 #List of datasets to be used (cross section information defined there)
-data_file = open("datasets/datasets80X_Moriond.json")
+data_file = open("datasets/datasets80X_ApprovalNoBkg.json")
 
 #number of bins in histograms
 nbin = 30
@@ -39,31 +40,34 @@ dr = "sqrt( (leadingPhoton.Eta() - subleadingPhoton.Eta())*(leadingPhoton.Eta() 
 
 #plots will be saved in dirName
 prefix = ""
-dirSuffix = "March10_36ifb_Moriond_SR_Blind"
+dirSuffix = "June7_36ifb_UNBLIND_Mjj70_MVA_NOBKG"
 dirPrefix = "/afs/cern.ch/user/r/rateixei/www/HHBBGG/ControlPlots/"
 dirName = dirPrefix + dirSuffix
 
 #Location of root files for each invidivual samples. Name of the root files is defined in datasets/datasets(76).json
-higgsLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/bbggTools_flashgg_tag-Moriond17-v8/CMSSW_8_0_26_patch1/src/flashgg/bbggTools/test/RunJobs/EGM_Background_ReMiniAOD/Hadd/" 
-bkgLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/bbggTools_flashgg_tag-Moriond17-v8/CMSSW_8_0_26_patch1/src/flashgg/bbggTools/test/RunJobs/EGM_Background_ReMiniAOD/Hadd/" 
-signalLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/bbggTools_flashgg_tag-Moriond17-v8/CMSSW_8_0_26_patch1/src/flashgg/bbggTools/test/RunJobs/EGM_Signal_ReMiniAOD/Hadd/"
-dataLocation = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/bbggTools_flashgg_tag-Moriond17-v8/CMSSW_8_0_26_patch1/src/flashgg/bbggTools/test/RunJobs/EGM_Data_ReMiniAOD/Hadd/"
+loc = '/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA/'
+higgsLocation = loc + '/EGML_Background_Mjj70_NewMVA/Hadd/'
+bkgLocation = loc + '/EGML_Background_Mjj70_NewMVA/Hadd/'
+signalLocation = loc + '/EGML_Signal_Mjj70_NewMVA/Hadd/'
+dataLocation = loc + '/EGML_Data_Mjj70_NewMVA/Hadd/'
 
 
 #plots to be made
 plots = []
+plots.append(["dicandidate_Mass", "diHiggsCandidate.M()", "M(jj#gamma#gamma) [GeV]", 34, 150, 1000])
+'''
+plots.append(["MXprime", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250.", "#tilde{M}_{X} (GeV)", 38, 240, 1000])
+plots.append(["diPho_Mass", "diphotonCandidate.M()", "M(#gamma#gamma) [GeV]", 80, 100, 180])
+plots.append(["HHTagger", "HHTagger", "Categorization MVA", 100, -1, 1])
 plots.append(["HHTagger", "HHTagger", "Categorization MVA", 50, -1, 1])
 plots.append(["HHTagger_LM", "HHTagger_LM", "Categorization MVA (Low Mass Training)", 50, -1, 1])
 plots.append(["HHTagger_HM", "HHTagger_HM", "Categorization MVA (High Mass Training)", 50, -1, 1])
-plots.append(["MXprime_binned", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250.", "#tilde{M}_{X} (GeV)", 80, 200, 1000])
-'''
-plots.append(["diPho_Mass", "diphotonCandidate.M()", "M(#gamma#gamma) [GeV]", 80, 100, 180])
-plots.append(["diJet_Mass", "dijetCandidate.M()", "M(jj) [GeV]", 40, 60, 180])
+plots.append(["MXprime_binned", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250.", "#tilde{M}_{X} (GeV)", 80, 200, 300])
+plots.append(["diJet_Mass", "dijetCandidate.M()", "M(jj) [GeV]", 40, 70, 190])
 plots.append(["PhotonIDMVA2", "(subleadingPhotonIDMVA)", "2 Photon #gammaMVA discriminant", nbin, 0.2, 1])
 plots.append(["PhotonIDMVA", "(leadingPhotonIDMVA+subleadingPhotonIDMVA)", "Sum Photon #gammaMVA discriminant", nbin, 0, 2])
 plots.append(["PhotonIDMVA1", "(leadingPhotonIDMVA)", "1 Photon #gammaMVA discriminant", nbin, 0.2, 1])
 plots.append(["leadingPhoton_pt", "leadingPhoton.pt()", "p_{T}(#gamma_{1}) [GeV]", 50, 30, 150])
-plots.append(["MXprime", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250.", "#tilde{M}_{X} (GeV)", 40, 200, 1000])
 plots.append(["CosTheta_bb", "CosTheta_bb", "Cos(#theta_{bb})", nbin, -1, 1])
 plots.append(["MX", "diHiggsCandidate.M() - dijetCandidate.M() + 125.", "#tilde{M}_{X} (GeV)", 40, 200, 1000])
 plots.append(["binnedMX", "diHiggsCandidate.M() - dijetCandidate.M() + 125.", "#tilde{M}_{X} (GeV)", nbin, 100, 1000])
@@ -76,7 +80,6 @@ plots.append(["Phi", "Phi0", "#Phi", nbin, -3.5, 3.5])
 plots.append(["Phi1", "Phi1", "#Phi_{1}", nbin, -3.5, 3.5])
 plots.append(["DiJetDiPho_DR", "DiJetDiPho_DR", "#DeltaR(#gamma#gamma,jj)", nbin, 0, 4])
 plots.append(["nvtx", "nvtx", "Number of vertices", 50, 0, 50])
-plots.append(["dicandidate_Mass", "diHiggsCandidate.M()", "M(jj#gamma#gamma) [GeV]", nbin, 100, 1000])
 plots.append(["costhetastar_cs", "fabs(CosThetaStar_CS)", "|cos#theta*|_{CS}", nbin, 0, 1])
 plots.append(["costhetastar", "fabs(CosThetaStar)", "|cos#theta*|", nbin, 0, 1])
 plots.append(["j1ratio_dijet", "leadingJet.Pt()/dijetCandidate.M()", "p_{T}(j_{1})/M(jj)", nbin, 0.1, 1.5])
@@ -104,10 +107,13 @@ plots.append(["subleadingPho_MVA", "customSubLeadingPhotonIDMVA", "SubLeading Ph
 '''
 
 #cuts to be used to make plots
-Cut = " isSignal && diphotonCandidate.M() > 100 && diphotonCandidate.M() < 180"
-Cut += " && dijetCandidate.M() > 60 && dijetCandidate.M() < 180"
+Cut = " isSignal && diphotonCandidate.M() > 100 && diphotonCandidate.M() < 180 "
+Cut += " && dijetCandidate.M() > 70 && dijetCandidate.M() < 190 "
+#Cut += " & (diHiggsCandidate.M()-dijetCandidate.M()-diphotonCandidate.M()+250) < 350 "
+#Cut += " & HHTagger_HM < 0.97 && HHTagger_HM > 0.6 "
+#Cut += " & HHTagger_LM < 0.985 && HHTagger_LM > 0.6 && leadingJet_bDis > 0.55 && subleadingJet_bDis > 0.55 "
 #Cut += " && (((leadingJet_bDis > 0.8 && subleadingJet_bDis > 0.8) && (leadingJet_bDis < 0.92))+((leadingJet_bDis > 0.8 && subleadingJet_bDis > 0.8) && (subleadingJet_bDis < 0.92)))"
-#Cut += " && (diHiggsCandidate.M() - dijetCandidate.M() + 125) < 400"
+#Cut += " && (diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250) < 350"
 #Cut += " && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) > 280 && (diHiggsCandidate.M() - dijetCandidate.M() + 125.) < 320"
 #Cut += " && diHiggsCandidate.M() > 280 && diHiggsCandidate.M() < 320"
 #Cut += " && (leadingJet.pt()/dijetCandidate.M()) > 0.3333"

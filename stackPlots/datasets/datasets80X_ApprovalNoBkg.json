@@ -15,7 +15,7 @@
             "name":"rad600",
             "legend":"Rad. m_{X} = 600 GeV",
             "color":925,
-            "style":3,
+            "style":2,
             "weight":50000,
             "file":"output_GluGluToRadionToHHTo2B2G_M-600_narrow_13TeV-madgraph.root",
             "xsec" : 0.5,
@@ -23,88 +23,18 @@
          },
          {
             "name":"nrSM",
-            "legend":"SM Nonresonant",
+            "legend":"SM HH (x5000)",
             "color":926,
-            "style":3,
+            "style":1,
             "weight":50000,
             "file":"output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph.root",
-            "xsec" : 0.5,
+            "xsec" : 0.434850,
             "sfactor" : 1.0
          }
    ],
    "background":{  
-      "DYJets":{  
-         "position":3,
-         "legend":"Z/#gamma*+Jets",
-         "color":"#ffe74c",
-         "files":[  
-            {  
-               "file":"output_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8.root",
-               "xsec":6025.2,
-               "nevents":28730591,
-               "weight":451200807040.0,
-               "sfactor":1
-            }
-         ]
-      },
-      "QCD":{  
-         "position":0,
-         "legend":"QCD",
-         "color":"#2B74BA",
-         "files":[  
-            {  
-               "file":"output_QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-               "xsec":113400.0,
-               "nevents":20632076,
-               "weight":20632076,
-               "sfactor":1
-            },
-            {  
-               "file":"output_QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-               "xsec":22110.0,
-               "nevents":18009301,
-               "weight":18009301,
-               "sfactor":1
-            }
-         ]
-      },
-      "GJets":{  
-         "position":2,
-         "legend":"j#gamma+Jets/jj+Jets",
-         "color":"#4aa6db",
-         "files":[  
-            {  
-               "file":"output_GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-               "xsec":863.8,
-               "nevents":72358076,
-               "weight":72358076,
-               "sfactor":3.5
-            },
-            {  
-               "file":"output_GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-               "xsec":218.0,
-               "nevents":24989649,
-               "weight":24989649,
-               "sfactor":27.0
-            }
-         ]
-      },
-      "DiPhoJets":{  
-         "position":1,
-         "legend":"#gamma#gamma+Jets",
-         "color":"#D0F1D8",
-         "files":[  
-            {  
-               "file":"output_DiPhotonJetsBox_MGG-80toInf_13TeV-Sherpa.root",
-               "xsec":84.0,
-               "nevents":57924220,
-               "weight":27392795.9746933,
-               "sfactor":1.45
-            }
-         ]
-      },
       "bbH":{  
-         "position":8,
+         "position":4,
          "legend":"b#bar{b}H(#gamma#gamma)",
          "color":"#ad395f",
          "files":[  
@@ -125,7 +55,7 @@
          ]
       },
       "ttH":{  
-         "position":7,
+         "position":3,
          "legend":"t#bar{t}H(#gamma#gamma)",
          "color":"#6a4c93",
          "files":[  
@@ -139,7 +69,7 @@
          ]
       },
       "VH":{  
-         "position":6,
+         "position":2,
          "legend":"VH(#gamma#gamma)",
          "color":"#dd542e",
          "files":[  
@@ -153,7 +83,7 @@
          ]
       },
       "VBF":{  
-         "position":5,
+         "position":1,
          "legend":"VBF H(#gamma#gamma)",
          "color":"#472060",
          "files":[  
@@ -167,7 +97,7 @@
          ]
       },
       "ggH":{  
-         "position":4,
+         "position":0,
          "legend":"ggH(#gamma#gamma)",
          "color":"#EAAC27",
          "files":[  

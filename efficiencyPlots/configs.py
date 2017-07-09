@@ -18,86 +18,105 @@ stepLegs = {
 6:"Jet sel 1", #Kinematic preselection on jets
 7:"Jets Selection" #Dijet selection
 }
-steps = [1, 2, 4, 7]
+steps = [2, 4, 7]
 
 isRes = 0
+isRadion = 1
 
-ffolder = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_tag-Moriond17-v5/CMSSW_8_0_26_patch1/src/flashgg/bbggTools/test/RunJobs/AllSignal_Feb25_mjj80_pt25/Hadd/"
-outname = "nonres_effs_pt25_mjj80_newcat.pdf"
+ffolder = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA/EGML_Signal_Mjj70_NewMVA/Hadd/"
+#ffolder = '/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA/EGML_Signal_Mjj70_NewMVA/Hadd/'
+#ffolder = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_tag-Moriond17-v5/CMSSW_8_0_26_patch1/src/flashgg/bbggTools/test/RunJobs/AllSignal_Feb25_mjj80_pt25/Hadd/"
+outname = "nonres_effs_mjj70_MVAcat_spin0.pdf"
 
 if isRes==1:
   #For Resonant
-  header = "pp#rightarrowX#rightarrowHH#rightarrowb#bar{b}#gamma#gamma Selection Steps"
+  header = "#font[61]{pp#rightarrowX_{spin-2}#rightarrowHH#rightarrowb#bar{b}#gamma#gamma} Selection Steps"
+  if isRadion: header = header.replace('spin-2', 'spin-0')
   xaxis = [
-  250, 260, 270, 280, 300, 320, 340, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 900
+  250, 260, 270, 280, 300, 350, 400, 450, 500, 600, 700, 800, 900
   ]
   xmin = 200
-  xmax = 1000
-  xtitle = "M_{X} [GeV]"
+  xmax = 950
+  ymax = 1.1
+  ymin = 0
+  yoff = 0.0
+  legymin = 0.65
+  xtitle = "Resonance Mass [GeV] (spin-2)"
+  if isRadion: xtitle = xtitle.replace('spin-2', 'spin-0')
   drawOpt = "PL"
   #"/afs/cern.ch/work/r/rateixei/work/DiHiggs/dev-rafael-Nov4/CMSSW_8_0_20/src/flashgg/bbggTools/test/RunJobs/Signal_Nov24/Hadd/"
-  files = [
+  files_1 = [
 "output_GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-320_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-340_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-400_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-450_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-550_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-600_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-650_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-700_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-750_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-800_narrow_13TeV-madgraph.root",
 "output_GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph.root"
   ]
+  files = files_1
+  if isRadion:
+    files = [ ff.replace('BulkGraviton', 'Radion') for ff in files_1 ]
 
   extraSteps = [
 #"genTotalWeight*( isSignal && (leadingJet_bDis > 0.92 && subleadingJet_bDis > 0.8 && subleadingJet_bDis < 0.92)||(subleadingJet_bDis > 0.92 && leadingJet_bDis > 0.8 && leadingJet_bDis < 0.92))+genTotalWeight*( isSignal && leadingJet_bDis > 0.92 && subleadingJet_bDis > 0.92)",
-"(genTotalWeight*(isSignal)*(HHTagger_LM > 0.6))"#, + genTotalWeight*(isSignal)*(diHiggsCandidate.M()-dijetCandidate.M+125 > 550)*(leadingJet_bDis > 0.8 || subleadingJet_bDis > 0.8))",
+"(genTotalWeight*(isSignal)*(ResHHTagger_HM > 0.))",
+"(genTotalWeight*(isSignal)*(ResHHTagger_LM > 0.7))",
 #"genTotalWeight*( isSignal && leadingJet_bDis > 0.92 && subleadingJet_bDis > 0.92)"
 
   ]
 
   extraLegs = {
-  int(len(stepLegs)):"MPC+HPC",
+  int(len(stepLegs)+0):"MPC+HPC (HM)",
+  int(len(stepLegs)+1):"MPC+HPC (LM)"
   #int(len(stepLegs)+1):"HPC"
   }
 
 else:
   #For NonResonant
 #  outname = "nonres_effs_hm.pdf"
-  header = "pp#rightarrowHH#rightarrowb#bar{b}#gamma#gamma Selection Steps (High Mass)"
-  xaxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
+  outname = "nonres_effs_mjj70_MVAcat_nonononres.pdf"
+  steps = []
+  header = "#font[61]{pp#rightarrowHH#rightarrowb#bar{b}#gamma#gamma} Mass Categorization"
+  xaxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
   xmin = -1
   xmax = 14
+  ymin = 0
+  ymax = 0.4
+  yoff = 0.1
+  legymin = 0.75
   xtitle = "Shape Benchmark Points"
   drawOpt = "P"
 #  ffolder = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/dev-rafael-Nov4/CMSSW_8_0_20/src/flashgg/bbggTools/test/RunJobs/Signal_Nov24/Hadd/"
+  ffolder = '/afs/cern.ch/work/r/rateixei/work/DiHiggs/bbggLimits_May8/CMSSW_7_4_7/src/HiggsAnalysis/bbggLimits/FlatTreesJHEP/'
   files = [
-"output_GluGluToHHTo2B2G_node_box_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_2_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_3_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_4_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_5_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_6_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_7_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_8_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_9_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_10_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_11_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_12_13TeV-madgraph.root",
-"output_GluGluToHHTo2B2G_node_13_13TeV-madgraph.root",
+'LT_NR_Nodes_All_merged_kl_1p0_kt_1p0_cg_0p0_c2_0p0_c2g_0p0.root',
+'LT_NR_Nodes_All_merged_kl_0p0_kt_1p0_cg_0p0_c2_0p0_c2g_0p0.root',
+'LT_NR_Nodes_All_merged_kl_10p0_kt_1p5_cg_0p0_c2_-1p0_c2g_0p0.root',
+'LT_NR_Nodes_All_merged_kl_15p0_kt_1p0_cg_0p0_c2_1p0_c2g_0p0.root',
+'LT_NR_Nodes_All_merged_kl_15p0_kt_1p0_cg_-1p0_c2_0p0_c2g_1p0.root',
+'LT_NR_Nodes_All_merged_kl_1p0_kt_1p0_cg_0p0_c2_-1p5_c2g_-0p8.root',
+'LT_NR_Nodes_All_merged_kl_1p0_kt_1p0_cg_-0p6_c2_1p0_c2g_0p6.root',
+'LT_NR_Nodes_All_merged_kl_1p0_kt_1p0_cg_0p8_c2_0p0_c2g_-1p0.root',
+'LT_NR_Nodes_All_merged_kl_1p0_kt_1p0_cg_-0p8_c2_0p5_c2g_0p6.root',
+'LT_NR_Nodes_All_merged_kl_2p4_kt_1p0_cg_0p2_c2_0p0_c2g_-0p2.root',
+'LT_NR_Nodes_All_merged_kl_2p4_kt_1p0_cg_1p0_c2_0p0_c2g_-1p0.root',
+'LT_NR_Nodes_All_merged_kl_-3p5_kt_1p5_cg_0p0_c2_-3p0_c2g_0p0.root',
+'LT_NR_Nodes_All_merged_kl_5p0_kt_1p0_cg_0p2_c2_0p0_c2g_-0p2.root',
+'LT_NR_Nodes_All_merged_kl_7p5_kt_1p0_cg_0p0_c2_-1p0_c2g_0p0.root'
   ]
 
   extraSteps = [
-"(genTotalWeight*(isSignal)*(HHTagger_LM > 0.6))"
+#"(NR_weight*(isSignal)*(HHTagger_HM > 0.6)*((diHiggsCandidate.M()-dijetCandidate.M()-diphotonCandidate.M()+250)>350))",
+#"(NR_weight*(isSignal)*(HHTagger_LM > 0.6)*((diHiggsCandidate.M()-dijetCandidate.M()-diphotonCandidate.M()+250)<350))"
+"(NR_weight*(isSignal)*(HHTagger_HM > -10.6)*((diHiggsCandidate.M()-dijetCandidate.M()-diphotonCandidate.M()+250)>350))",
+"(NR_weight*(isSignal)*(HHTagger_LM > -10.6)*((diHiggsCandidate.M()-dijetCandidate.M()-diphotonCandidate.M()+250)<350))"
 #"genTotalWeight*( isSignal && (diHiggsCandidate.M()-dijetCandidate.M()+125) > 350 )",
 #"genTotalWeight*( isSignal && (diHiggsCandidate.M()-dijetCandidate.M()+125) > 350  && (leadingJet_bDis > 0.92 && subleadingJet_bDis > 0.8 && subleadingJet_bDis < 0.92)||(subleadingJet_bDis > 0.92 && leadingJet_bDis > 0.8 && leadingJet_bDis < 0.92))",
 #"genTotalWeight*( isSignal && (diHiggsCandidate.M()-dijetCandidate.M()+125) > 350  && leadingJet_bDis > 0.92 && subleadingJet_bDis > 0.92)"
@@ -106,7 +125,8 @@ else:
   extraLegs = {
 #  int(len(stepLegs)):"High Mass region",
 #  int(len(stepLegs)+1):"MPC",
-  int(len(stepLegs)):"MPC+HPC"
+  int(len(stepLegs)):"MPC+HPC (High Mass)",
+  int(len(stepLegs)+1):"MPC+HPC (Low Mass)"
   }
 
 

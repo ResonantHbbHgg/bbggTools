@@ -1,8 +1,8 @@
-#!/bin/python
 from ROOT import *
 from copy import deepcopy
 from math import *
 from array import array
+from flashgg.bbggTools.MyCMSStyle import *
 
 def getRatio(hist1, hist2):
 	graph = TGraphAsymmErrors(hist1)
@@ -169,6 +169,7 @@ def SaveNoPull(data, bkg, fileName):
 #	c0.SaveAs('/afs/cern.ch/user/r/rateixei/www/HHBBGG/TestBench/noPull_'+str(fileName) + ".png")
 #	c0.Delete()
 
+
 def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lumi, signals, SUM, ControlRegion, hideData, year):
 	gStyle.SetHatchesLineWidth(1)
 	data.SetStats(0)
@@ -203,7 +204,8 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	bkg.SetTitle("")
 	bkg.SetMinimum(0.001)	
 	SUM.Draw("E2 same")
-	data.Draw('E same')
+	if(hideData == False):
+		data.Draw('E same')
 	tlatex = TLatex()
 	baseSize = 25
 	tlatex.SetNDC()
@@ -238,6 +240,13 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 		h[0].Draw("same hist")
 	cs.SaveAs(dirName+"/NP_" + fileName + ".pdf")
 	cs.SaveAs(dirName+"/NP_" + fileName + ".png")
+
+	if hideData:
+		cs.SetLogy()
+		bkg.SetMinimum(0.01)
+	        cs.SaveAs(dirName+"/LOG_" + fileName + ".pdf")
+	        cs.SaveAs(dirName+"/LOG_" + fileName + ".png")
+		return
 
 
 	ratio = 0.2
@@ -411,16 +420,18 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 			newList.append(h)
 			newLegs.append(h[1])
 
-	nMaxPerBox = (len(newList)+len(Signals)+2)/3
-	if (3*nMaxPerBox < len(newList)+len(Signals)+2):
+#	nMaxPerBox = (len(newList)+len(Signals)+2)/3
+	nMaxPerBox = (len(newList)+2)/3
+#	if (3*nMaxPerBox < len(newList)+len(Signals)+2):
+	if (3*nMaxPerBox < len(newList)+2):
 		nMaxPerBox += 1
 	lenPerHist = 0.27/float(nMaxPerBox)
 
 	legends = []
 #	leg1 = TLegend(0.65, 0.65, 0.71, 0.65+lenPerHist*float(nMaxPerBox))
-	leg1 = TLegend(0.68, 0.85-lenPerHist*float(nMaxPerBox), 0.74, 0.89)
-#	if (3*nMaxPerBox > len(newList)+len(Signals)+2):
-#		nMaxPerBox -= 1
+	leg1 = TLegend(0.68, 0.85-lenPerHist*float(len(Signals)), 0.74, 0.89)
+	if (3*nMaxPerBox > len(newList)+2):
+		nMaxPerBox -= 1
 	leg2 = TLegend(0.43, 0.85-lenPerHist*float(nMaxPerBox), 0.49, 0.89)
 
 	leg3 = TLegend(0.13, 0.85-lenPerHist*float(nMaxPerBox), 0.19, 0.89)
@@ -437,8 +448,9 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 #	leg1.AddEntry(SUM, " Stat. Uncertainty", "lf")
 	
 	allLegs = []
-	allLegs.append([DataHist, "Data (" + str(llumi) + " fb^{-1})"])
-	allLegs.append([SUM,  "Stat. Uncertainty"])
+#	allLegs.append([DataHist, "Data (" + str(llumi) + " fb^{-1})"])
+	allLegs.append([DataHist, "Data"])
+	allLegs.append([SUM,  "Stat. Uncert."])
 	allLegs += newList + Signals
 
 	nMaxPerBox = (len(newList)+len(Signals)+2)/3
@@ -446,6 +458,7 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 		nMaxPerBox += 1
 
 	for i,l in enumerate(allLegs):
+		if i > len(newList)+1: continue
 		Type = 'f'
 		if 'Data' in l[1]:
 			Type = 'lep'
@@ -454,8 +467,16 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 		iLeg = i//nMaxPerBox
 		legends[iLeg].AddEntry(l[0], ' '+l[1], Type)
 
+	for j,l in enumerate(Signals):
+		Type = 'f'
+		if 'Data' in l[1]:
+			Type = 'lep'
+		if 'Stat' in l[1]:
+			Type = 'f'
+		legends[len(legends)-1].AddEntry(l[0], ' '+l[1], Type)
+
         textFont = 43
-        textSize = 20
+        textSize = 25
 	for leg in legends:
 		leg.SetFillStyle(0)
 		leg.SetLineWidth(0)
