@@ -23,14 +23,25 @@
          },
          {
             "name":"nrSM",
-            "legend":"SM HH (x5000)",
+            "legend":"gg #rightarrow HH (x5000)",
             "color":926,
             "style":1,
             "weight":50000,
             "file":"output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph.root",
             "xsec" : 0.434850,
             "sfactor" : 1.0
+         },
+         {
+            "name":"nrSMVBF",
+            "legend":"VBF HH (x100000)",
+            "color":927,
+            "style":1,
+            "weight":50000,
+            "file":"output_VBF_HH_13TeV_VBF_SM_6.root",
+            "xsec" : 0.426,
+            "sfactor" : 1.0
          }
+
    ],
    "background":{  
       "bbH":{  

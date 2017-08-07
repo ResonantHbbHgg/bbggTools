@@ -179,16 +179,21 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 
 	bkg.Draw('hist')
 	bkg.SetTitle("")
-	bkg.SetMinimum(0.001)
+	bkg.SetMinimum(0.01)
 	print bkg.GetNhists()
-	bkg.GetYaxis().SetTitle("Events")
+#	bkg.GetYaxis().SetTitle("Events")
+#	if "GeV" in varName:
+	nbins = bkg.GetXaxis().GetNbins()
+	binslow = bkg.GetXaxis().GetBinLowEdge(1)
+	binsup = bkg.GetXaxis().GetBinUpEdge(nbins)
+	perbin = (float(binsup) - float(binslow))/float(nbins)
+	thisLabel = "Events/("+str(perbin)+")"
+	bkg.GetYaxis().SetTitle(thisLabel)
+
 	if "GeV" in varName:
-		nbins = bkg.GetXaxis().GetNbins()
-		binslow = bkg.GetXaxis().GetBinLowEdge(1)
-		binsup = bkg.GetXaxis().GetBinUpEdge(nbins)
-		perbin = (float(binsup) - float(binslow))/float(nbins)
-		thisLabel = "Events/("+str(perbin)+" GeV)"
-		bkg.GetYaxis().SetTitle(thisLabel)
+		thisLabel = "Events/("+str(perbin)+"GeV)"
+
+	print "Hello World"
 
 	bkg.GetYaxis().SetTitleOffset(1.75)
 
@@ -216,9 +221,9 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	tlatex.SetTextSize(25)
 	tlatex.DrawLatex(0.11, 0.91, "CMS")
 	tlatex.SetTextFont(53)
-	tlatex.DrawLatex(0.18, 0.91, "Preliminary")
-	tlatex.SetTextFont(43)
-	tlatex.SetTextSize(23)
+#	tlatex.DrawLatex(0.18, 0.91, "Preliminary")#
+#	tlatex.SetTextFont(43)
+#	tlatex.SetTextSize(23)
 #	tlatex.DrawLatex(0.65, 0.91,"L = 2.70 fb^{-1} (13 TeV)")
 	Lumi = "" + str(lumi) + " pb^{-1} (13 TeV)"#, "+ year + ")"
 	if lumi > 1000:
@@ -329,7 +334,7 @@ def SaveWithPull(data, bkg, legend, pullH, pullE, fileName, varName, dirName, lu
 	tlatex.SetTextSize(25)
 	tlatex.DrawLatex(0.11, 0.91, "CMS")
 	tlatex.SetTextFont(53)
-	tlatex.DrawLatex(0.18, 0.91, "Preliminary")
+#	tlatex.DrawLatex(0.18, 0.91, "Preliminary")
 	tlatex.SetTextFont(43)
 	tlatex.SetTextSize(23)
 #	tlatex.DrawLatex(0.65, 0.91,"L = 2.70 fb^{-1} (13 TeV)")
@@ -429,7 +434,7 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 
 	legends = []
 #	leg1 = TLegend(0.65, 0.65, 0.71, 0.65+lenPerHist*float(nMaxPerBox))
-	leg1 = TLegend(0.68, 0.85-lenPerHist*float(len(Signals)), 0.74, 0.89)
+	leg1 = TLegend(0.68, 0.85-lenPerHist*0.7*float(len(Signals)), 0.74, 0.89)
 	if (3*nMaxPerBox > len(newList)+2):
 		nMaxPerBox -= 1
 	leg2 = TLegend(0.43, 0.85-lenPerHist*float(nMaxPerBox), 0.49, 0.89)

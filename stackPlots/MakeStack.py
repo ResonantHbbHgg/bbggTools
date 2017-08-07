@@ -40,12 +40,12 @@ cNicePaleYellow = TColor.GetColor('#FFFF66')
 cNiceMidnight = TColor.GetColor('#000080')
 cNiceTangerine = TColor.GetColor('#FF8000')
 
-myCols = [cNiceMidnight, kRed, cNiceGreenDark]
+myCols = [cNiceMidnight, cNiceGreenDark, kRed, kMagenta]
 
 if not os.path.exists(dirName):
         print dirName, "doesn't exist, creating it..."
         os.makedirs(dirName)
-        shutil.copy2(dirPrefix + "index.php", dirName+"/index.php")
+#        shutil.copy2(dirPrefix + "index.php", dirName+"/index.php")
         if os.path.exists(dirName):
                 print dirName, "now exists!"
 
@@ -71,9 +71,12 @@ weightedcut = ""
 weightedcut += "( genTotalWeight )*"
 if (doPUweight):
 	weightedcut += "( puweight )*("+Cut+")"
+	weightedcut_vbf =  weightedcut.replace("puweight", "1>0")
+
 weightedCut = TCut(weightedcut)
 cut_data = TCut(Cut)
 cut_signal = TCut(weightedcut.replace("!((diphotonCandidate.M() > 115 && diphotonCandidate.M() < 135))", "(1>0)"))
+cut_signal_vbf = TCut(weightedcut_vbf.replace("!((diphotonCandidate.M() > 115 && diphotonCandidate.M() < 135))", "(1>0)"))
 
 for plot in plots:
     Histos = []
@@ -150,8 +153,14 @@ for plot in plots:
             Trees[thisTreeLoc] = TChain("bbggSelectionTree")
             Trees[thisTreeLoc].AddFile(signalLocation+thisTreeLoc)
             SetOwnership( Trees[thisTreeLoc], True )
-        Trees[thisTreeLoc].Draw(plot[1]+">>"+thisName, cut_signal)
+	if "VBF" in thisName:
+		Trees[thisTreeLoc].Draw(plot[1]+">>"+thisName, cut_signal_vbf)
+	else:
+		Trees[thisTreeLoc].Draw(plot[1]+">>"+thisName, cut_signal)
+
+	print thisName, " ",  thisHist.Integral()
         thisHist.Scale(signalFactor*lumi*signal["xsec"]*signal["sfactor"]/signal["weight"])
+	print thisName, " ",  thisHist.Integral()
         Histos.append(thisHist)
         thisStack.addSignal(thisHist, signal["legend"], lumi*signal["xsec"]*signal["sfactor"]/signal["weight"])
         del thisHist
@@ -174,6 +183,7 @@ for plot in plots:
     dataHist.SetMarkerColor(1)
     dataHist.SetLineColor(1)
     dataHist.SetLineWidth(2)
+    dataHist.SetBinErrorOption(TH1.kPoisson)
     thisStack.addData(dataHist, "Data")
 #    thisFile = TFile(plot[0]+"_data.root", "RECREATE")
 #    thisFile.cd()
