@@ -32,7 +32,7 @@ lumi = 35900#pb
 MCSF = 1.0
 signalFactor = 1
 #List of datasets to be used (cross section information defined there)
-data_file = open("datasets/datasets80X_ApprovalNoBkg.json")
+data_file = open("datasets/datasets80X_ApprovalNoBkg_Restricted.json")
 
 #number of bins in histograms
 nbin = 30
@@ -54,13 +54,13 @@ dataLocation = loc + '/EGML_Data_Mjj70_NewMVA/Hadd/'
 
 #plots to be made
 plots = []
-plots.append(["dicandidate_Mass", "diHiggsCandidate.M()", "m_{#gamma#gamma jj} [GeV]", 34, 150, 1000])
-plots.append(["MXprime", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250.", "#tilde{M}_{X} (GeV)", 34, 150, 1000])
-plots.append(["diPho_Mass", "diphotonCandidate.M()", "m_{#gamma#gamma} [GeV]", 80, 100, 180])
-plots.append(["diJet_Mass", "dijetCandidate.M()", "m_{jj} [GeV]", 40, 70, 190])
+##plots.append(["dicandidate_Mass", "diHiggsCandidate.M()", "m_{#gamma#gamma jj} [GeV]", 34, 150, 1000])
+plots.append(["MXprime", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCandidate.M() + 250.", "#tilde{M}_{X} [GeV]", 30, 250, 1150])
+plots.append(["diPho_Mass", "diphotonCandidate.M()", "m_{#gamma#gamma} [GeV]", 80, 100, 140])
+plots.append(["diJet_Mass", "dijetCandidate.M()", "m_{jj} [GeV]", 24, 70, 190])
 plots.append(["HHTagger", "HHTagger", "Classification MVA", 54, -1.08, 1.08])
 plots.append(["CosTheta_gg", "fabs(CosTheta_gg)", "| cos #theta_{#gamma#gamma} |", 10, 0, 1])
-plots.append(["CosTheta_bb", "fabs(CosTheta_bb)", "| cos #theta_{bb} |", 10, 0, 1])
+plots.append(["CosTheta_bb", "fabs(CosTheta_bb)", "| cos #theta_{jj} |", 10, 0, 1])
 plots.append(["CosThetaStar_CS", "fabs(CosThetaStar_CS)", "| cos #theta^{CS}_{HH} |", 10, 0, 1])
 
 

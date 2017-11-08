@@ -426,20 +426,17 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 			newLegs.append(h[1])
 
 #	nMaxPerBox = (len(newList)+len(Signals)+2)/3
-	nMaxPerBox = (len(newList)+2)/3
+	nMaxPerBox = (len(newList)+1)/3
 #	if (3*nMaxPerBox < len(newList)+len(Signals)+2):
-	if (3*nMaxPerBox < len(newList)+2):
+	if (3*nMaxPerBox < len(newList)+1):
 		nMaxPerBox += 1
-	lenPerHist = 0.27/float(nMaxPerBox)
+	lenPerHist = 0.04
 
 	legends = []
 #	leg1 = TLegend(0.65, 0.65, 0.71, 0.65+lenPerHist*float(nMaxPerBox))
-	leg1 = TLegend(0.68, 0.85-lenPerHist*0.7*float(len(Signals)), 0.74, 0.89)
-	if (3*nMaxPerBox > len(newList)+2):
-		nMaxPerBox -= 1
-	leg2 = TLegend(0.43, 0.85-lenPerHist*float(nMaxPerBox), 0.49, 0.89)
-
-	leg3 = TLegend(0.13, 0.85-lenPerHist*float(nMaxPerBox), 0.19, 0.89)
+	leg1 = TLegend(0.13, 0.85-lenPerHist*float(len(Signals)), 0.49, 0.87)
+	leg2 = TLegend(0.50, 0.85-lenPerHist*3, 0.68, 0.87)
+	leg3 = TLegend(0.70, 0.85-lenPerHist, 0.85, 0.87)
 	
 	legends.append(leg1)
 	legends.append(leg2)
@@ -455,30 +452,29 @@ def MakeLegend(HistList, DataHist, lumi, Signals, SUM):
 	allLegs = []
 #	allLegs.append([DataHist, "Data (" + str(llumi) + " fb^{-1})"])
 	allLegs.append([DataHist, "Data"])
-	allLegs.append([SUM,  "Stat. Uncert."])
-	allLegs += newList + Signals
+#	allLegs.append([SUM,  "Stat. Uncert."])
+	allLegs += newList
 
-	nMaxPerBox = (len(newList)+len(Signals)+2)/3
-	if (3*nMaxPerBox < len(newList)+len(Signals)+2):
+	nMaxPerBox = (len(newList)+len(Signals)+1)/3
+	if (3*nMaxPerBox < len(newList)+len(Signals)+1):
 		nMaxPerBox += 1
 
-	for i,l in enumerate(allLegs):
-		if i > len(newList)+1: continue
-		Type = 'f'
-		if 'Data' in l[1]:
-			Type = 'lep'
-		if 'Stat' in l[1]:
-			Type = 'f'
-		iLeg = i//nMaxPerBox
-		legends[iLeg].AddEntry(l[0], ' '+l[1], Type)
-
 	for j,l in enumerate(Signals):
+		Type = 'l'
+		if 'Grav.' in l[1] or 'Rad.' in l[1]:
+			legends[len(legends)-3].AddEntry(l[0], ' '+l[1], Type)
+		else:
+			legends[len(legends)-3].AddEntry(l[0], ' '+l[1], Type)
+
+
+	for i,l in enumerate(allLegs):
 		Type = 'f'
 		if 'Data' in l[1]:
 			Type = 'lep'
-		if 'Stat' in l[1]:
-			Type = 'f'
-		legends[len(legends)-1].AddEntry(l[0], ' '+l[1], Type)
+			legends[len(legends)-1].AddEntry(l[0], ' '+l[1], Type)
+		else:
+			legends[len(legends)-2].AddEntry(l[0], ' '+l[1], Type)
+
 
         textFont = 43
         textSize = 25

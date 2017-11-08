@@ -9,7 +9,7 @@ def DrawNoPull(data, bkg, legend, fileName, varName, dirName, lumi, signals, SUM
   frame.GetXaxis().SetTitle(varName)
   myMax = max(data.GetMaximum(), SUM.GetMaximum())
   frame.SetMaximum(myMax*1.7)
-  frame.SetMinimum(0.07)
+  frame.SetMinimum(0.5)
 #  frame.GetYaxis().SetMaxDigits(2)
 
   frame.GetYaxis().SetTitle("Events")
@@ -75,7 +75,10 @@ def DrawNoPull(data, bkg, legend, fileName, varName, dirName, lumi, signals, SUM
   for ll in l1:
     ll.Delete()
 
-  frame.SetMaximum( myMax*100000 )
+  if 'cos' in varName or 'Cos' in varName:
+    frame.SetMaximum( myMax*30 )
+  else :
+    frame.SetMaximum( myMax*60 )
   tc.SetLogy()
   tc.Update()
 

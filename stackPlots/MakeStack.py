@@ -40,7 +40,7 @@ cNicePaleYellow = TColor.GetColor('#FFFF66')
 cNiceMidnight = TColor.GetColor('#000080')
 cNiceTangerine = TColor.GetColor('#FF8000')
 
-myCols = [cNiceMidnight, cNiceGreenDark, kRed, kMagenta]
+myCols = [cNiceMidnight, cNiceGreenDark, kRed, kMagenta+1]
 
 if not os.path.exists(dirName):
         print dirName, "doesn't exist, creating it..."
