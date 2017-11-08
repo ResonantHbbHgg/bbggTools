@@ -5,7 +5,7 @@ from flashgg.bbggTools.MyCMSStyle import *
 
 gROOT.ProcessLine("gErrorIgnoreLevel = 5000;")
 
-legendSize = 0.03
+legendSize = 0.04
 
 markerStyles = [ 24, 25, 26, 27, 28, 30, 32 ]
 markerStylesFull = [ 20, 21, 22, 33, 34, 29, 23 ]
@@ -43,9 +43,10 @@ for n,i in enumerate(xaxis):
         thisIndex = len(steps)+ss
         effs[extraStepsN[ss]].append(thisHisto.Integral()/float(totalEvs))
         axes[extraStepsN[ss]].append(int(i))
+        print st, ' ', i, ' ', thisHisto.Integral()/float(totalEvs)
 
 leg = TLegend(0.13, legymin, 0.87, 0.89)
-leg.SetFillColorAlpha(kWhite, 0.8)
+leg.SetFillColor(kWhite)
 leg.SetHeader(header)
 Header = leg.GetListOfPrimitives().First()
 Header.SetTextSize(.035)
@@ -58,15 +59,16 @@ for n,i in enumerate(steps+extraStepsN):
     if(DEBUG): print effs[i]
     gr = TGraph(len(axes[i]), array('d', axes[i]), array('d', effs[i]))
     gr.SetLineColor(kBlack)
-    gr.SetMarkerColor(kBlack)
+    gr.SetMarkerColor(kWhite)
     gr.SetMarkerStyle(markerStyles[n])
-    gr.SetMarkerSize(2)
+    gr.SetMarkerSize(2.4)
     grs.append(gr)
-    leg.AddEntry(grs[n], stepLegs[i], "lp")
+    leg.AddEntry(grs[n], stepLegs[i], "p")
 
 c0 = TCanvas("c", "c", 800, 750)
+SetPadStyle(c0)
 c0.SetGridy()
-c0.SetGridx()
+#c0.SetGridx()
 for i,gr in enumerate(grs):
     if i == 0:
         gr.Draw("A"+drawOpt)
@@ -98,7 +100,7 @@ for n,i in enumerate(steps+extraStepsN):
     gr.SetMarkerColorAlpha(TColor.GetColor(colors[n]),0.8)
 #    gr.SetMarkerColor(n+1)
     gr.SetMarkerStyle(markerStylesFull[n])
-    gr.SetMarkerSize(2)
+    gr.SetMarkerSize(2.5)
     grs2.append(gr)
     leg2.AddEntry(grs2[n], stepLegs[i], "p")
 
