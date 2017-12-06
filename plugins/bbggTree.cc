@@ -123,6 +123,7 @@ private:
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
     LorentzVector leadingJet_VBF, subleadingJet_VBF, DijetVBF;
+    LorentzVector p4MET;
     float dEta_VBF, Mjj_VBF;
     LorentzVector leadingJet_KF, subleadingJet_KF, dijetCandidate_KF;
     LorentzVector leadingJet_Reg, subleadingJet_Reg, dijetCandidate_Reg;
@@ -141,6 +142,7 @@ private:
     float HHTagger, HHTagger_LM, HHTagger_HM;
     float ResHHTagger, ResHHTagger_LM, ResHHTagger_HM;
     float MX;
+    float njets;
 
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -614,6 +616,8 @@ void
     dEta_VBF = -999; 
     Mjj_VBF = 0;
 
+    njets = 0;
+
     diphotonCandidate.SetPxPyPzE(0,0,0,0);// = diphoCand->p4();
     leadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
     subleadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->subLeadingPhoton()->p4();
@@ -629,6 +633,8 @@ void
     leadingJet_cMVA = 0;
     subleadingJet_CSVv2 = 0;
     subleadingJet_cMVA = 0;
+
+    p4MET.SetPxPyPzE(0,0,0,0);// MET p4
 
     leadingJet_VBF.SetPxPyPzE(0,0,0,0);// = LeadingJet->p4();
     subleadingJet_VBF.SetPxPyPzE(0,0,0,0);// = LeadingJet->p4();
@@ -872,8 +878,15 @@ void
     }
 
     std::vector<flashgg::Jet> collectionForVBF;
-    for( unsigned int jetIndex = 0; jetIndex < testCollection.size(); jetIndex++ )
+    std::vector<flashgg::Jet> collectionForCounting;
+    for( unsigned int jetIndex = 0; jetIndex < testCollection.size(); jetIndex++ ){
       collectionForVBF.push_back(testCollection[jetIndex]);
+      collectionForCounting.push_back(testCollection[jetIndex]);
+    }
+
+    collectionForCounting = tools_.JetPreSelection(collectionForCounting, diphoCandidate);
+    njets = collectionForCounting.size();
+
 
     //Regression bzns
     if(doJetRegression!=0) {
@@ -885,8 +898,10 @@ void
         Ptr<flashgg::Met> theMET = METs->ptrAt( 0 );
 //        Ptr<pat::MET> theMET = METs->ptrAt( 0 );
 
+	p4MET = theMET->p4();
         if(DEBUG) std::cout << "DOING REGRESSION! JetCol before: " << testCollection.size() << std::endl;
-        jetReg_.RegressedJets(myDiJetCandidates, nPVs, theMET->p4() );
+        jetReg_.RegressedJets(myDiJetCandidates, nPVs, p4MET );
+
         if(DEBUG) std::cout << "DOING REGRESSION! JetCol after: " << testCollection.size() << std::endl;
     }
 
@@ -1222,7 +1237,8 @@ bbggTree::beginJob()
     tree->Branch("ResHHTagger_LM", &ResHHTagger_LM, "ResHHTagger_LM/F"); 
     tree->Branch("ResHHTagger_HM", &ResHHTagger_HM, "ResHHTagger_HM/F"); 
     tree->Branch("MX", &MX, "MX/F"); 
-
+    tree->Branch("MET", &p4MET);
+    tree->Branch("njets", &njets, "njets/I");
 
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);
