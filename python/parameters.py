@@ -105,4 +105,10 @@ _NonResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/
 _ResMVAWeights_LowMass 		=	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_LM500Res_GradBoost_Mjj70.xml")
 _ResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_HM500Res_GradBoost_Mjj70.xml")
 _NonResMVAVars 			=	cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','diphotonCandidate.Pt()/dijetCandidate.Pt()','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')
+_addNonResMVA2017               =       cms.untracked.uint32(1)
 
+_NonResMVA2017Weights   	=	cms.untracked.FileInPath("flashgg/bbggTools/data/MVA2017/allMC_resWeighting_F_noDR_minDRGJet_edited.weights.xml");
+_NonResMVA2017Vars              =       cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','diphotonCandidate.Pt()/(diHiggsCandidate.M())','dijetCandidate.Pt()/(diHiggsCandidate.M())','customLeadingPhotonIDMVA','customSubLeadingPhotonIDMVA','leadingPhotonSigOverE','subleadingPhotonSigOverE','sigmaMOverMDecorr','PhoJetMinDr')
+
+_doSigmaMdecorr =cms.untracked.uint32(1)
+_sigmaMdecorrFile = cms.untracked.FileInPath("flashgg/Taggers/data/diphoMVA_sigmaMoMdecorr_split_Mgg40_180.root")
