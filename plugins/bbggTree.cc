@@ -1359,7 +1359,7 @@ bbggTree::beginJob()
     tree->Branch("subleadingPhotonISO", &subleadingPhotonISO);
     tree->Branch("subleadingPhotonEVeto", &subleadingPhotonEVeto, "subleadingPhotonEVeto/I");
     tree->Branch("subleadingPhotonIDMVA", &subleadingPhotonIDMVA, "subleadingPhotonIDMVA/F");
-    tree->Branch("customSubLeadingPhotonMVA", &customSubLeadingPhotonMVA, "customSubLeadingPhotonMVA/F");
+    tree->Branch("customSubLeadingPhotonIDMVA", &customSubLeadingPhotonMVA, "customSubLeadingPhotonIDMVA/F");
     tree->Branch("subleadingPhotonR9full5x5", &subleadingPhotonR9full5x5, "subleadingPhotonR9full5x5/F");
     tree->Branch("subLeadingPhotonHasGain1", &subLeadingPhotonHasGain1, "subLeadingPhotonHasGain1/I");
     tree->Branch("subLeadingPhotonHasGain6", &subLeadingPhotonHasGain6, "subLeadingPhotonHasGain6/I");
