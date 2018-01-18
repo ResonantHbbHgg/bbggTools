@@ -13,11 +13,16 @@ _myTriggers	=	cms.untracked.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_
 #_DiPhotonTag	=	cms.untracked.InputTag('flashggDiPhotons')
 _DiPhotonTag	=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag		=	cms.untracked.InputTag('flashggJets')
-_metTag		=	cms.InputTag('flashggMets')
+_METTag		=	cms.InputTag('flashggMets')
+_ElectronTag    =       cms.InputTag('flashggSelectedElectrons')
+_MuonTag        =       cms.InputTag('flashggSelectedMuons')
 #_inputTagJets	=	flashggTags.UnpackedJetCollectionVInputTag,
 #_inputTagJets	= 	flashggTags.UnpackedJetCollectionVInputTag
 #_inputTagJets 	= 	flashggTags.UnpackedJetCollectionVInputTag
 _GenTag		=	cms.untracked.InputTag('flashggGenPhotons')
+_VertexTag      =       cms.InputTag('offlineSlimmedPrimaryVertices')
+_rhoTag         =       cms.InputTag('fixedGridRhoFastjetAll')
+
 
 _rhoFixedGridCollection		=	cms.InputTag('fixedGridRhoAll')
 
@@ -90,7 +95,7 @@ _phCorrEE	=	cms.untracked.vdouble(0.0034, 0.)
 _jetSmear		=	cms.untracked.int32(1)
 _randomLabel		=	cms.untracked.string("rnd_g_JER")
 _jetScale		=	cms.untracked.int32(1)
-##Photon corrections
+##Photon corrections/
 _doPhotonScale		=	cms.untracked.int32(1) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonSmearing	=	cms.untracked.int32(1) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
@@ -106,3 +111,15 @@ _ResMVAWeights_LowMass 		=	cms.untracked.FileInPath("flashgg/bbggTools/data/NonR
 _ResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_HM500Res_GradBoost_Mjj70.xml")
 _NonResMVAVars 			=	cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','diphotonCandidate.Pt()/dijetCandidate.Pt()','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')
 
+##Muons selection
+_muPtThreshold              =       cms.double(20)
+_muEtaThreshold               =       cms.double(2.4)
+_muPFIsoSumRelThreshold         =       cms.double(0.25)
+
+_dRPhoLeptonThreshold      =   cms.double(0.3)
+_dRJetLeptonThreshold      =   cms.double(0.5)
+
+_elecPtThreshold             =       cms.double(20)
+_elecEtaThresholds            =       cms.vdouble(1.4442,1.566,2.5)
+_useElecMVARecipe            =   cms.bool(False)
+_useElecLooseId              =   cms.bool(True)

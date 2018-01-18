@@ -56,7 +56,9 @@ Implementation:
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 #include "flashgg/DataFormats/interface/Met.h"
-
+#include "flashgg/DataFormats/interface/Electron.h"
+#include "flashgg/DataFormats/interface/Muon.h"
+#include "flashgg/Taggers/interface/LeptonSelection.h"
 
 //Local
 #include "flashgg/bbggTools/interface/bbggTools.h"
@@ -114,7 +116,14 @@ private:
     edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
 //    edm::EDGetTokenT<edm::View<pat::MET> > METToken_;
+
+    edm::EDGetTokenT<edm::View<reco::Vertex> > vertexToken_;
     edm::EDGetTokenT<edm::View<flashgg::Met> > METToken_;
+    edm::EDGetTokenT<double> rhoToken_;
+    edm::EDGetTokenT<edm::View<flashgg::Electron> > electronToken_;
+    edm::EDGetTokenT<edm::View<flashgg::Muon> > muonToken_;
+
+
 
     //Efficiency histogram
     TH1F* h_Efficiencies = new TH1F("h_Efficiencies", "Efficiencies;Cut Level;Number of events", 10, 0, 10);
@@ -123,6 +132,7 @@ private:
     LorentzVector leadingPhoton, subleadingPhoton, diphotonCandidate;
     LorentzVector leadingJet, subleadingJet, dijetCandidate;
     LorentzVector leadingJet_VBF, subleadingJet_VBF, DijetVBF;
+    LorentzVector leadingMuon, subleadingMuon, leadingElectron, subleadingElectron; 
     LorentzVector p4MET;
     float dEta_VBF, Mjj_VBF;
     LorentzVector leadingJet_KF, subleadingJet_KF, dijetCandidate_KF;
@@ -142,8 +152,7 @@ private:
     float HHTagger, HHTagger_LM, HHTagger_HM;
     float ResHHTagger, ResHHTagger_LM, ResHHTagger_HM;
     float MX;
-    float njets;
-
+    
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
     int leadingPhotonEVeto, subleadingPhotonEVeto;
@@ -197,6 +206,17 @@ private:
     edm::FileInPath ResMVAWeights_LowMass, ResMVAWeights_HighMass;
     std::vector<std::string> NonResMVAVars;
 
+    double muPtThreshold, muEtaThreshold, muPFIsoSumRelThreshold;// deltaRMuonPhoThreshold;
+    double dRPhoLeptonThreshold, dRJetLeptonThreshold;
+
+    double elecPtThreshold;
+    bool useElecMVARecipe, useElecLooseId;
+    std::vector<double> elecEtaThresholds;
+
+    int njets, nelecs, nmus;
+    vector<float> Xtt;
+    float Xtt0, Xtt1, MjjW0, MjjW1, Mjjbt0, Mjjbt1;
+
     int jetSmear;
     int jetScale;
     std::string randomLabel;
@@ -228,6 +248,8 @@ genToken_( consumes<edm::View<pat::PackedGenParticle> >( iConfig.getUntrackedPar
 genToken2_( consumes<edm::View<reco::GenParticle> >( iConfig.getUntrackedParameter<edm::InputTag>( "GenTag2", edm::InputTag( "flashggPrunedGenParticles" ) ) ) ),
 inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) )
 {
+  iConfig.dump();
+
     //now do what ever initialization is needed
     tools_ = bbggTools();
     jetReg_ = bbggJetRegression();
@@ -386,6 +408,20 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     cand_mass = iConfig.getUntrackedParameter<std::vector<double > >("CandidateMassWindow", def_cand_mass);
     dr_cands  = iConfig.getUntrackedParameter<std::vector<double > >("CandidatesDeltaR", def_dr_cands);
 
+    //leptons selection
+    muPtThreshold = iConfig.getParameter<double>("muPtThreshold");
+    muEtaThreshold = iConfig.getParameter<double>("muEtaThreshold");
+    muPFIsoSumRelThreshold = iConfig.getParameter<double>("muPFIsoSumRelThreshold");
+
+    dRPhoLeptonThreshold = iConfig.getParameter<double>("dRPhoLeptonThreshold");
+    dRJetLeptonThreshold = iConfig.getParameter<double>("dRJetLeptonThreshold");
+
+    elecPtThreshold  = iConfig.getParameter<double>("elecPtThreshold");
+    useElecMVARecipe = iConfig.getParameter<bool>("useElecMVARecipe"); 
+    useElecLooseId = iConfig.getParameter<bool>("useElecLooseId");
+    elecEtaThresholds = iConfig.getParameter<std::vector<double > >("elecEtaThresholds");
+    // Xtt0                MW0                 Mt0                Xtt1                 MW1               Mt1
+    Xtt.push_back(1000); Xtt.push_back(0); Xtt.push_back(0); Xtt.push_back(1000); Xtt.push_back(0); Xtt.push_back(0); 
 
     fileName = iConfig.getUntrackedParameter<std::string>( "OutFileName", def_fileName );
 
@@ -406,8 +442,18 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
 //    METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
-    METToken_ = consumes<edm::View<flashgg::Met> >( iConfig.getParameter<edm::InputTag> ( "metTag" ) );
+
+    rhoToken_ = consumes<double>( iConfig.getParameter<edm::InputTag>( "rhoTag" ) );
+    vertexToken_ = consumes<edm::View<reco::Vertex> >( iConfig.getParameter<edm::InputTag> ( "VertexTag" ) );
+    METToken_ = consumes<edm::View<flashgg::Met> >( iConfig.getParameter<edm::InputTag> ( "METTag" ) );
+    electronToken_ = consumes<edm::View<flashgg::Electron> >( iConfig.getParameter<edm::InputTag> ( "ElectronTag" ) );
+    muonToken_ = consumes<edm::View<flashgg::Muon> >( iConfig.getParameter<edm::InputTag>( "MuonTag" ) );
+
+
     randomLabel = iConfig.getUntrackedParameter<std::string>("randomLabel", def_randomLabel);
+
+
+
 
     resFile = iConfig.getUntrackedParameter<edm::FileInPath>("resFile", def_resFile);
     sfFile = iConfig.getUntrackedParameter<edm::FileInPath>("sfFile", def_sfFile);
@@ -617,6 +663,9 @@ void
     Mjj_VBF = 0;
 
     njets = 0;
+
+    leadingMuon.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
+    leadingElectron.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
 
     diphotonCandidate.SetPxPyPzE(0,0,0,0);// = diphoCand->p4();
     leadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
@@ -884,9 +933,9 @@ void
       collectionForCounting.push_back(testCollection[jetIndex]);
     }
 
-    collectionForCounting = tools_.JetPreSelection(collectionForCounting, diphoCandidate);
-    njets = collectionForCounting.size();
 
+    Handle<View<reco::Vertex> > vertices;
+    iEvent.getByToken( vertexToken_, vertices );
 
     //Regression bzns
     if(doJetRegression!=0) {
@@ -926,12 +975,7 @@ void
         SubLeadingJet = SelJets[1];
     }
 
-    collectionForVBF = tools_.JetVBFPreSelection(collectionForVBF, diphoCandidate, SelJets);
 
-    if (collectionForVBF.size() > 1) 
-      SelVBFJets = tools_.DiJetVBFSelection(collectionForVBF, SelJets);
-
- 
     /////////////////////////////////////////////////////
     /// DOING SELECTION HERE NOW ////////////////////////
     /////////////////////////////////////////////////////
@@ -998,7 +1042,14 @@ void
 
     MX = diHiggsCandidate.M() - diphotonCandidate.M() - dijetCandidate.M() + 250;
 
-    // VBF definition
+    // ================================ VBF definition ======================
+
+    collectionForVBF = tools_.JetVBFPreSelection(collectionForVBF, diphoCandidate, SelJets);
+
+    if (collectionForVBF.size() > 1) 
+      SelVBFJets = tools_.DiJetVBFSelection(collectionForVBF, SelJets);
+
+
     if (SelVBFJets.size() > 1){
       leadingJet_VBF = SelVBFJets[0].p4();
       subleadingJet_VBF = SelVBFJets[1].p4();
@@ -1014,6 +1065,10 @@ void
 
     PhoJetMinDr = min( min( tools_.DeltaR( leadingPhoton, leadingJet ), tools_.DeltaR( leadingPhoton, subleadingJet ) ),
                        min( tools_.DeltaR( subleadingPhoton, leadingJet ), tools_.DeltaR( subleadingPhoton, subleadingJet ) ) );
+
+
+
+
 
     //Kinematic fit:
     if(DEBUG) std::cout << "[bbggTree::analyze] Doing kinematic fit!" << std::endl;
@@ -1146,6 +1201,59 @@ void
     leadingPhotonEVeto = diphoCand.leadingPhoton()->passElectronVeto();
     subleadingPhotonEVeto = diphoCand.subLeadingPhoton()->passElectronVeto();
 
+
+
+    // ======================= LEPTONS =====================
+
+    edm::Handle<double>  rho;
+    iEvent.getByToken(rhoToken_,rho);
+
+
+    //    Handle<View<flashgg::Met> > METs;
+    Handle<View<flashgg::Electron> > theElectrons;
+    iEvent.getByToken( electronToken_, theElectrons );
+ 
+    std::vector<edm::Ptr<flashgg::Electron> > selectedElectrons = selectStdAllElectrons( theElectrons->ptrs(), vertices->ptrs(), elecPtThreshold, elecEtaThresholds, useElecMVARecipe, useElecLooseId, *rho, iEvent.isRealData() );
+
+    std::vector<edm::Ptr<flashgg::Electron> > tagElectrons = tools_.filterElectrons( selectedElectrons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
+
+    if (tagElectrons.size() > 0) leadingElectron = tagElectrons.at( 0 )->p4();
+    if (tagElectrons.size() > 1) subleadingElectron = tagElectrons.at( 1 )->p4();
+    nelecs = tagElectrons.size();
+
+
+    Handle<View<flashgg::Muon> > theMuons;
+    iEvent.getByToken( muonToken_, theMuons );
+    //diphoCandidate
+    std::vector<edm::Ptr<flashgg::Muon> > selectedMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muEtaThreshold, muPtThreshold, muPFIsoSumRelThreshold);
+    std::vector<edm::Ptr<flashgg::Muon> > tagMuons = tools_.filterMuons( selectedMuons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
+
+    if (tagMuons.size() > 0) leadingMuon = tagMuons.at( 0 )->p4();
+    if (tagMuons.size() > 1) subleadingMuon = tagMuons.at( 1 )->p4();
+    nmus = tagMuons.size();
+
+
+
+
+    // ============== ttH hadronic filtering==============
+   
+    collectionForCounting = tools_.JetPreSelection(collectionForCounting, diphoCandidate);
+    njets = collectionForCounting.size();
+
+
+    if (collectionForCounting.size() > 2 && SelJets.size() > 1){
+      Xtt = tools_.XttCalculation(collectionForCounting, SelJets);
+    }
+    else {
+      Xtt[0] = 1000, Xtt[1] = 0, Xtt[2] = 0, Xtt[3] = 1000, Xtt[4] = 0, Xtt[5] = 0;
+    }
+
+    Xtt0 = Xtt[0], Xtt1 = Xtt[3]; MjjW0 = Xtt[1],  MjjW1 = Xtt[4]; Mjjbt0 = Xtt[2],  Mjjbt1 = Xtt[5];
+
+
+
+
+
     if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
     tree->Fill();
 
@@ -1239,9 +1347,27 @@ bbggTree::beginJob()
     tree->Branch("MX", &MX, "MX/F"); 
     tree->Branch("MET", &p4MET);
     tree->Branch("njets", &njets, "njets/I");
+    tree->Branch("Xtt0", &Xtt0, "Xtt0/F");
+    tree->Branch("Xtt1", &Xtt1, "Xtt1/F");
+    tree->Branch("MjjW0", &MjjW0, "MjjW0/F");
+    tree->Branch("MjjW1", &MjjW1, "MjjW1/F");
+    tree->Branch("Mjjbt0", &Mjjbt0, "Mjjbt0/F");
+    tree->Branch("Mjjbt1", &Mjjbt1, "Mjjbt1/F");
+
+    //    std::cout << "branch set Xtt" << std::endl;
+
+    tree->Branch("leadingMuon", &leadingMuon);
+    tree->Branch("subleadingMuon", &subleadingMuon);
+    tree->Branch("nmus", &nmus, "nmus/I");
+
+    tree->Branch("leadingElectron", &leadingElectron);
+    tree->Branch("subleadingElectron", &subleadingElectron);
+    tree->Branch("nelecs", &nelecs, "nelecs/I");
 
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);
+
+    std::cout << "done" << std::endl;
 
     if(DEBUG) std::cout << "[bbggTree::beginJob] Output tree set!" << std::endl;
 
