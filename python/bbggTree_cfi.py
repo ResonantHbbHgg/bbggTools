@@ -72,8 +72,8 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	jetSmear=param._jetSmear,
 	randomLabel=param._randomLabel,
 	jetScale=param._jetScale,
-        doPhotonScale=param._doPhotonScale,
-        doPhotonExtraScale=param._doPhotonExtraScale,
+  doPhotonScale=param._doPhotonScale,
+  doPhotonExtraScale=param._doPhotonExtraScale,
         doPhotonSmearing=param._doPhotonSmearing,
         PhotonCorrectionFile=param._PhotonCorrectionFile,
         doCustomPhotonMVA=param._doCustomPhotonMVA,
@@ -83,6 +83,27 @@ bbggtree = cms.EDAnalyzer('bbggTree',
         ResMVAWeights_LowMass=param._ResMVAWeights_LowMass,
         ResMVAWeights_HighMass=param._ResMVAWeights_HighMass,
         NonResMVAVars=param._NonResMVAVars,
+#ttH
+       
+        VertexTag=param._VertexTag,
+        rhoTag = param._rhoTag,
+
+
+        ElectronTag=param._ElectronTag,
+        MuonTag=param._MuonTag,
+
+
+        muPtThreshold = param._muPtThreshold,
+        muEtaThreshold = param._muEtaThreshold,
+        muPFIsoSumRelThreshold = param._muPFIsoSumRelThreshold,
+
+        dRPhoLeptonThreshold = param._dRPhoLeptonThreshold, 
+        dRJetLeptonThreshold = param._dRJetLeptonThreshold,
+
+        elecPtThreshold = param._elecPtThreshold,
+        elecEtaThresholds = param._elecEtaThresholds,
+        useElecMVARecipe = param._useElecMVARecipe,
+        useElecLooseId = param._useElecLooseId
         addNonResMVA2017=param._addNonResMVA2017,
         NonResMVA2017Weights=param._NonResMVA2017Weights,                   
         NonResMVA2017Vars=param._NonResMVA2017Vars,
