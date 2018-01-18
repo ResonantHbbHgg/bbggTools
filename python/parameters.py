@@ -13,7 +13,7 @@ _myTriggers	=	cms.untracked.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_
 #_DiPhotonTag	=	cms.untracked.InputTag('flashggDiPhotons')
 _DiPhotonTag	=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
 _JetTag		=	cms.untracked.InputTag('flashggJets')
-_METTag		=	cms.InputTag('flashggMets')
+_metTag		=	cms.InputTag('flashggMets')
 _ElectronTag    =       cms.InputTag('flashggSelectedElectrons')
 _MuonTag        =       cms.InputTag('flashggSelectedMuons')
 #_inputTagJets	=	flashggTags.UnpackedJetCollectionVInputTag,
@@ -110,7 +110,9 @@ _NonResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/
 _ResMVAWeights_LowMass 		=	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_LM500Res_GradBoost_Mjj70.xml")
 _ResMVAWeights_HighMass 	= 	cms.untracked.FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_BDT_HM500Res_GradBoost_Mjj70.xml")
 _NonResMVAVars 			=	cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','diphotonCandidate.Pt()/(diHiggsCandidate.M())','diphotonCandidate.Pt()/dijetCandidate.Pt()','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','dijetCandidate.Pt()/(diHiggsCandidate.M())')
+_addNonResMVA2017               =       cms.untracked.uint32(1)
 
+#ttH
 ##Muons selection
 _muPtThreshold              =       cms.double(20)
 _muEtaThreshold               =       cms.double(2.4)
@@ -123,3 +125,10 @@ _elecPtThreshold             =       cms.double(20)
 _elecEtaThresholds            =       cms.vdouble(1.4442,1.566,2.5)
 _useElecMVARecipe            =   cms.bool(False)
 _useElecLooseId              =   cms.bool(True)
+
+_NonResMVA2017Weights   	=	cms.untracked.FileInPath("flashgg/bbggTools/data/MVA2017/allMC_resWeighting_F_noDR_minDRGJet_edited.weights.xml");
+_NonResMVA2017Vars              =       cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','diphotonCandidate.Pt()/(diHiggsCandidate.M())','dijetCandidate.Pt()/(diHiggsCandidate.M())','customLeadingPhotonIDMVA','customSubLeadingPhotonIDMVA','leadingPhotonSigOverE','subleadingPhotonSigOverE','sigmaMOverMDecorr','PhoJetMinDr')
+
+_doSigmaMdecorr =cms.untracked.uint32(1)
+_sigmaMdecorrFile = cms.untracked.FileInPath("flashgg/Taggers/data/diphoMVA_sigmaMoMdecorr_split_Mgg40_180.root")
+
