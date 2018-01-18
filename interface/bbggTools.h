@@ -10,6 +10,9 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "flashgg/DataFormats/interface/Electron.h"
+#include "flashgg/DataFormats/interface/Muon.h"
+
 // system include files
 #include <memory>
 #include <vector>
@@ -33,12 +36,15 @@ public:
     typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
     //Photon selection
+    int indexSel_;
     std::vector<flashgg::DiPhotonCandidate> DiPhotonKinematicSelection(vector<flashgg::DiPhotonCandidate> diphoCol, bool DoMassCut = 0);
     std::vector<flashgg::DiPhotonCandidate> DiPhotonIDSelection( std::vector<flashgg::DiPhotonCandidate> diphoCol);
     std::vector<flashgg::DiPhotonCandidate> GetDiPhotonsInCategory( std::vector<std::pair<flashgg::DiPhotonCandidate, int > > SelectedDiPhotons, int category );
     std::vector<std::pair<flashgg::DiPhotonCandidate, int > > EvaluatePhotonIDs( std::vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID = 0);
     bool passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
     bool passHggPreselection(const flashgg::DiPhotonCandidate * dipho);
+    bool passPreselectionTnP2016(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
+    std::vector<flashgg::DiPhotonCandidate> DiPhotonPreselectionTnP2016(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults);
     std::vector<flashgg::DiPhotonCandidate> DiPhoton76XPreselection(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults);
     std::vector<flashgg::DiPhotonCandidate> DiPhotonPreselection( vector<flashgg::DiPhotonCandidate> diphoCol );
     flashgg::DiPhotonCandidate MVAIDDiPhotonSelection( vector<flashgg::DiPhotonCandidate> DiPhotons);
@@ -46,17 +52,34 @@ public:
     
     //Jet selection
     bool SingleJetPreSelection(flashgg::Jet jet, flashgg::DiPhotonCandidate dipho);
+    bool isExtraJet(const flashgg::Jet *jet,  std::vector<flashgg::Jet> DiJet);
+
     std::vector<flashgg::Jet> DiJetSelection(std::vector<flashgg::Jet> Jets, bool DoMassCut = 0);
     std::vector<flashgg::Jet> DiJetSelection(std::vector<std::pair<flashgg::Jet,flashgg::Jet>> Jets, bool DoMassCut = 0);
     std::vector<flashgg::Jet> JetPreSelection(std::vector<flashgg::Jet>, flashgg::DiPhotonCandidate dCand);
     std::vector<std::pair<flashgg::Jet, flashgg::Jet>> JetPreSelection(std::vector<std::pair<flashgg::Jet, flashgg::Jet>>, flashgg::DiPhotonCandidate dCand);
     std::vector<flashgg::Jet> JetVBFPreSelection(std::vector<flashgg::Jet>, flashgg::DiPhotonCandidate dCand, std::vector<flashgg::Jet> DiJet);
 
+
+
     //VBF selection
     std::vector<flashgg::Jet> DiJetVBFSelection(std::vector<flashgg::Jet> Jets, std::vector<flashgg::Jet> DiJet);
 
     //Trigger
     std::map<std::string,int> TriggerSelection(std::vector<std::string> myTriggers, const edm::TriggerNames &names, edm::Handle<edm::TriggerResults> triggerBits);
+
+    // Leptons selection
+    std::vector<edm::Ptr<flashgg::Muon> > filterMuons( const std::vector<edm::Ptr<flashgg::Muon> > &muonPointers, flashgg::DiPhotonCandidate dipho, 
+						       LorentzVector leadingJet, LorentzVector subleadingJet,
+						       double dRPhoMuonThreshold, double dRJetMuonThreshold);
+
+    std::vector<edm::Ptr<flashgg::Electron> > filterElectrons( const std::vector<edm::Ptr<flashgg::Electron> > &electronPointers, 
+							       flashgg::DiPhotonCandidate dipho, 
+							       LorentzVector leadingJet, LorentzVector subleadingJet,
+							       double dRPhoLeptonThreshold, double dRJetLeptonThreshold);
+
+    std::vector<float> XttCalculation(std::vector<flashgg::Jet> jetsCol, std::vector<flashgg::Jet> DiJet);
+
 
     //Angular Functions
     float getCosThetaStar_CS(TLorentzVector h1, TLorentzVector h2, float ebeam = 6500);

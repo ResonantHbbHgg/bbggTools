@@ -19,6 +19,7 @@ def SetGeneralStyle():
 
 def SetPadStyle(obj):
   obj.SetTicky()
+  obj.SetTickx()
 
 def DrawCMSLabels(obj, lumi, simul=0, left_border=0, size=0.045):
 #  obj.Print()
@@ -31,11 +32,11 @@ def DrawCMSLabels(obj, lumi, simul=0, left_border=0, size=0.045):
   lat.SetTextSize(size)
   lat.SetTextAlign(11)
   lat.SetTextFont(42)
-  cmsTag = "#bf{CMS} #it{Preliminary}"
-  if simul: cmsTag = "#bf{CMS} #it{Preliminary Simulation}"
-  d1 = lat.DrawLatexNDC(l+0.01+left_border, 1-t+0.01, cmsTag)
+  cmsTag = "#bf{CMS}"# #it{Preliminary}"
+  if simul: cmsTag = "#bf{CMS} #it{Simulation}"
+  d1 = lat.DrawLatexNDC(l+0.01+left_border, 1-t+0.015, cmsTag)
   lat.SetTextAlign(31)
   lumiTag = lumi+' fb^{-1} (13 TeV)'
   if lumi == '': lumiTag = '(13 TeV)'
-  d2 = lat.DrawLatexNDC(1-r-0.001, 1-t+0.01, lumiTag)
+  d2 = lat.DrawLatexNDC(1-r-0.001, 1-t+0.015, lumiTag)
   return [d1,d2]
