@@ -122,6 +122,56 @@ bool bbggTools::passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho,
 }
 
 
+std::vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonPreselectionTnP2016(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults)
+{
+  std::vector<flashgg::DiPhotonCandidate> selDiPhos;
+
+  for ( unsigned int dp = 0; dp < diphoCol.size(); dp++)
+    {
+      flashgg::DiPhotonCandidate dipho = diphoCol[dp];
+
+      if (passPreselectionTnP2016(&dipho, myTriggersResults)){
+	selDiPhos.push_back(dipho);
+	continue;
+      }
+
+    }
+
+  return selDiPhos;
+}
+
+
+bool bbggTools::passPreselectionTnP2016(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults){
+
+  bool isPreselected = false;
+
+  if ( myTriggersResults["HLT_Ele27_WPTight_Gsf_v"] != 1 )
+    return false;
+
+
+  if ( ( dipho->leadingPhoton()->full5x5_r9() > 0.8
+	 || dipho->leadingPhoton()->egChargedHadronIso() < 20
+	 || dipho->leadingPhoton()->egChargedHadronIso()/dipho->leadingPhoton()->pt() < 0.3 )
+         &&
+       ( dipho->subLeadingPhoton()->full5x5_r9() > 0.8
+	 || dipho->subLeadingPhoton()->egChargedHadronIso() < 20
+	 || dipho->subLeadingPhoton()->egChargedHadronIso()/dipho->subLeadingPhoton()->pt() < 0.3)
+       && ( dipho->leadingPhoton()->hadronicOverEm() < 0.08 && dipho->subLeadingPhoton()->hadronicOverEm() < 0.08 )
+       && ( dipho->leadingPhoton()->pt() > 30 && dipho->subLeadingPhoton()->pt() > 20)
+       && ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 2.5 && fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 2.5 )
+       && ( fabs(dipho->leadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->leadingPhoton()->superCluster()->eta()) > 1.566 )
+       && ( fabs(dipho->subLeadingPhoton()->superCluster()->eta()) < 1.4442 ||  fabs(dipho->subLeadingPhoton()->superCluster()->eta()) > 1.566 )
+       ) {
+    isPreselected = true;
+  }
+
+  if (isPreselected) return true;
+  else return false;
+
+
+}
+
+
 std::vector<flashgg::DiPhotonCandidate> bbggTools::DiPhoton76XPreselection(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults)
 {
     std::vector<flashgg::DiPhotonCandidate> selDiPhos;
@@ -708,6 +758,7 @@ vector<flashgg::DiPhotonCandidate> bbggTools::GetDiPhotonsInCategory( vector<pai
 
 vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID)
 {
+  indexSel_=-1;
    vector<pair<flashgg::DiPhotonCandidate, int > > PreselDiPhotons;
     //Begin DiPhoton Loop/Selection -----------------------------------------------------------
    for( unsigned int diphoIndex = 0; diphoIndex < diphoCol.size(); diphoIndex++ )
@@ -783,6 +834,9 @@ vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( ve
          //Category = 2: 2 id'ed photons (signal region)
          int Category = pho_ids[0] + pho_ids[1];
          PreselDiPhotons.push_back(make_pair(dipho, Category));
+	 if (Category == 2){
+	   indexSel_=diphoIndex;
+	 }
      }
      return PreselDiPhotons;
 }

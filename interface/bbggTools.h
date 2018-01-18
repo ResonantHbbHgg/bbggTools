@@ -33,12 +33,15 @@ public:
     typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
     //Photon selection
+    int indexSel_;
     std::vector<flashgg::DiPhotonCandidate> DiPhotonKinematicSelection(vector<flashgg::DiPhotonCandidate> diphoCol, bool DoMassCut = 0);
     std::vector<flashgg::DiPhotonCandidate> DiPhotonIDSelection( std::vector<flashgg::DiPhotonCandidate> diphoCol);
     std::vector<flashgg::DiPhotonCandidate> GetDiPhotonsInCategory( std::vector<std::pair<flashgg::DiPhotonCandidate, int > > SelectedDiPhotons, int category );
     std::vector<std::pair<flashgg::DiPhotonCandidate, int > > EvaluatePhotonIDs( std::vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID = 0);
     bool passHgg76XPreselection(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
     bool passHggPreselection(const flashgg::DiPhotonCandidate * dipho);
+    bool passPreselectionTnP2016(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults);
+    std::vector<flashgg::DiPhotonCandidate> DiPhotonPreselectionTnP2016(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults);
     std::vector<flashgg::DiPhotonCandidate> DiPhoton76XPreselection(vector<flashgg::DiPhotonCandidate> diphoCol, std::map<std::string, int> myTriggersResults);
     std::vector<flashgg::DiPhotonCandidate> DiPhotonPreselection( vector<flashgg::DiPhotonCandidate> diphoCol );
     flashgg::DiPhotonCandidate MVAIDDiPhotonSelection( vector<flashgg::DiPhotonCandidate> DiPhotons);

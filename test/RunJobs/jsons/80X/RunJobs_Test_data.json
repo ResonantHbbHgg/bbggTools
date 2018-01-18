@@ -1,0 +1,8 @@
+{
+    "processes": {
+	"Data"   : [
+	"/DoubleEG/sethzenz-ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016B-03Feb2017_ver2-v2-a56cd34be537fa6f2c9a0e455e52bfcd/USER"
+	]	
+     },
+     "cmdLine" : "campaign=ReMiniAOD-03Feb2017-2_5_Y targetLumi=35.87e+3 doSelection=1 processId=Data processType=Data lumiMask=/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_Moriond17/CMSSW_8_0_25/src/flashgg/bbggTools/test/RunJobs/lumiJsons/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+}
