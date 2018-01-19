@@ -115,7 +115,6 @@ private:
     edm::InputTag genInfo_;
     edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
-//    edm::EDGetTokenT<edm::View<pat::MET> > METToken_;
 
     edm::EDGetTokenT<edm::View<reco::Vertex> > vertexToken_;
     edm::EDGetTokenT<edm::View<flashgg::Met> > METToken_;
@@ -151,7 +150,7 @@ private:
     int subLeadingPhotonHasGain1, subLeadingPhotonHasGain6;
     float HHTagger, HHTagger_LM, HHTagger_HM;
     float ResHHTagger, ResHHTagger_LM, ResHHTagger_HM;
-    float MX;
+    float MX, sumEt;
     
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -661,6 +660,8 @@ void
 
     dEta_VBF = -999; 
     Mjj_VBF = 0;
+
+    sumEt = 0;
 
     njets = 0;
 
@@ -1251,7 +1252,9 @@ void
     Xtt0 = Xtt[0], Xtt1 = Xtt[3]; MjjW0 = Xtt[1],  MjjW1 = Xtt[4]; Mjjbt0 = Xtt[2],  Mjjbt1 = Xtt[5];
 
 
-
+    for( unsigned int jetIndex = 0; jetIndex < collectionForVBF.size(); jetIndex++ )
+      sumEt += collectionForVBF[jetIndex].pt();
+    
 
 
     if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
@@ -1346,6 +1349,7 @@ bbggTree::beginJob()
     tree->Branch("ResHHTagger_HM", &ResHHTagger_HM, "ResHHTagger_HM/F"); 
     tree->Branch("MX", &MX, "MX/F"); 
     tree->Branch("MET", &p4MET);
+    tree->Branch("sumEt", &sumEt, "sumEt/F");
     tree->Branch("njets", &njets, "njets/I");
     tree->Branch("Xtt0", &Xtt0, "Xtt0/F");
     tree->Branch("Xtt1", &Xtt1, "Xtt1/F");
