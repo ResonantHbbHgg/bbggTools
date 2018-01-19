@@ -43,22 +43,60 @@ def readLorentzVector():
   hDijet_2b = ROOT.TH2F("hDijet_2b", "; mjj; mjjgg; nevents", 15, 50, 200, 30, 250, 1000);  
 
 
-  hNjets_low_mp = ROOT.TH1F("hNjets_low_mp", "MX < 350 && MP; njets; nevents", 14, -0., 13.5);
-  hNjets_low_hp = ROOT.TH1F("hNjets_low_hp", "MX < 350 && HP; njets; nevents", 14, -0., 13.5);   
+  hNjets_low_mp = ROOT.TH1F("hNjets_low_mp", "MX < 350 && MP; njets; nevents", 14, -0.5, 13.5);
+  hNjets_low_hp = ROOT.TH1F("hNjets_low_hp", "MX < 350 && HP; njets; nevents", 14, -0.5, 13.5);   
   hNjets_high_mp = ROOT.TH1F("hNjets_high_mp", "MX > 350 && MP; njets; nevents", 14, -0.5, 13.5);
   hNjets_high_hp = ROOT.TH1F("hNjets_high_hp", "MX > 350 && HP; njets; nevents", 14, -0.5, 13.5);
 
+  hNleptons_low_mp = ROOT.TH1F("hNleptons_low_mp", "MX < 350 && MP; nleptons; nevents", 5, -0.5, 4.5);
+  hNleptons_low_hp = ROOT.TH1F("hNleptons_low_hp", "MX < 350 && HP; nleptons; nevents", 5, -0.5, 4.5);   
+  hNleptons_high_mp = ROOT.TH1F("hNleptons_high_mp", "MX > 350 && MP; nleptons; nevents", 5, -0.5, 4.5);
+  hNleptons_high_hp = ROOT.TH1F("hNleptons_high_hp", "MX > 350 && HP; nleptons; nevents", 5, -0.5, 4.5);
 
   hMET_low_mp = ROOT.TH1F("hMET_low_mp", "; MET; nevents", 20, 0, 200);
   hMET_low_hp = ROOT.TH1F("hMET_low_hp", "; MET; nevents", 20, 0, 200);   
   hMET_high_mp = ROOT.TH1F("hMET_high_mp", "; MET; nevents", 20, 0, 200);
   hMET_high_hp = ROOT.TH1F("hMET_high_hp", "; MET; nevents", 20, 0, 200);
 
+  hMET_nleptonsg1_low_mp = ROOT.TH1F("hMET_nleptonsg1_low_mp", "; MET; nevents", 20, 0, 200);
+  hMET_nleptonsg1_low_hp = ROOT.TH1F("hMET_nleptonsg1_low_hp", "; MET; nevents", 20, 0, 200);   
+  hMET_nleptonsg1_high_mp = ROOT.TH1F("hMET_nleptonsg1_high_mp", "; MET; nevents", 20, 0, 200);
+  hMET_nleptonsg1_high_hp = ROOT.TH1F("hMET_nleptonsg1_high_hp", "; MET; nevents", 20, 0, 200);
 
   hMET_njets4_low_mp = ROOT.TH1F("hMET_njets4_low_mp", "; MET; nevents", 20, 0, 200);
   hMET_njets4_low_hp = ROOT.TH1F("hMET_njets4_low_hp", "; MET; nevents", 20, 0, 200);   
   hMET_njets4_high_mp = ROOT.TH1F("hMET_njets4_high_mp", "; MET; nevents", 20, 0, 200);
   hMET_njets4_high_hp = ROOT.TH1F("hMET_njets4_high_hp", "; MET; nevents", 20, 0, 200);
+
+  hXtt0_low_mp = ROOT.TH1F("hXtt0_low_mp", "; Xtt0; nevents", 60, 0, 60);
+  hXtt0_low_hp = ROOT.TH1F("hXtt0_low_hp", "; Xtt0; nevents", 60, 0, 60);   
+  hXtt0_high_mp = ROOT.TH1F("hXtt0_high_mp", "; Xtt0; nevents", 60, 0, 60);
+  hXtt0_high_hp = ROOT.TH1F("hXtt0_high_hp", "; Xtt0; nevents", 60, 0, 60);
+
+  hXtt1_low_mp = ROOT.TH1F("hXtt1_low_mp", "; Xtt1; nevents", 60, 0, 60);
+  hXtt1_low_hp = ROOT.TH1F("hXtt1_low_hp", "; Xtt1; nevents", 60, 0, 60);   
+  hXtt1_high_mp = ROOT.TH1F("hXtt1_high_mp", "; Xtt1; nevents", 60, 0, 60);
+  hXtt1_high_hp = ROOT.TH1F("hXtt1_high_hp", "; Xtt1; nevents", 60, 0, 60);
+
+  hMjjW0_low_mp = ROOT.TH1F("hMjjW0_low_mp", "; MjjW0; nevents", 36, 20, 200);
+  hMjjW0_low_hp = ROOT.TH1F("hMjjW0_low_hp", "; MjjW0; nevents", 36, 20, 200);   
+  hMjjW0_high_mp = ROOT.TH1F("hMjjW0_high_mp", "; MjjW0; nevents", 36, 20, 200);
+  hMjjW0_high_hp = ROOT.TH1F("hMjjW0_high_hp", "; MjjW0; nevents", 36, 20, 200);
+
+  hMjjW1_low_mp = ROOT.TH1F("hMjjW1_low_mp", "; MjjW1; nevents", 36, 20, 200);
+  hMjjW1_low_hp = ROOT.TH1F("hMjjW1_low_hp", "; MjjW1; nevents", 36, 20, 200);   
+  hMjjW1_high_mp = ROOT.TH1F("hMjjW1_high_mp", "; MjjW1; nevents", 36, 20, 200);
+  hMjjW1_high_hp = ROOT.TH1F("hMjjW1_high_hp", "; MjjW1; nevents", 36, 20, 200);
+
+  hMjjbt0_low_mp = ROOT.TH1F("hMjjbt0_low_mp", "; Mjjbt0; nevents", 40, 100, 300);
+  hMjjbt0_low_hp = ROOT.TH1F("hMjjbt0_low_hp", "; Mjjbt0; nevents", 40, 100, 300);   
+  hMjjbt0_high_mp = ROOT.TH1F("hMjjbt0_high_mp", "; Mjjbt0; nevents", 40, 100, 300);
+  hMjjbt0_high_hp = ROOT.TH1F("hMjjbt0_high_hp", "; Mjjbt0; nevents", 40, 100, 300);
+
+  hMjjbt1_low_mp = ROOT.TH1F("hMjjbt1_low_mp", "; Mjjbt1; nevents", 40, 100, 300);
+  hMjjbt1_low_hp = ROOT.TH1F("hMjjbt1_low_hp", "; Mjjbt1; nevents", 40, 100, 300);   
+  hMjjbt1_high_mp = ROOT.TH1F("hMjjbt1_high_mp", "; Mjjbt1; nevents", 40, 100, 300);
+  hMjjbt1_high_hp = ROOT.TH1F("hMjjbt1_high_hp", "; Mjjbt1; nevents", 40, 100, 300);
 
 
 
@@ -87,6 +125,23 @@ def readLorentzVector():
   nLMHPC_clean = 0
   nHMHPC_clean = 0
 
+  nHMHPC_filter_L = 0
+  nHMHPC_filter_LMET = 0
+  nHMHPC_filter_LMET_JET = 0
+  nHMHPC_filter_LMET_JET_H = 0
+  nHMHPC_filter_LMET_JET_HFH = 0
+
+  nHMHPC_filter_LMET_NJ3 = 0
+
+  nHMHPC_filter_NJ3 = 0
+  nHMHPC_filter_NJ4to5 = 0
+  nHMHPC_filter_NJ6to7 = 0
+  nHMHPC_filter_NJ8 = 0
+
+  nHMHPC_filter_LMET_H = 0
+  nHMHPC_filter_LMET_FH = 0
+
+
   LMMbtag = 0
   HMMbtag = 0
   LMHbtag = 0
@@ -100,6 +155,25 @@ def readLorentzVector():
     pMET = event.MET
 
     MET = pMET.Pt()
+
+    nelecs = event.nelecs
+    nmus = event.nmus
+
+    nleptons = nelecs + nmus
+    
+    Xtt0 = event.Xtt0
+    Xtt1 = event.Xtt1
+
+    MjjW0 = event.MjjW0
+    MjjW1 = event.MjjW1
+
+    Mjjbt0 = event.Mjjbt0
+    Mjjbt1 = event.Mjjbt1
+
+
+
+
+
 
     mass_jj = dijet.M()
     mass_gg = diphoton.M()
@@ -125,43 +199,143 @@ def readLorentzVector():
     bLMHPC = bCuts and bLM and (MX < 350 and HHTagger_LM > 0.985 and subleadingJet_bDis > 0.5426 and leadingJet_bDis > 0.5426)
     bHMHPC = bCuts and bHM and (MX > 350 and HHTagger_HM > 0.970)
 
+# ---------------------------------------------------------
+
+    filterSL_L = nleptons > 0
+    filterSL_MET = MET > 130
+    filterSL_H = njets > 3 and njets < 6 and ((Xtt0 < 5 and MET > 60) or (MET > 90 and Xtt0 < 10) or MET > 110)
+    filterFH = njets > 5 and njets < 8 and ((Xtt0 < 5 and Xtt1 < 10) or (Xtt0 < 10 and Xtt1 < 20 and MET > 70) or MET > 100)
+    filterFH_JETS = njets > 7
+
+# ---------------------------------------------------------
+
     if bLMMPC:
       LMMPC += genTotalWeight
       nLMMPC += 1
-      if njets < 7 and MET < 90:
+      if not filterSL_L and not filterSL_MET and not filterSL_H and not filterFH and not filterFH_JETS:
         nLMMPC_clean += 1
       hNjets_low_mp.Fill(njets)
       hMET_low_mp.Fill(MET)
+      hNleptons_low_mp.Fill(nleptons)
+
+      if nleptons > 0:
+        hMET_nleptonsg1_low_mp.Fill(MET)
       if njets < 5:
         hMET_njets4_low_mp.Fill(MET)
+      if njets > 3:
+        hXtt0_low_mp.Fill(Xtt0)
+        hMjjW0_low_mp.Fill(MjjW0)
+        hMjjbt0_low_mp.Fill(Mjjbt0)
+      if njets > 5:
+        hXtt1_low_mp.Fill(Xtt1)
+        hMjjW1_low_mp.Fill(MjjW1)
+        hMjjbt1_low_mp.Fill(Mjjbt1)
+
+
     elif bHMMPC:
       HMMPC += genTotalWeight
       nHMMPC += 1
-      if njets < 7 and MET < 90:
+      if not filterSL_L and not filterSL_MET  and not filterSL_H and not filterFH and not filterFH_JETS:
         nHMMPC_clean += 1
       hNjets_high_mp.Fill(njets)
       hMET_high_mp.Fill(MET)
+      hNleptons_high_mp.Fill(nleptons)
+
+      if nleptons > 0:
+        hMET_nleptonsg1_high_mp.Fill(MET)
       if njets < 5:
         hMET_njets4_high_mp.Fill(MET)
+      if njets > 3:
+        hXtt0_high_mp.Fill(Xtt0)
+        hMjjW0_high_mp.Fill(MjjW0)
+        hMjjbt0_high_mp.Fill(Mjjbt0)
+      if njets > 5:
+        hXtt1_high_mp.Fill(Xtt1)
+        hMjjW1_high_mp.Fill(MjjW1)
+        hMjjbt1_high_mp.Fill(Mjjbt1)
+
+
     elif bLMHPC:
       LMHPC += genTotalWeight
       nLMHPC += 1 
-      if njets < 7 and MET < 90:
+      if not filterSL_L and not filterSL_MET  and not filterSL_H and not filterFH and not filterFH_JETS:
         nLMHPC_clean += 1
       hNjets_low_hp.Fill(njets)
       hMET_low_hp.Fill(MET)
+      hNleptons_low_hp.Fill(nleptons)
+
+      if nleptons > 0:
+        hMET_nleptonsg1_low_hp.Fill(MET)
       if njets < 5:
         hMET_njets4_low_hp.Fill(MET)
+      if njets > 3:
+        hXtt0_low_hp.Fill(Xtt0)
+        hMjjW0_low_hp.Fill(MjjW0)
+        hMjjbt0_low_hp.Fill(Mjjbt0)
+      if njets > 5:
+        hXtt1_low_hp.Fill(Xtt1)
+        hMjjW1_low_hp.Fill(MjjW1)
+        hMjjbt1_low_hp.Fill(Mjjbt1)
+
+
     elif bHMHPC:
       HMHPC += genTotalWeight
       nHMHPC += 1
-      if njets < 7 and MET < 90:
+      if not filterSL_L and not filterSL_MET  and not filterSL_H and not filterFH and not filterFH_JETS:
         nHMHPC_clean += 1
+
+      if not filterSL_L:
+        nHMHPC_filter_L += 1
+      if not filterSL_L and not filterSL_MET:
+        nHMHPC_filter_LMET += 1
+      if not filterSL_L and not filterSL_MET and not filterFH_JETS:
+        nHMHPC_filter_LMET_JET += 1
+      if not filterSL_L and not filterSL_MET and not filterFH_JETS and not filterSL_H:
+        nHMHPC_filter_LMET_JET_H += 1
+      if not filterSL_L and not filterSL_MET and not filterFH_JETS and not filterSL_H and not filterFH:
+        nHMHPC_filter_LMET_JET_HFH += 1
+
+      if not filterSL_L and not filterSL_MET and njets < 4:
+        nHMHPC_filter_LMET_NJ3 += 1
+
+      if njets < 4:
+        nHMHPC_filter_NJ3 += 1
+
+      if njets > 3 and njets < 6:
+        nHMHPC_filter_NJ4to5 += 1
+
+      if njets > 5 and njets < 8:
+        nHMHPC_filter_NJ6to7 += 1
+
+      if njets > 7:
+        nHMHPC_filter_NJ8 += 1
+
+
+
+      if not filterSL_L and not filterSL_MET and not filterSL_H and  njets > 3 and njets < 6:
+        nHMHPC_filter_LMET_H += 1
+
+      if not filterSL_L and not filterSL_MET and not filterFH and  njets > 5 and njets < 8:
+        nHMHPC_filter_LMET_FH += 1
+
+
+
       hNjets_high_hp.Fill(njets)
       hMET_high_hp.Fill(MET)
+      hNleptons_high_hp.Fill(nleptons)
+
+      if nleptons > 0:
+        hMET_nleptonsg1_high_hp.Fill(MET)
       if njets < 5:
         hMET_njets4_high_hp.Fill(MET)
-
+      if njets > 3:
+        hXtt0_high_hp.Fill(Xtt0)
+        hMjjW0_high_hp.Fill(MjjW0)
+        hMjjbt0_high_hp.Fill(Mjjbt0)
+      if njets > 5:
+        hXtt1_high_hp.Fill(Xtt1)
+        hMjjW1_high_hp.Fill(MjjW1)
+        hMjjbt1_high_hp.Fill(Mjjbt1)
 
 
 
@@ -211,12 +385,25 @@ def readLorentzVector():
   print 'nLMHPC ',  nLMHPC, ' nLMHPC_clean ',  nLMHPC_clean, " rate ", nLMHPC_clean/(nLMHPC+1.0)
   print 'nLMMPC ',  nLMMPC, ' nLMMPC_clean ',  nLMMPC_clean, " rate ", nLMMPC_clean/(nLMMPC+1.0)
 
-
-#    b2btag = ( and subleadingJet_bDis > 0.80);
-###    b0btag = (leadingJet_bDis < 0.80 and subleadingJet_bDis < 0.80);
-#    b1btag = (not b2btag) and (not b0btag);
-###    b1btag = (leadingJet_bDis > 0.80 and subleadingJet_bDis > 0.46 and subleadingJet_bDis < 0.80) or (leadingJet_bDis > 0.46 and subleadingJet_bDis > 0.80 and leadingJet_bDis < 0.80);
-
+  print 'High Mass High Purity'
+  print '---------------------'
+  print 'lept > 0 ', '%.3f' % (nHMHPC_filter_L/(nHMHPC+1.0))
+  print 'lept > 0 && MET > 130 ', '%.3f' %(nHMHPC_filter_LMET/(nHMHPC+1.0))
+  print 'lept > 0 && MET > 130 && Njets > 8',  '%.3f' %(nHMHPC_filter_LMET_JET/(nHMHPC+1.0))
+  print 'lept > 0 && MET > 130 && Njets > 8 && Wjj SL cut',  '%.3f' %(nHMHPC_filter_LMET_JET_H/(nHMHPC+1.0))
+  print 'lept > 0 && MET > 130 && Njets > 8 && Wjj SL cut && Full H cut ',  '%.3f' %(nHMHPC_filter_LMET_JET_HFH/(nHMHPC+1.0))
+  print '---------------------'
+  print 'ttH hard to remove: Njets < 4',  '\t \t %.3f' %(nHMHPC_filter_NJ3/(nHMHPC+1.0))
+  print '    lept > 0 && MET > 130 && Njets < 4',      '\t\t  relative %.3f' %(nHMHPC_filter_LMET_NJ3/(nHMHPC_filter_NJ3+1.0))
+  print '---------------------'
+  print 'ttH hard to remove: Njets > 3 and Njets < 6',  '\t \t %.3f' %(nHMHPC_filter_NJ4to5/(nHMHPC+1.0))
+  print '    lept > 0 && MET > 130 && Wjj SL cut',     '\t \t relative %.3f' %(nHMHPC_filter_LMET_H/(nHMHPC_filter_NJ4to5+1.0))
+  print '---------------------'
+  print 'Njets > 6 and Njets < 8',  '\t \t %.3f' %(nHMHPC_filter_NJ6to7/(nHMHPC+1.0))
+  print '    lept > 0 && MET > 130 && Fully Hadronic', '\t \t relative  %.3f' %(nHMHPC_filter_LMET_FH/(nHMHPC_filter_NJ6to7+1.0))
+  print '---------------------'
+  print 'Njets > 7',  '\t \t %.3f' %(nHMHPC_filter_NJ8/(nHMHPC+1.0))
+  print '    removed Njets > 7: \t \t 0' 
 #    if mass_hh < 350 and b2btag:
 #      hDijet_low_2b.Fill(mass_jj)
 #    elif mass_hh > 350 and b2btag:
@@ -262,6 +449,59 @@ def readLorentzVector():
   hNjets_low_hp.Write()
   hNjets_high_mp.Write()
   hNjets_high_hp.Write()
+
+
+  hNleptons_low_mp.Write()
+  hNleptons_low_hp.Write()
+  hNleptons_high_mp.Write()
+  hNleptons_high_hp.Write()
+
+  hMET_low_mp.Write()
+  hMET_low_hp.Write()
+  hMET_high_mp.Write()
+  hMET_high_hp.Write()
+
+  hMET_nleptonsg1_low_mp.Write()
+  hMET_nleptonsg1_low_hp.Write()
+  hMET_nleptonsg1_high_mp.Write()
+  hMET_nleptonsg1_high_hp.Write()
+
+  hMET_njets4_low_mp.Write()
+  hMET_njets4_low_hp.Write()
+  hMET_njets4_high_mp.Write()
+  hMET_njets4_high_hp.Write()
+
+  hXtt0_low_mp.Write()
+  hXtt0_low_hp.Write()
+  hXtt0_high_mp.Write()
+  hXtt0_high_hp.Write()
+
+  hXtt1_low_mp.Write()
+  hXtt1_low_hp.Write()
+  hXtt1_high_mp.Write()
+  hXtt1_high_hp.Write()
+
+  hMjjW0_low_mp.Write()
+  hMjjW0_low_hp.Write()
+  hMjjW0_high_mp.Write()
+  hMjjW0_high_hp.Write()
+
+  hMjjW1_low_mp.Write()
+  hMjjW1_low_hp.Write()
+  hMjjW1_high_mp.Write()
+  hMjjW1_high_hp.Write()
+
+  hMjjbt0_low_mp.Write()
+  hMjjbt0_low_hp.Write()
+  hMjjbt0_high_mp.Write()
+  hMjjbt0_high_hp.Write()
+
+  hMjjbt1_low_mp.Write()
+  hMjjbt1_low_hp.Write()
+  hMjjbt1_high_mp.Write()
+  hMjjbt1_high_hp.Write()
+
+
   outfile.Close()
 
 readLorentzVector()
