@@ -2,6 +2,7 @@
 
 import os, sys, ROOT, math
 from array import array
+import numpy as n
 
 rndm = ROOT.TRandom(1)
 
@@ -23,6 +24,7 @@ def readLorentzVector():
   treeName = sys.argv[2]
 
   outfilename = sys.argv[1].replace('/','_')
+  outfile = ROOT.TFile(outfilename, "RECREATE")
 
   sigma = float(sys.argv[3])
   nEvt = float(sys.argv[4])
@@ -57,6 +59,16 @@ def readLorentzVector():
   hMET_low_hp = ROOT.TH1F("hMET_low_hp", "; MET; nevents", 20, 0, 200);   
   hMET_high_mp = ROOT.TH1F("hMET_high_mp", "; MET; nevents", 20, 0, 200);
   hMET_high_hp = ROOT.TH1F("hMET_high_hp", "; MET; nevents", 20, 0, 200);
+
+  hsumEt_low_mp = ROOT.TH1F("hsumEt_low_mp", "; sumEt; nevents", 20, 0, 1000);
+  hsumEt_low_hp = ROOT.TH1F("hsumEt_low_hp", "; sumEt; nevents", 20, 0, 1000);   
+  hsumEt_high_mp = ROOT.TH1F("hsumEt_high_mp", "; sumEt; nevents", 20, 0, 1000);
+  hsumEt_high_hp = ROOT.TH1F("hsumEt_high_hp", "; sumEt; nevents", 20, 0, 1000);
+
+  hMET_over_sumEt_low_mp = ROOT.TH1F("hMET_over_sumEt_low_mp", "; MET_over_sumEt; nevents",   40, 0, 5);
+  hMET_over_sumEt_low_hp = ROOT.TH1F("hMET_over_sumEt_low_hp", "; MET_over_sumEt; nevents",   40, 0, 5);   
+  hMET_over_sumEt_high_mp = ROOT.TH1F("hMET_over_sumEt_high_mp", "; MET_over_sumEt; nevents", 40, 0, 5);
+  hMET_over_sumEt_high_hp = ROOT.TH1F("hMET_over_sumEt_high_hp", "; MET_over_sumEt; nevents", 40, 0, 5);
 
   hMET_nleptonsg1_low_mp = ROOT.TH1F("hMET_nleptonsg1_low_mp", "; MET; nevents", 20, 0, 200);
   hMET_nleptonsg1_low_hp = ROOT.TH1F("hMET_nleptonsg1_low_hp", "; MET; nevents", 20, 0, 200);   
@@ -103,10 +115,50 @@ def readLorentzVector():
   mychain = f.Get("bbggSelectionTree")
   entries = mychain.GetEntriesFast()
 
+  nsumEt = n.zeros(1, dtype=float)
+  nMET = n.zeros(1, dtype=float)
+  nXtt0 = n.zeros(1, dtype=float)
+  nXtt1 = n.zeros(1, dtype=float)
+  nnjets = n.zeros(1, dtype=int)
+  nnmus = n.zeros(1, dtype=int)
+  nnelecs = n.zeros(1, dtype=int)
 
-#  t.Branch( 'HHTagger_LM', HHTagger_LM, 'HHTagger_LM/F' )
-#  t.Branch( 'HHTagger_HM', HHTagger_HM, 'HHTagger_HM/F' )
-#  t.Branch( 'MX', MX, 'MX/F' )
+  nm_over_ptjj = n.zeros(1, dtype=float)
+  nm_over_ptgg = n.zeros(1, dtype=float)
+
+  ndPhi1 = n.zeros(1, dtype=float)
+  ndPhi2 = n.zeros(1, dtype=float)
+
+  nCosThetaStar_CS = n.zeros(1, dtype=float)
+  nPhoJetMinDr = n.zeros(1, dtype=float)
+  nCosTheta_bb = n.zeros(1, dtype=float)
+
+
+# --------------- BDT tree definition ---------------
+
+  tBDT = ROOT.TTree("BDT", "Tree for ggHH vs ttH BDT")
+
+  tBDT.Branch("sumEt", nsumEt, "sumEt/D")
+  tBDT.Branch("MET", nMET, "MET/D")
+
+  tBDT.Branch("Xtt0", nXtt0, "Xtt0/D")
+  tBDT.Branch("Xtt1", nXtt1, "Xtt1/D")
+
+  tBDT.Branch("njets", nnjets, "njets/I")
+  tBDT.Branch("nmus", nnmus, "nmus/I")
+  tBDT.Branch("nelecs", nnelecs, "nelecs/I")
+
+  tBDT.Branch("m_over_ptjj", nm_over_ptjj, "m_over_ptjj/D")
+  tBDT.Branch("m_over_ptgg", nm_over_ptgg, "m_over_ptgg/D")
+
+  tBDT.Branch("dPhi1", ndPhi1, "dPhi1/D")
+  tBDT.Branch("dPhi2", ndPhi2, "dPhi2/D")
+
+  tBDT.Branch("CosTheta_bb", nCosTheta_bb, "CosTheta_bb/D");
+  tBDT.Branch("CosThetaStar_CS", nCosThetaStar_CS, "CosThetaStar_CS/D");
+
+  tBDT.Branch("PhoJetMinDr", nPhoJetMinDr, "PhoJetMinDr/D");
+# --------------- --------------- ---------------
 
   LMMPC = 0
   HMMPC = 0
@@ -152,9 +204,26 @@ def readLorentzVector():
 
     dijet = event.dijetCandidate
     diphoton = event.diphotonCandidate
+
+    leadingJet = event.leadingJet
+    subleadingJet = event.subleadingJet
+
+    CosThetaStar_CS = event.CosThetaStar_CS 
+    CosTheta_bb = event.CosTheta_bb
+
     pMET = event.MET
 
     MET = pMET.Pt()
+
+    PhoJetMinDr = event.PhoJetMinDr
+
+    v3MET = ROOT.TVector3(pMET.Px(), pMET.Py(), 0)
+    v3j1  = ROOT.TVector3(leadingJet.Px(), leadingJet.Py(), 0)
+    v3j2  = ROOT.TVector3(subleadingJet.Px(), subleadingJet.Py(), 0)
+
+    dPhi1 = ROOT.TMath.ACos(v3MET.Dot(v3j1)/(MET*v3j1.Mag()+1e-10))
+    dPhi2 = ROOT.TMath.ACos(v3MET.Dot(v3j2)/(MET*v3j2.Mag()+1e-10))
+
 
     nelecs = event.nelecs
     nmus = event.nmus
@@ -171,10 +240,6 @@ def readLorentzVector():
     Mjjbt1 = event.Mjjbt1
 
 
-
-
-
-
     mass_jj = dijet.M()
     mass_gg = diphoton.M()
 
@@ -187,6 +252,38 @@ def readLorentzVector():
     genTotalWeight = event.genTotalWeight
 
     njets = event.njets
+
+    sumEt = event.sumEt
+    sumBjets = leadingJet.pt() + subleadingJet.pt()
+
+    m_over_ptjj = dijet.Pt()/dijet.M()
+    m_over_ptgg = diphoton.Pt()/diphoton.M()
+
+    nsumEt[0] = sumEt
+    nMET[0] = MET
+    nXtt0[0] = Xtt0
+    nXtt1[0] = Xtt1
+    nnjets[0] = njets
+    nnmus[0] = nmus
+    nnelecs[0] = nelecs
+    nm_over_ptjj[0] = m_over_ptjj
+    nm_over_ptgg[0] = m_over_ptgg
+
+    ndPhi1[0] = dPhi1
+    ndPhi2[0] = dPhi2
+
+    nCosTheta_bb[0] = CosTheta_bb
+    nCosThetaStar_CS[0] = CosThetaStar_CS 
+    
+    nPhoJetMinDr[0] = PhoJetMinDr
+
+
+
+    tBDT.Fill()
+    
+
+    # ============================================================================
+
 
     bCuts = mass_jj > 80 and mass_jj < 180 and  mass_gg > 100 and  mass_gg < 180
     bLM = MX < 350
@@ -218,6 +315,9 @@ def readLorentzVector():
       hMET_low_mp.Fill(MET)
       hNleptons_low_mp.Fill(nleptons)
 
+      hsumEt_low_mp.Fill(sumEt)
+      hMET_over_sumEt_low_mp.Fill(MET/(sumBjets+0.01))
+
       if nleptons > 0:
         hMET_nleptonsg1_low_mp.Fill(MET)
       if njets < 5:
@@ -241,6 +341,9 @@ def readLorentzVector():
       hMET_high_mp.Fill(MET)
       hNleptons_high_mp.Fill(nleptons)
 
+      hsumEt_high_mp.Fill(sumEt)
+      hMET_over_sumEt_high_mp.Fill(MET/(sumBjets+0.01))
+
       if nleptons > 0:
         hMET_nleptonsg1_high_mp.Fill(MET)
       if njets < 5:
@@ -263,6 +366,9 @@ def readLorentzVector():
       hNjets_low_hp.Fill(njets)
       hMET_low_hp.Fill(MET)
       hNleptons_low_hp.Fill(nleptons)
+
+      hsumEt_low_hp.Fill(sumEt)
+      hMET_over_sumEt_low_hp.Fill(MET/(sumBjets+0.01))
 
       if nleptons > 0:
         hMET_nleptonsg1_low_hp.Fill(MET)
@@ -323,6 +429,9 @@ def readLorentzVector():
       hNjets_high_hp.Fill(njets)
       hMET_high_hp.Fill(MET)
       hNleptons_high_hp.Fill(nleptons)
+
+      hsumEt_high_hp.Fill(sumEt)
+      hMET_over_sumEt_high_hp.Fill(MET/(sumBjets+0.01))
 
       if nleptons > 0:
         hMET_nleptonsg1_high_hp.Fill(MET)
@@ -434,7 +543,7 @@ def readLorentzVector():
 #  corrHH_Hgg =  hcosThetaStar_vs_hcosThetaStarHgg.GetCorrelationFactor();
 #  corrHH_Hbb =  hcosThetaStar_vs_hcosThetaStarHbb.GetCorrelationFactor();
 #  corrHgg_Hbb =  hcosThetaStarHgg_vs_hcosThetaStarHbb.GetCorrelationFactor();
-  outfile = ROOT.TFile(outfilename, "RECREATE")
+
   hMET_low_mp.Write()
   hMET_low_hp.Write()
   hMET_high_mp.Write()
@@ -501,6 +610,17 @@ def readLorentzVector():
   hMjjbt1_high_mp.Write()
   hMjjbt1_high_hp.Write()
 
+  hsumEt_low_mp.Write()
+  hsumEt_low_hp.Write()
+  hsumEt_high_mp.Write()
+  hsumEt_high_hp.Write()
+
+  hMET_over_sumEt_low_mp.Write()
+  hMET_over_sumEt_low_hp.Write()
+  hMET_over_sumEt_high_mp.Write()
+  hMET_over_sumEt_high_hp.Write()
+
+  tBDT.Write()
 
   outfile.Close()
 
