@@ -212,7 +212,7 @@ private:
     bool useElecMVARecipe, useElecLooseId;
     std::vector<double> elecEtaThresholds;
 
-    int njets, nelecs, nmus;
+  int njets, nelecs, nmus,  nelecs_loose, nmus_loose;
     vector<float> Xtt;
     float Xtt0, Xtt1, MjjW0, MjjW1, Mjjbt0, Mjjbt1;
 
@@ -1214,24 +1214,37 @@ void
     Handle<View<flashgg::Electron> > theElectrons;
     iEvent.getByToken( electronToken_, theElectrons );
  
-    std::vector<edm::Ptr<flashgg::Electron> > selectedElectrons = selectStdAllElectrons( theElectrons->ptrs(), vertices->ptrs(), elecPtThreshold, elecEtaThresholds, useElecMVARecipe, useElecLooseId, *rho, iEvent.isRealData() );
+    double looseLeptonPtThreshold = 10;
+
+    std::vector<edm::Ptr<flashgg::Electron> > selectedElectrons = selectStdAllElectrons( theElectrons->ptrs(), vertices->ptrs(), looseLeptonPtThreshold, elecEtaThresholds, useElecMVARecipe, useElecLooseId, *rho, iEvent.isRealData() );
 
     std::vector<edm::Ptr<flashgg::Electron> > tagElectrons = tools_.filterElectrons( selectedElectrons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
 
+    nelecs_loose = tagElectrons.size();
     if (tagElectrons.size() > 0) leadingElectron = tagElectrons.at( 0 )->p4();
     if (tagElectrons.size() > 1) subleadingElectron = tagElectrons.at( 1 )->p4();
-    nelecs = tagElectrons.size();
+
+    for (unsigned int i = 0; i < tagElectrons.size(); i++)
+      if (tagElectrons.at( i )->p4().Pt() > elecPtThreshold) nelecs++;
+
+    nelecs_loose = nelecs_loose - nelecs;
+
 
 
     Handle<View<flashgg::Muon> > theMuons;
     iEvent.getByToken( muonToken_, theMuons );
     //diphoCandidate
-    std::vector<edm::Ptr<flashgg::Muon> > selectedMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muEtaThreshold, muPtThreshold, muPFIsoSumRelThreshold);
+    std::vector<edm::Ptr<flashgg::Muon> > selectedMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muEtaThreshold, looseLeptonPtThreshold, muPFIsoSumRelThreshold);
     std::vector<edm::Ptr<flashgg::Muon> > tagMuons = tools_.filterMuons( selectedMuons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
 
+    nmus_loose = tagMuons.size();
     if (tagMuons.size() > 0) leadingMuon = tagMuons.at( 0 )->p4();
     if (tagMuons.size() > 1) subleadingMuon = tagMuons.at( 1 )->p4();
-    nmus = tagMuons.size();
+
+    for (unsigned int i = 0; i < tagMuons.size(); i++)
+      if (tagMuons.at( i )->p4().Pt() > muPtThreshold) nmus++;
+
+    nmus_loose = tagMuons.size() - nmus;
 
 
 
@@ -1363,10 +1376,12 @@ bbggTree::beginJob()
     tree->Branch("leadingMuon", &leadingMuon);
     tree->Branch("subleadingMuon", &subleadingMuon);
     tree->Branch("nmus", &nmus, "nmus/I");
+    tree->Branch("nmus_loose", &nmus_loose, "nmus_loose/I");
 
     tree->Branch("leadingElectron", &leadingElectron);
     tree->Branch("subleadingElectron", &subleadingElectron);
     tree->Branch("nelecs", &nelecs, "nelecs/I");
+    tree->Branch("nelecs_loose", &nelecs_loose, "nelecs_loose/I");
 
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);
