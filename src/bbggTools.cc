@@ -148,6 +148,7 @@ std::vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonPreselectionTnP2016(v
 bool bbggTools::passPreselectionTnP2016(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults){
 
   bool isPreselected = false;
+  
 
   if ( myTriggersResults["HLT_Ele27_WPTight_Gsf_v"] != 1 )
     return false;
@@ -213,13 +214,14 @@ std::vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonPreselection(vector<f
 
 std::map<std::string,int> bbggTools::TriggerSelection(std::vector<std::string> myTriggers, const edm::TriggerNames &names, edm::Handle<edm::TriggerResults> triggerBits)
 {
+
     std::map<std::string,int> triggerResults;
     for(unsigned int j = 0; j < myTriggers.size(); j++)
     {
         int accepted = 0;
         for ( unsigned int i = 0; i < triggerBits->size(); i++)
         {
-//            if(DEBUG) std::cout << "[bbggTools::TriggerSelection] Trigger name: " << names.triggerName(i) << " \t Decision: " << triggerBits->accept(i) << std::endl;
+            if(DEBUG) std::cout << "[bbggTools::TriggerSelection] Trigger name: " << names.triggerName(i) << " \t Decision: " << triggerBits->accept(i) << std::endl;
             if((names.triggerName(i)).find(myTriggers[j]) != std::string::npos )
             {
                 if(triggerBits->accept(i) == 1){
@@ -730,6 +732,8 @@ vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonKinematicSelection( vector
 
 }
 
+
+
 vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonIDSelection( vector<flashgg::DiPhotonCandidate> diphoCol)
 {
     vector<pair<flashgg::DiPhotonCandidate, int > > SelectedDiPhotons = bbggTools::EvaluatePhotonIDs( diphoCol);
@@ -794,6 +798,7 @@ vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( ve
          for( int whichPho = 0; whichPho < 2; whichPho++)
          {
              if( _PhotonDoElectronVeto[whichPho] ) {
+	       std::cout<<"---------------doElVeto-------------"<<std::endl;
                  pho_ids[whichPho] = pho_elv[whichPho];
              }
              int pho1Index = 0; //Index 0 = barrel, 1 = endcap

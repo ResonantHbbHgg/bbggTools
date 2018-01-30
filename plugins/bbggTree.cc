@@ -405,7 +405,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     phCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEE");
 
     is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
-    doTnP = iConfig.getUntrackedParameter<unsigned int>("doTnP", def_doTnP);
+    doTnP = iConfig.getUntrackedParameter<unsigned int>("doTnP",def_doTnP);
+
     BenchNum = iConfig.getUntrackedParameter<unsigned int>("benchmark", 0);
 
     //photon selection parameters
@@ -414,6 +415,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     ph_r9     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonR9", def_ph_r9);
     ph_elVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonElectronVeto", def_ph_elVeto);
     ph_doelVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoElectronVeto", def_ph_doelVeto);
+    if(doTnP){
+      ph_doelVeto[0]=0; ph_doelVeto[1]=0;
+    }
     ph_doID   = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoID", def_ph_doID);
     ph_whichID   = iConfig.getUntrackedParameter<std::vector<std::string > >("PhotonWhichID", def_ph_whichID);
     ph_doISO  = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoISO", def_ph_doISO);
@@ -498,6 +502,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     //tokens and labels
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
     genInfoToken_ = consumes<GenEventInfoProduct>( genInfo_ );
+
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
 //    METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
@@ -791,7 +796,12 @@ void
     if (DEBUG) std::cout << "Number of jet collections!!!! " << theJetsCols.size() << std::endl;
 
     Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
+
+
     iEvent.getByToken( diPhotonToken_, diPhotons );
+    
+//    std::cout<<"size!!!"<<diPhotons->size()<<std::endl;
+
 
     const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
     tools_.setRho(rhoFixedGrd);
@@ -946,19 +956,23 @@ void
     if(doTnP && is2016){
        Handle<edm::TriggerResults> trigResults;
        iEvent.getByToken(triggerToken_, trigResults);
-       const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
+	const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
        myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
        PreSelDipho = tools_.DiPhotonPreselectionTnP2016( diphotonCollection, myTriggerResults);
      }
-    if(DEBUG) std::cout << "[bbggTree::analyze] Number of pre-selected diphotons: " << PreSelDipho.size() << std::endl;
+    //    if(DEBUG)
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() < 1 ) return;
     h_Efficiencies->Fill(2, genTotalWeight*gen_NRW);
 
     
     //Kinematic selection
-    std::vector<flashgg::DiPhotonCandidate> KinDiPhoton = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
-    if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: " << KinDiPhoton.size() << std::endl;
+    std::vector<flashgg::DiPhotonCandidate> KinDiPhoton;
+    if(!doTnP)  KinDiPhoton  = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
+    else {
+      KinDiPhoton = PreSelDipho;
+    }
+    //    if(DEBUG)
     if( KinDiPhoton.size() < 1) return;
     h_Efficiencies->Fill(3, genTotalWeight*gen_NRW);
 
@@ -966,6 +980,7 @@ void
     vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA );
     vector<flashgg::DiPhotonCandidate> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
     vector<flashgg::DiPhotonCandidate> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
+
 
     //needed for diphoton mva
     if(tools_.indexSel_>-1){

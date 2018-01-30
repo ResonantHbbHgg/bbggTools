@@ -8,7 +8,7 @@ _doPhotonCR		=	cms.untracked.uint32(1)
 _doSelectionTree	=	cms.untracked.uint32(1) 
 
 ##Tags and Objects
-_triggerTag	=	cms.InputTag("TriggerResults", "", "HLT2")
+_triggerTag	=	cms.InputTag("TriggerResults", "", "HLT")
 _myTriggers	=	cms.untracked.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v")
 #_DiPhotonTag	=	cms.untracked.InputTag('flashggDiPhotons')
 _DiPhotonTag	=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
@@ -132,3 +132,4 @@ _NonResMVA2017Vars              =       cms.untracked.vstring('leadingJet_bDis',
 _doSigmaMdecorr =cms.untracked.uint32(1)
 _sigmaMdecorrFile = cms.untracked.FileInPath("flashgg/Taggers/data/diphoMVA_sigmaMoMdecorr_split_Mgg40_180.root")
 
+#_doTnp = cms.untracked.uint32(1)
