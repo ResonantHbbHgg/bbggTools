@@ -126,7 +126,6 @@ private:
     edm::InputTag genInfo_;
     edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
     edm::EDGetTokenT<edm::TriggerResults> triggerToken_;
-//    edm::EDGetTokenT<edm::View<pat::MET> > METToken_;
 
     edm::EDGetTokenT<edm::View<reco::Vertex> > vertexToken_;
     edm::EDGetTokenT<edm::View<flashgg::Met> > METToken_;
@@ -169,7 +168,7 @@ private:
     int subLeadingPhotonHasGain1, subLeadingPhotonHasGain6;
     float HHTagger, HHTagger2017, HHTagger_LM, HHTagger_HM;
     float ResHHTagger, ResHHTagger_LM, ResHHTagger_HM;
-    float MX;
+    float MX, sumEt;
     
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -237,7 +236,7 @@ private:
     bool useElecMVARecipe, useElecLooseId;
     std::vector<double> elecEtaThresholds;
 
-    int njets, nelecs, nmus;
+  int njets, nelecs, nmus,  nelecs_loose, nmus_loose;
     vector<float> Xtt;
     float Xtt0, Xtt1, MjjW0, MjjW1, Mjjbt0, Mjjbt1;
 
@@ -748,6 +747,8 @@ void
 
     dEta_VBF = -999; 
     Mjj_VBF = 0;
+
+    sumEt = 0;
 
     njets = 0;
 
@@ -1424,24 +1425,37 @@ void
     Handle<View<flashgg::Electron> > theElectrons;
     iEvent.getByToken( electronToken_, theElectrons );
  
-    std::vector<edm::Ptr<flashgg::Electron> > selectedElectrons = selectStdAllElectrons( theElectrons->ptrs(), vertices->ptrs(), elecPtThreshold, elecEtaThresholds, useElecMVARecipe, useElecLooseId, *rho, iEvent.isRealData() );
+    double looseLeptonPtThreshold = 10;
+
+    std::vector<edm::Ptr<flashgg::Electron> > selectedElectrons = selectStdAllElectrons( theElectrons->ptrs(), vertices->ptrs(), looseLeptonPtThreshold, elecEtaThresholds, useElecMVARecipe, useElecLooseId, *rho, iEvent.isRealData() );
 
     std::vector<edm::Ptr<flashgg::Electron> > tagElectrons = tools_.filterElectrons( selectedElectrons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
 
+    nelecs_loose = tagElectrons.size();
     if (tagElectrons.size() > 0) leadingElectron = tagElectrons.at( 0 )->p4();
     if (tagElectrons.size() > 1) subleadingElectron = tagElectrons.at( 1 )->p4();
-    nelecs = tagElectrons.size();
+
+    for (unsigned int i = 0; i < tagElectrons.size(); i++)
+      if (tagElectrons.at( i )->p4().Pt() > elecPtThreshold) nelecs++;
+
+    nelecs_loose = nelecs_loose - nelecs;
+
 
 
     Handle<View<flashgg::Muon> > theMuons;
     iEvent.getByToken( muonToken_, theMuons );
     //diphoCandidate
-    std::vector<edm::Ptr<flashgg::Muon> > selectedMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muEtaThreshold, muPtThreshold, muPFIsoSumRelThreshold);
+    std::vector<edm::Ptr<flashgg::Muon> > selectedMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muEtaThreshold, looseLeptonPtThreshold, muPFIsoSumRelThreshold);
     std::vector<edm::Ptr<flashgg::Muon> > tagMuons = tools_.filterMuons( selectedMuons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
 
+    nmus_loose = tagMuons.size();
     if (tagMuons.size() > 0) leadingMuon = tagMuons.at( 0 )->p4();
     if (tagMuons.size() > 1) subleadingMuon = tagMuons.at( 1 )->p4();
-    nmus = tagMuons.size();
+
+    for (unsigned int i = 0; i < tagMuons.size(); i++)
+      if (tagMuons.at( i )->p4().Pt() > muPtThreshold) nmus++;
+
+    nmus_loose = tagMuons.size() - nmus;
 
 
 
@@ -1462,7 +1476,9 @@ void
     Xtt0 = Xtt[0], Xtt1 = Xtt[3]; MjjW0 = Xtt[1],  MjjW1 = Xtt[4]; Mjjbt0 = Xtt[2],  Mjjbt1 = Xtt[5];
 
 
-
+    for( unsigned int jetIndex = 0; jetIndex < collectionForVBF.size(); jetIndex++ )
+      sumEt += collectionForVBF[jetIndex].pt();
+    
 
 
     if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
@@ -1581,6 +1597,7 @@ bbggTree::beginJob()
     tree->Branch("ResHHTagger_HM", &ResHHTagger_HM, "ResHHTagger_HM/F"); 
     tree->Branch("MX", &MX, "MX/F"); 
     tree->Branch("MET", &p4MET);
+    tree->Branch("sumEt", &sumEt, "sumEt/F");
     tree->Branch("njets", &njets, "njets/I");
     tree->Branch("Xtt0", &Xtt0, "Xtt0/F");
     tree->Branch("Xtt1", &Xtt1, "Xtt1/F");
@@ -1594,10 +1611,12 @@ bbggTree::beginJob()
     tree->Branch("leadingMuon", &leadingMuon);
     tree->Branch("subleadingMuon", &subleadingMuon);
     tree->Branch("nmus", &nmus, "nmus/I");
+    tree->Branch("nmus_loose", &nmus_loose, "nmus_loose/I");
 
     tree->Branch("leadingElectron", &leadingElectron);
     tree->Branch("subleadingElectron", &subleadingElectron);
     tree->Branch("nelecs", &nelecs, "nelecs/I");
+    tree->Branch("nelecs_loose", &nelecs_loose, "nelecs_loose/I");
 
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);
