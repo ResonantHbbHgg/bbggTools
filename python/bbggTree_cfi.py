@@ -109,6 +109,5 @@ bbggtree = cms.EDAnalyzer('bbggTree',
         NonResMVA2017Vars=param._NonResMVA2017Vars,
         doSigmaMdecorr=param._doSigmaMdecorr,
         sigmaMdecorr_File=param._sigmaMdecorrFile
-
 #	doSelectionTree=param._doSelectionTree
 )
