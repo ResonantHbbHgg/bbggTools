@@ -96,9 +96,9 @@ _jetSmear		=	cms.untracked.int32(1)
 _randomLabel		=	cms.untracked.string("rnd_g_JER")
 _jetScale		=	cms.untracked.int32(1)
 ##Photon corrections/
-_doPhotonScale		=	cms.untracked.int32(1) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonScale		=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
-_doPhotonSmearing	=	cms.untracked.int32(1) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonSmearing	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 
 #_PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/80X_ichepV2_2016_pho")
 _PhotonCorrectionFile	=	cms.untracked.string("flashgg/Systematics/data/Moriond17_74x_pho")
