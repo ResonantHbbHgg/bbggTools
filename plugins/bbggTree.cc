@@ -414,9 +414,6 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     ph_r9     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonR9", def_ph_r9);
     ph_elVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonElectronVeto", def_ph_elVeto);
     ph_doelVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoElectronVeto", def_ph_doelVeto);
-    if(doTnP){//not needed since we want to invert ele veto, not only switch off
-      //      ph_doelVeto[0]=0; ph_doelVeto[1]=0;
-    }
     ph_doID   = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoID", def_ph_doID);
     ph_whichID   = iConfig.getUntrackedParameter<std::vector<std::string > >("PhotonWhichID", def_ph_whichID);
     ph_doISO  = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoISO", def_ph_doISO);
@@ -501,10 +498,12 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     //tokens and labels
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
     genInfoToken_ = consumes<GenEventInfoProduct>( genInfo_ );
-
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
 //    METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
+    if (is2016){
+      triggerToken_ = consumes<edm::TriggerResults>( edm::InputTag("TriggerResults", "", "HLT" )) ;
+    }
 
     rhoToken_ = consumes<double>( iConfig.getParameter<edm::InputTag>( "rhoTag" ) );
     vertexToken_ = consumes<edm::View<reco::Vertex> >( iConfig.getParameter<edm::InputTag> ( "VertexTag" ) );
@@ -797,11 +796,7 @@ void
     if (DEBUG) std::cout << "Number of jet collections!!!! " << theJetsCols.size() << std::endl;
 
     Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
-
-
     iEvent.getByToken( diPhotonToken_, diPhotons );
-    
-//    std::cout<<"size!!!"<<diPhotons->size()<<std::endl;
 
 
     const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
@@ -961,7 +956,7 @@ void
        myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
        PreSelDipho = tools_.DiPhotonPreselectionTnP2016( diphotonCollection, myTriggerResults);
      }
-    //    if(DEBUG)
+    if(DEBUG) std::cout << "[bbggTree::analyze] Number of pre-selected diphotons: " << PreSelDipho.size() << std::endl;
     //If no diphoton passed presel, skip event
     if ( PreSelDipho.size() < 1 ) return;
     h_Efficiencies->Fill(2, genTotalWeight*gen_NRW);
@@ -983,7 +978,6 @@ void
       else KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA, 1 );
     vector<flashgg::DiPhotonCandidate> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
     vector<flashgg::DiPhotonCandidate> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
-
 
     //needed for diphoton mva
     if(tools_.indexSel_>-1){
@@ -1142,7 +1136,7 @@ void
     leadingPhotonR9full5x5 = diphoCand.leadingPhoton()->full5x5_r9();
     subleadingPhotonR9full5x5 = diphoCand.subLeadingPhoton()->full5x5_r9();
 
-    //    diphotonCandidate = diphoCand.p4();
+    //    diphotonCandidate = diphoCand.p4(); //this is wrong since diphoton collection is not updated by the smearer
     diphotonCandidate = (diphoCand.leadingPhoton()->p4()+diphoCand.subLeadingPhoton()->p4());
     leadingPhoton = diphoCand.leadingPhoton()->p4();
     subleadingPhoton = diphoCand.subLeadingPhoton()->p4();

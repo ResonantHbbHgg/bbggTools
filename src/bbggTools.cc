@@ -214,14 +214,13 @@ std::vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonPreselection(vector<f
 
 std::map<std::string,int> bbggTools::TriggerSelection(std::vector<std::string> myTriggers, const edm::TriggerNames &names, edm::Handle<edm::TriggerResults> triggerBits)
 {
-
     std::map<std::string,int> triggerResults;
     for(unsigned int j = 0; j < myTriggers.size(); j++)
     {
         int accepted = 0;
         for ( unsigned int i = 0; i < triggerBits->size(); i++)
         {
-            if(DEBUG) std::cout << "[bbggTools::TriggerSelection] Trigger name: " << names.triggerName(i) << " \t Decision: " << triggerBits->accept(i) << std::endl;
+	  //            if(DEBUG) std::cout << "[bbggTools::TriggerSelection] Trigger name: " << names.triggerName(i) << " \t Decision: " << triggerBits->accept(i) << std::endl;
             if((names.triggerName(i)).find(myTriggers[j]) != std::string::npos )
             {
                 if(triggerBits->accept(i) == 1){
@@ -731,8 +730,6 @@ vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonKinematicSelection( vector
      return PreselDiPhotons;
 
 }
-
-
 
 vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonIDSelection( vector<flashgg::DiPhotonCandidate> diphoCol)
 {
