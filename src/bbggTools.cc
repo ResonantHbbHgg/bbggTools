@@ -148,7 +148,7 @@ std::vector<flashgg::DiPhotonCandidate> bbggTools::DiPhotonPreselectionTnP2016(v
 bool bbggTools::passPreselectionTnP2016(const flashgg::DiPhotonCandidate * dipho, std::map<std::string, int> myTriggersResults){
 
   bool isPreselected = false;
-  
+  //this should not be needed since photons are preselected, but just be sure
 
   if ( myTriggersResults["HLT_Ele27_WPTight_Gsf_v"] != 1 )
     return false;
@@ -760,11 +760,10 @@ vector<flashgg::DiPhotonCandidate> bbggTools::GetDiPhotonsInCategory( vector<pai
             catDiPhotons.push_back(it->first);
         }
     }
-
     return catDiPhotons;
 }
 
-vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID)
+vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( vector<flashgg::DiPhotonCandidate> diphoCol, unsigned int doCustomID,unsigned int doTnP)
 {
   indexSel_=-1;
    vector<pair<flashgg::DiPhotonCandidate, int > > PreselDiPhotons;
@@ -798,8 +797,8 @@ vector<pair<flashgg::DiPhotonCandidate, int > > bbggTools::EvaluatePhotonIDs( ve
          for( int whichPho = 0; whichPho < 2; whichPho++)
          {
              if( _PhotonDoElectronVeto[whichPho] ) {
-	       std::cout<<"---------------doElVeto-------------"<<std::endl;
-                 pho_ids[whichPho] = pho_elv[whichPho];
+	       if(!doTnP) pho_ids[whichPho] = pho_elv[whichPho];
+	       else pho_ids[whichPho] = pho_elv[whichPho] > 0 ? 0:1;
              }
              int pho1Index = 0; //Index 0 = barrel, 1 = endcap
              double pho_eta = (whichPho) ? fabs(pho2_eta) : fabs(pho1_eta);
