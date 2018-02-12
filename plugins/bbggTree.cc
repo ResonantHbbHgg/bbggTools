@@ -414,8 +414,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     ph_r9     = iConfig.getUntrackedParameter<std::vector<double > >("PhotonR9", def_ph_r9);
     ph_elVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonElectronVeto", def_ph_elVeto);
     ph_doelVeto = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoElectronVeto", def_ph_doelVeto);
-    if(doTnP){
-      ph_doelVeto[0]=0; ph_doelVeto[1]=0;
+    if(doTnP){//not needed since we want to invert ele veto, not only switch off
+      //      ph_doelVeto[0]=0; ph_doelVeto[1]=0;
     }
     ph_doID   = iConfig.getUntrackedParameter<std::vector<int > >("PhotonDoID", def_ph_doID);
     ph_whichID   = iConfig.getUntrackedParameter<std::vector<std::string > >("PhotonWhichID", def_ph_whichID);
@@ -978,7 +978,9 @@ void
     h_Efficiencies->Fill(3, genTotalWeight*gen_NRW);
 
     //Evaluate photon IDs
-    vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA );
+    vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID;
+      if(!doTnP) KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA );
+      else KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA, 1 );
     vector<flashgg::DiPhotonCandidate> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
     vector<flashgg::DiPhotonCandidate> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
 
@@ -1140,7 +1142,8 @@ void
     leadingPhotonR9full5x5 = diphoCand.leadingPhoton()->full5x5_r9();
     subleadingPhotonR9full5x5 = diphoCand.subLeadingPhoton()->full5x5_r9();
 
-    diphotonCandidate = diphoCand.p4();
+    //    diphotonCandidate = diphoCand.p4();
+    diphotonCandidate = (diphoCand.leadingPhoton()->p4()+diphoCand.subLeadingPhoton()->p4());
     leadingPhoton = diphoCand.leadingPhoton()->p4();
     subleadingPhoton = diphoCand.subLeadingPhoton()->p4();
 
