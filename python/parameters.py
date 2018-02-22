@@ -8,7 +8,7 @@ _doPhotonCR		=	cms.untracked.uint32(1)
 _doSelectionTree	=	cms.untracked.uint32(1) 
 
 ##Tags and Objects
-_triggerTag	=	cms.InputTag("TriggerResults", "", "HLT2")
+_triggerTag	=	cms.InputTag("TriggerResults", "", "HLT2") #this might be changed into HLT2 if running on 2015 data
 _myTriggers	=	cms.untracked.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v")
 #_DiPhotonTag	=	cms.untracked.InputTag('flashggDiPhotons')
 _DiPhotonTag	=	cms.untracked.InputTag('flashggPreselectedDiPhotons')
@@ -96,9 +96,9 @@ _jetSmear		=	cms.untracked.int32(1)
 _randomLabel		=	cms.untracked.string("rnd_g_JER")
 _jetScale		=	cms.untracked.int32(1)
 ##Photon corrections/
-_doPhotonScale		=	cms.untracked.int32(1) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonScale		=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
-_doPhotonSmearing	=	cms.untracked.int32(1) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
+_doPhotonSmearing	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 
 #_PhotonCorrectionFile	=	cms.untracked.string("EgammaAnalysis/ElectronTools/data/80X_ichepV2_2016_pho")
 _PhotonCorrectionFile	=	cms.untracked.string("flashgg/Systematics/data/Moriond17_74x_pho")

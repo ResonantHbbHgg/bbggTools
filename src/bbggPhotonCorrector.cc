@@ -28,7 +28,7 @@ void bbggPhotonCorrector::SmearPhotonsInDiPhotons(std::vector<flashgg::DiPhotonC
         SmearPhoton(diPhos[dp].getLeadingPhoton());
         SmearPhoton(diPhos[dp].getSubLeadingPhoton());
         float afterLeadingCorr = diPhos[dp].getLeadingPhoton().energy();
-        if (DEBUG) std::cout << "[bbggPhotonCorrector::SmearPhotonsInDiPhotons] Before smear: " << beforeLeadingCorr << " - after smear: " << afterLeadingCorr << std::endl;
+	if (DEBUG)	  std::cout << "[bbggPhotonCorrector::SmearPhotonsInDiPhotons] Before smear: " << beforeLeadingCorr << " - after smear: " << afterLeadingCorr << std::endl;
     }
 }
 
@@ -39,11 +39,22 @@ void bbggPhotonCorrector::ScalePhotonsInDiPhotons(std::vector<flashgg::DiPhotonC
     scaler_.doSmearings = false;
     scaler_.doScale = true;
     for ( unsigned int dp = 0; dp < diPhos.size(); dp++) {
-        float beforeLeadingCorr = diPhos[dp].getLeadingPhoton().energy();
+      float beforeLeadingCorr = diPhos[dp].getLeadingPhoton().energy();
+	bbggPhotonCorrector::LorentzVector leadingPhoBef = diPhos[dp].getLeadingPhoton().p4();
+	bbggPhotonCorrector::LorentzVector subleadingPhoBef = diPhos[dp].getSubLeadingPhoton().p4();
+
+	if(DEBUG)	std::cout<<"ORIGINAL Mass"<<(leadingPhoBef+subleadingPhoBef).M()<<std::endl;
+
         ScalePhoton(diPhos[dp].getLeadingPhoton());
         ScalePhoton(diPhos[dp].getSubLeadingPhoton());
         float afterLeadingCorr = diPhos[dp].getLeadingPhoton().energy();
         if (DEBUG) std::cout << "[bbggPhotonCorrector::ScalePhotonsInDiPhotons] Before scale: " << beforeLeadingCorr << " - after scale: " << afterLeadingCorr << std::endl;
+	if(DEBUG){
+	bbggPhotonCorrector::LorentzVector leadingPho = diPhos[dp].getLeadingPhoton().p4();
+	bbggPhotonCorrector::LorentzVector subleadingPho = diPhos[dp].getSubLeadingPhoton().p4();
+
+	std::cout<<"smearedMass"<<(leadingPho+subleadingPho).M()<<std::endl;
+	}
     }
 }
 
@@ -94,8 +105,8 @@ void bbggPhotonCorrector::ScalePhoton(flashgg::Photon & photon)
 
     if( DEBUG ) {
         std::cout << "  " << ": Photon has energy= " << photon.energy() << " eta=" << photon.eta()
-        << " and we apply a scale factor of " << ( 100 * scale ) << "% to get new energy=" << scale*photon.energy() << std::endl;
-    }
+		  << " and we apply a scale factor of " << ( 100 * scale/photon.energy() ) << "% to get new energy=" << scale*photon.energy() << std::endl;
+	    }
     bbggPhotonCorrector::LorentzVector thisp4 = photon.p4();
     photon.setP4( scale*thisp4);
 }

@@ -404,7 +404,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     phCorrEE = iConfig.getUntrackedParameter<std::vector<double > >("phCorrEE");
 
     is2016 = iConfig.getUntrackedParameter<unsigned int>("is2016", def_is2016);
-    doTnP = iConfig.getUntrackedParameter<unsigned int>("doTnP", def_doTnP);
+    doTnP = iConfig.getUntrackedParameter<unsigned int>("doTnP",def_doTnP);
+
     BenchNum = iConfig.getUntrackedParameter<unsigned int>("benchmark", 0);
 
     //photon selection parameters
@@ -500,6 +501,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
 //    METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
+    if (is2016){
+      triggerToken_ = consumes<edm::TriggerResults>( edm::InputTag("TriggerResults", "", "HLT" )) ;
+    }
 
     rhoToken_ = consumes<double>( iConfig.getParameter<edm::InputTag>( "rhoTag" ) );
     vertexToken_ = consumes<edm::View<reco::Vertex> >( iConfig.getParameter<edm::InputTag> ( "VertexTag" ) );
@@ -794,6 +798,7 @@ void
     Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
     iEvent.getByToken( diPhotonToken_, diPhotons );
 
+
     const double rhoFixedGrd = globVar_->valueOf(globVar_->indexOf("rho"));
     tools_.setRho(rhoFixedGrd);
     const double nPVs = globVar_->valueOf(globVar_->indexOf("nvtx"));
@@ -947,7 +952,7 @@ void
     if(doTnP && is2016){
        Handle<edm::TriggerResults> trigResults;
        iEvent.getByToken(triggerToken_, trigResults);
-       const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
+	const edm::TriggerNames &names = iEvent.triggerNames(*trigResults);
        myTriggerResults = tools_.TriggerSelection(myTriggers, names, trigResults);
        PreSelDipho = tools_.DiPhotonPreselectionTnP2016( diphotonCollection, myTriggerResults);
      }
@@ -958,13 +963,19 @@ void
 
     
     //Kinematic selection
-    std::vector<flashgg::DiPhotonCandidate> KinDiPhoton = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
-    if(DEBUG) std::cout << "[bbggTree::analyze] Number of kinematic-selected diphotons: " << KinDiPhoton.size() << std::endl;
+    std::vector<flashgg::DiPhotonCandidate> KinDiPhoton;
+    if(!doTnP)  KinDiPhoton  = tools_.DiPhotonKinematicSelection( PreSelDipho, 1);
+    else {
+      KinDiPhoton = PreSelDipho;
+    }
+    //    if(DEBUG)
     if( KinDiPhoton.size() < 1) return;
     h_Efficiencies->Fill(3, genTotalWeight*gen_NRW);
 
     //Evaluate photon IDs
-    vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA );
+    vector<pair<flashgg::DiPhotonCandidate, int> > KinDiPhotonWithID;
+      if(!doTnP) KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA );
+      else KinDiPhotonWithID = tools_.EvaluatePhotonIDs( KinDiPhoton, doCustomPhotonMVA, 1 );
     vector<flashgg::DiPhotonCandidate> SignalDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 2 );
     vector<flashgg::DiPhotonCandidate> CRDiPhotons = tools_.GetDiPhotonsInCategory( KinDiPhotonWithID, 1 );
 
@@ -1125,7 +1136,8 @@ void
     leadingPhotonR9full5x5 = diphoCand.leadingPhoton()->full5x5_r9();
     subleadingPhotonR9full5x5 = diphoCand.subLeadingPhoton()->full5x5_r9();
 
-    diphotonCandidate = diphoCand.p4();
+    //    diphotonCandidate = diphoCand.p4(); //this is wrong since diphoton collection is not updated by the smearer
+    diphotonCandidate = (diphoCand.leadingPhoton()->p4()+diphoCand.subLeadingPhoton()->p4());
     leadingPhoton = diphoCand.leadingPhoton()->p4();
     subleadingPhoton = diphoCand.subLeadingPhoton()->p4();
 
