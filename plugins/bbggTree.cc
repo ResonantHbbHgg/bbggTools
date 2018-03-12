@@ -166,9 +166,10 @@ private:
     float leadingPhotonR9full5x5, subleadingPhotonR9full5x5, customLeadingPhotonMVA, customSubLeadingPhotonMVA;
     int leadingPhotonHasGain1, leadingPhotonHasGain6;
     int subLeadingPhotonHasGain1, subLeadingPhotonHasGain6;
-    float HHTagger, HHTagger2017, HHTagger_LM, HHTagger_HM;
+    float HHTagger, HHTagger2017, HHTagger_LM, HHTagger_HM, HHTagger2017_transform;
     float ResHHTagger, ResHHTagger_LM, ResHHTagger_HM;
     float MX, sumEt;
+    TGraph *HHTagger2017_cumulative;
     
     double genTotalWeight;
     unsigned int nPromptInDiPhoton;
@@ -226,6 +227,7 @@ private:
     edm::FileInPath NonResMVAWeights_LowMass, NonResMVAWeights_HighMass;
     edm::FileInPath ResMVAWeights_LowMass, ResMVAWeights_HighMass;
     edm::FileInPath NonResMVA2017Weights;
+    edm::FileInPath NonResMVA2017Transformation;
     std::vector<std::string> NonResMVAVars;
     std::vector<std::string> NonResMVA2017Vars;
 
@@ -494,6 +496,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
     NonResMVA2017Weights = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVA2017Weights");
     NonResMVA2017Vars = iConfig.getUntrackedParameter<std::vector<std::string > >("NonResMVA2017Vars", NonResMVA2017Vars);
+    NonResMVA2017Transformation = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVA2017Transformation");
 
     //tokens and labels
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
@@ -636,6 +639,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
    if(addNonResMVA2017) {
         std::cout << "Adding nonres MVA 207 with files: " << NonResMVA2017Weights.fullPath() <<  std::endl;
  	 nonresMVA2017_.SetupNonResMVA( NonResMVA2017Weights.fullPath().data(), NonResMVA2017Vars);
+        TFile* fHHTagger2017Transformation = new TFile((NonResMVA2017Transformation.fullPath()).c_str(), "READ");
+        HHTagger2017_cumulative = (TGraph*)fHHTagger2017Transformation->Get("cumulativeGraph"); 
       }
  
       if (doDecorr){
@@ -738,6 +743,7 @@ void
     subLeadingPhotonHasGain6 = -10;
     HHTagger = -10;
     HHTagger2017 = -10;
+    HHTagger2017_transform = -10;
     HHTagger_LM = -10;
     HHTagger_HM = -10;
     ResHHTagger = -10;
@@ -1312,6 +1318,8 @@ void
  
          std::vector<float> myHHTagger2017 = nonresMVA2017_.mvaDiscriminants(HHVars2017);
          HHTagger2017 = myHHTagger2017[0];
+
+         HHTagger2017_transform = HHTagger2017_cumulative->Eval(HHTagger2017) ;
  
      }
 
@@ -1560,6 +1568,7 @@ bbggTree::beginJob()
      tree->Branch("subleadingJet_genNcHadronsb",&subleadingJet_genNcHadronsb, "subleadingJet_genNcHadronsb/F");
 
     tree->Branch("HHTagger2017", &HHTagger2017, "HHTagger2017/F"); 
+    tree->Branch("HHTagger2017_transform", &HHTagger2017_transform, "HHTagger2017_transform/F"); 
 
     tree->Branch("dijetCandidate", &dijetCandidate);
     tree->Branch("dijetCandidate_KF", &dijetCandidate_KF);
