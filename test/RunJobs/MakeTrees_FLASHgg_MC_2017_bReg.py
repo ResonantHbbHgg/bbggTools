@@ -130,11 +130,31 @@ process.load("flashgg.Taggers.flashggPreselectedDiPhotons_cfi")
 import flashgg.Taggers.flashggDiPhotonMVA_cfi as flashggDiPhotonMVA
 process.load("flashgg.Taggers.flashggDiPhotonMVA_cfi")
 
+bregProducers = []
+bregJets = []
+
+from flashgg.Taggers.flashggTags_cff import UnpackedJetCollectionVInputTag
+recoJetCollections = UnpackedJetCollectionVInputTag
+
+for icoll,coll in enumerate(recoJetCollections):
+    print "doing icoll "+str(icoll)
+    producer =   cms.EDProducer('flashggbRegressionProducer',
+				JetTag=coll,
+				rhoFixedGridCollection = cms.InputTag('fixedGridRhoAll'),
+				bRegressionWeightfile= cms.FileInPath("flashgg/Taggers/data/xgboost_bRegression.weights.xml"), 
+				)
+    setattr(process,"bRegProducer%d" %icoll,producer)
+    bregProducers.append(producer)
+    bregJets.append("bRegProducer%d" %icoll)
+
+process.bregProducers = cms.Sequence(reduce(lambda x,y: x+y, bregProducers))
+process.bbggtree.inputTagJets=cms.VInputTag(bregJets)
 
 process.p = cms.Path( flashggPhotonMVA.flashggUpdatedIdMVADiPhotons
                       * flashggPreSelection.flashggPreselectedDiPhotons
 		      * flashggDiPhotonMVA.flashggDiPhotonMVA
                       * flashggTags.flashggUnpackedJets
+		      * process.bregProducers
                       * process.bbggtree )
 
 #process.p = cms.Path( flashggPhotonMVA.flashggUpdatedIdMVADiPhotons
