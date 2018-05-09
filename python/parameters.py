@@ -126,8 +126,9 @@ _elecEtaThresholds            =       cms.vdouble(1.4442,1.566,2.5)
 _useElecMVARecipe            =   cms.bool(False)
 _useElecLooseId              =   cms.bool(True)
 
-_NonResMVA2017Weights   	=	cms.untracked.FileInPath("flashgg/bbggTools/data/MVA2017/allMC_resWeighting_F_noDR_minDRGJet_edited.weights.xml");
+_NonResMVA2017Weights   	=	cms.untracked.FileInPath("flashgg/bbggTools/data/MVA2017/allMC_resWeighting_F_noDR_minDRGJet_edited.weights.xml")
 _NonResMVA2017Vars              =       cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','diphotonCandidate.Pt()/(diHiggsCandidate.M())','dijetCandidate.Pt()/(diHiggsCandidate.M())','customLeadingPhotonIDMVA','customSubLeadingPhotonIDMVA','leadingPhotonSigOverE','subleadingPhotonSigOverE','sigmaMOverMDecorr','PhoJetMinDr')
+_NonResMVA2017Transformation   	=	cms.untracked.FileInPath("flashgg/bbggTools/data/MVA2017/cumulativeTransformation_output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph.root")
 
 _doSigmaMdecorr =cms.untracked.uint32(1)
 _sigmaMdecorrFile = cms.untracked.FileInPath("flashgg/Taggers/data/diphoMVA_sigmaMoMdecorr_split_Mgg40_180.root")
