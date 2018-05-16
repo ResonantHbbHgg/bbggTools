@@ -72,8 +72,8 @@ bbggtree = cms.EDAnalyzer('bbggTree',
 	jetSmear=param._jetSmear,
 	randomLabel=param._randomLabel,
 	jetScale=param._jetScale,
-  doPhotonScale=param._doPhotonScale,
-  doPhotonExtraScale=param._doPhotonExtraScale,
+        doPhotonScale=param._doPhotonScale,
+        doPhotonExtraScale=param._doPhotonExtraScale,
         doPhotonSmearing=param._doPhotonSmearing,
         PhotonCorrectionFile=param._PhotonCorrectionFile,
         doCustomPhotonMVA=param._doCustomPhotonMVA,
@@ -108,6 +108,11 @@ bbggtree = cms.EDAnalyzer('bbggTree',
         NonResMVA2017Weights=param._NonResMVA2017Weights,                   
         NonResMVA2017Vars=param._NonResMVA2017Vars,
         doSigmaMdecorr=param._doSigmaMdecorr,
-        sigmaMdecorr_File=param._sigmaMdecorrFile
+        sigmaMdecorr_File=param._sigmaMdecorrFile,
 #	doSelectionTree=param._doSelectionTree
+
+        addttHMVA = param._addttHMVA,
+        ttHMVAWeights = param._ttHMVAWeights,
+        ttHMVAVars = param._ttHMVAVars
+
 )

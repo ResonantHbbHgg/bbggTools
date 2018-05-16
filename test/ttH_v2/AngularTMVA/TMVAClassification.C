@@ -195,20 +195,21 @@ int TMVAClassification( TString myMethodList = "" )
    factory->AddVariable( "dPhi1",               "dPhi1",           "degree", 'F' );
    factory->AddVariable( "dPhi2",               "dPhi2",           "degree", 'F' );
 
-   factory->AddVariable( "m_over_ptjj",         "m_over_ptjj",     "units", 'F' );
-   factory->AddVariable( "m_over_ptgg",         "m_over_ptgg",     "units", 'F' );
-
    factory->AddVariable( "PhoJetMinDr",         "PhoJetMinDr",     "degree", 'F' );
 
-
+   factory->AddVariable( "njets>8",               "njets9",           "number", 'I');
    factory->AddVariable( "Xtt0",                "Xtt0",            "units", 'F' );
    factory->AddVariable( "Xtt1",                "Xtt1",            "units", 'F' );
 
-   factory->AddVariable( "njets",               "njets",           "number", 'I' );
-   factory->AddVariable( "nmus",                "nmus",            "number", 'I' );
-   factory->AddVariable( "nelecs",              "nelecs",          "number", 'I' );
 
-   factory->AddVariable( "CosThetaStar_CS",     "CosThetaStar_CS", "units", 'F' );
+   factory->AddVariable( "pte1",                "pte1",            "GeV", 'F' );
+   factory->AddVariable( "pte2",                "pte2",            "GeV", 'F' );
+   factory->AddVariable( "ptmu1",                "ptmu1",            "GeV", 'F' );
+   factory->AddVariable( "ptmu2",                "ptmu2",            "GeV", 'F' );
+
+
+   factory->AddVariable( "fabs_CosThetaStar_CS",     "fabs(CosThetaStar_CS)", "units", 'F' );
+   factory->AddVariable( "fabs_CosTheta_bb",     "fabs(CosTheta_bb)", "units", 'F' );
 
    //factory->AddVariable( "var18",                "dihiggsMass", "GeV", 'F' );
 
@@ -221,9 +222,12 @@ int TMVAClassification( TString myMethodList = "" )
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    //  TString fname = "./tmva_class_example.root";
-   TString fnameS = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Dec13_ForTTH_rejection/Signal_v2/Signal_v2_output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root";
+   //   TString fnameS = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Dec13_ForTTH_rejection/Signal_v2/Signal_v2_output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root";
 
-   TString fnameB = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Dec13_ForTTH_rejection/SingleHiggsBackground/ttH_v2/SingleHiggsBackground_ttH_v2_output_ttHToGG_M125_13TeV_powheg_pythia8_v2_0.root";
+   //   TString fnameB = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Dec13_ForTTH_rejection/SingleHiggsBackground/ttH_v2/SingleHiggsBackground_ttH_v2_output_ttHToGG_M125_13TeV_powheg_pythia8_v2_0.root";
+   TString fnameS = "Signal_Hadd_output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root";
+   TString fnameB = "Background_Hadd_output_ttHToGG_M125_13TeV_powheg_pythia8_v2.root"; 
+   
 
    //   if (gSystem->AccessPathName( fname ))  // file does not exist in local directory
    //      gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");

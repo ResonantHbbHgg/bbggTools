@@ -32,7 +32,7 @@ lumi = 35900#pb
 MCSF = 1.0
 signalFactor = 1
 #List of datasets to be used (cross section information defined there)
-data_file = open("datasets/datasets80X_ApprovalNoBkg_Restricted.json")
+data_file = open("datasets/datasets80X_ApprovalNoBkg_Uprade.json")
 
 #number of bins in histograms
 nbin = 30
@@ -40,16 +40,17 @@ dr = "sqrt( (leadingPhoton.Eta() - subleadingPhoton.Eta())*(leadingPhoton.Eta() 
 
 #plots will be saved in dirName
 prefix = ""
-dirSuffix = "June7_36ifb_UNBLIND_Mjj70_MVA_NOBKG"
-dirPrefix = "/afs/cern.ch/work/m/mgouzevi/private/LIMITS/CLEAN_EPS_GGBB/SAMPLES_PRODUCER/CMSSW_8_0_26_patch1/src/flashgg/bbggTools/stackPlots/"
+dirSuffix = "ttHMVA/"
+dirPrefix = "/afs/cern.ch/work/m/mgouzevi/private/LIMITS/CLEAN_EPS_GGBB_UPDATE/CMSSW_8_0_28/src/flashgg/bbggTools/stackPlots/"
 dirName = dirPrefix + dirSuffix
 
 #Location of root files for each invidivual samples. Name of the root files is defined in datasets/datasets(76).json
-loc = '/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA'
-higgsLocation = loc + '/EGML_Background_Mjj70_NewMVA/Hadd/'
-bkgLocation = loc + '/EGML_Background_Mjj70_NewMVA/Hadd/'
-signalLocation = loc + '/EGML_Signal_Mjj70_NewMVA/Hadd/'
-dataLocation = loc + '/EGML_Data_Mjj70_NewMVA/Hadd/'
+#loc = '/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA'
+loc = '/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Mar292018_ForUpgrade_ttHBDT/'
+higgsLocation = loc + '/Background/Hadd/'
+bkgLocation = loc + '/Background/Hadd/'
+signalLocation = loc + '/Signal/Hadd/'
+dataLocation = loc + '/Data/Hadd/'
 
 
 #plots to be made
@@ -59,6 +60,7 @@ plots.append(["MXprime", "diHiggsCandidate.M() - dijetCandidate.M() - diphotonCa
 plots.append(["diPho_Mass", "diphotonCandidate.M()", "m_{#gamma#gamma} [GeV]", 80, 100, 140])
 plots.append(["diJet_Mass", "dijetCandidate.M()", "m_{jj} [GeV]", 24, 70, 190])
 plots.append(["HHTagger", "HHTagger", "Classification MVA", 54, -1.08, 1.08])
+plots.append(["ttHTagger", "ttHTagger", "Classification MVA", 54, -1.08, 1.08])
 plots.append(["CosTheta_gg", "fabs(CosTheta_gg)", "| cos #theta_{#gamma#gamma} |", 10, 0, 1])
 plots.append(["CosTheta_bb", "fabs(CosTheta_bb)", "| cos #theta_{jj} |", 10, 0, 1])
 plots.append(["CosThetaStar_CS", "fabs(CosThetaStar_CS)", "| cos #theta^{CS}_{HH} |", 10, 0, 1])

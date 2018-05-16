@@ -92,9 +92,9 @@ _nhCorrEE	=	cms.untracked.vdouble(0.0139, 0.000025)
 _phCorrEE	=	cms.untracked.vdouble(0.0034, 0.)
 
 ##Systematics
-_jetSmear		=	cms.untracked.int32(1)
+_jetSmear		=	cms.untracked.int32(0)
 _randomLabel		=	cms.untracked.string("rnd_g_JER")
-_jetScale		=	cms.untracked.int32(1)
+_jetScale		=	cms.untracked.int32(0)
 ##Photon corrections/
 _doPhotonScale		=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
 _doPhotonExtraScale	=	cms.untracked.int32(0) #-10: not applied | -1: -1sigma | 0: central | 1: 1sigma
@@ -113,7 +113,6 @@ _NonResMVAVars 			=	cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis'
 _addNonResMVA2017               =       cms.untracked.uint32(1)
 
 #ttH
-##Muons selection
 _muPtThreshold              =       cms.double(20)
 _muEtaThreshold               =       cms.double(2.4)
 _muPFIsoSumRelThreshold         =       cms.double(0.25)
@@ -125,6 +124,11 @@ _elecPtThreshold             =       cms.double(20)
 _elecEtaThresholds            =       cms.vdouble(1.4442,1.566,2.5)
 _useElecMVARecipe            =   cms.bool(False)
 _useElecLooseId              =   cms.bool(True)
+
+_addttHMVA               =       cms.untracked.uint32(1)
+_ttHMVAWeights   	=	cms.untracked.FileInPath("flashgg/bbggTools/data/ttHMVA/ttH_BDT.weights.xml");
+_ttHMVAVars 			=	cms.untracked.vstring('sumEt', 'MET', 'dPhi1', 'dPhi2', 'PhoJetMinDr', 'njets>8', 'Xtt0', 'Xtt1', 'pte1', 'pte2', 'ptmu1', 'ptmu2', 'fabs_CosThetaStar_CS', 'fabs_CosTheta_bb')
+
 
 _NonResMVA2017Weights   	=	cms.untracked.FileInPath("flashgg/bbggTools/data/MVA2017/allMC_resWeighting_F_noDR_minDRGJet_edited.weights.xml");
 _NonResMVA2017Vars              =       cms.untracked.vstring('leadingJet_bDis','subleadingJet_bDis','fabs(CosThetaStar_CS)','fabs(CosTheta_bb)','fabs(CosTheta_gg)','diphotonCandidate.Pt()/(diHiggsCandidate.M())','dijetCandidate.Pt()/(diHiggsCandidate.M())','customLeadingPhotonIDMVA','customSubLeadingPhotonIDMVA','leadingPhotonSigOverE','subleadingPhotonSigOverE','sigmaMOverMDecorr','PhoJetMinDr')

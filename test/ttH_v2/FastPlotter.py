@@ -14,13 +14,21 @@ def buildLegend(x1, y1, x2, y2):
     leg.SetFillStyle(0)
     return leg
 
-os.system("python ../../scripts/readLorentzVector_2017Signal_ttH.py Signal_v2/output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root bbggSelectionTree 1 1 1")
+os.system("python ../../scripts/readLorentzVector_2017Signal_ttH.py Signal/Hadd/output_GluGluToHHTo2B2G_node_7_13TeV-madgraph_0.root bbggSelectionTree 1 1 1")
 
-os.system("python ../../scripts/readLorentzVector_2017Signal_ttH.py SingleHiggsBackground/ttH_v2/output_ttHToGG_M125_13TeV_powheg_pythia8_v2_0.root bbggSelectionTree 1 1 1")
+os.system("python ../../scripts/readLorentzVector_2017Signal_ttH.py Signal/Hadd/output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root bbggSelectionTree 1 1 1")
+
+os.system("python ../../scripts/readLorentzVector_2017Signal_ttH.py Background/Hadd/output_ttHToGG_M125_13TeV_powheg_pythia8_v2.root bbggSelectionTree 1 1 1")
+
+os.system("python ../../scripts/readLorentzVector_2017Signal_ttH.py Background/Hadd/output_TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8.root bbggSelectionTree 1 1 1")
+
+os.system("python ../../scripts/readLorentzVector_2017Signal_ttH.py Background/Hadd/output_GluGluHToGG_M-125_13TeV_powheg_pythia8.root bbggSelectionTree 1 1 1")
+
+os.system("python ../../scripts/readLorentzVector_2017Signal_ttH.py Data/Hadd/DoubleEG.root bbggSelectionTree 1 1 1")
 
 
-fB = TFile("SingleHiggsBackground_ttH_v2_output_ttHToGG_M125_13TeV_powheg_pythia8_v2_0.root")
-fS = TFile("Signal_v2_output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root")
+fB = TFile("Background_Hadd_output_ttHToGG_M125_13TeV_powheg_pythia8_v2.root")
+fS = TFile("Signal_Hadd_output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root")
 
 listMET = [["hMET_low_mp;1", 1], ["hMET_low_hp;1", 2], ["hMET_high_mp;1", 3], ["hMET_high_hp;1", 4]]
 
