@@ -1562,7 +1562,7 @@ bbggTree::beginJob()
     tree->Branch("leadingElectron", &leadingElectron);
     tree->Branch("subleadingElectron", &subleadingElectron);
 
-    tree->Branch("ttHTagger", &ttHTagger, "tHHTagger/F"); 
+    tree->Branch("ttHTagger", &ttHTagger, "ttHTagger/F"); 
 
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);
