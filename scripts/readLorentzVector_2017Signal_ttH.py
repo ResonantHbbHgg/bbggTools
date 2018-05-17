@@ -17,7 +17,7 @@ def readLorentzVector():
 
 
 #  f = ROOT.TFile.Open('/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Mar30_ForApproval/'+sys.argv[1], "READ")
-  f = ROOT.TFile.Open('/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Dec13_ForTTH_rejection/'+sys.argv[1], "READ")
+  f = ROOT.TFile.Open('/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Mar292018_ForUpgrade_ttHBDT/'+sys.argv[1], "READ")
 
   print sys.argv[1]
 
@@ -120,8 +120,11 @@ def readLorentzVector():
   nXtt0 = n.zeros(1, dtype=float)
   nXtt1 = n.zeros(1, dtype=float)
   nnjets = n.zeros(1, dtype=int)
-  nnmus = n.zeros(1, dtype=int)
-  nnelecs = n.zeros(1, dtype=int)
+
+  npte1  = n.zeros(1, dtype=float)
+  npte2  = n.zeros(1, dtype=float)
+  nptmu1  = n.zeros(1, dtype=float)
+  nptmu2  = n.zeros(1, dtype=float)
 
   nm_over_ptjj = n.zeros(1, dtype=float)
   nm_over_ptgg = n.zeros(1, dtype=float)
@@ -145,8 +148,11 @@ def readLorentzVector():
   tBDT.Branch("Xtt1", nXtt1, "Xtt1/D")
 
   tBDT.Branch("njets", nnjets, "njets/I")
-  tBDT.Branch("nmus", nnmus, "nmus/I")
-  tBDT.Branch("nelecs", nnelecs, "nelecs/I")
+
+  tBDT.Branch("pte1", npte1, "pte1/D")
+  tBDT.Branch("pte2", npte2, "pte2/D")
+  tBDT.Branch("ptmu1", nptmu1, "ptmu1/D")
+  tBDT.Branch("ptmu2", nptmu2, "ptmu2/D")
 
   tBDT.Branch("m_over_ptjj", nm_over_ptjj, "m_over_ptjj/D")
   tBDT.Branch("m_over_ptgg", nm_over_ptgg, "m_over_ptgg/D")
@@ -154,8 +160,8 @@ def readLorentzVector():
   tBDT.Branch("dPhi1", ndPhi1, "dPhi1/D")
   tBDT.Branch("dPhi2", ndPhi2, "dPhi2/D")
 
-  tBDT.Branch("CosTheta_bb", nCosTheta_bb, "CosTheta_bb/D");
-  tBDT.Branch("CosThetaStar_CS", nCosThetaStar_CS, "CosThetaStar_CS/D");
+  tBDT.Branch("fabs_CosTheta_bb", nCosTheta_bb, "fabs_CosTheta_bb/D");
+  tBDT.Branch("fabs_CosThetaStar_CS", nCosThetaStar_CS, "fabs_CosThetaStar_CS/D");
 
   tBDT.Branch("PhoJetMinDr", nPhoJetMinDr, "PhoJetMinDr/D");
 # --------------- --------------- ---------------
@@ -183,16 +189,12 @@ def readLorentzVector():
   nHMHPC_filter_LMET_JET_H = 0
   nHMHPC_filter_LMET_JET_HFH = 0
 
-  nHMHPC_filter_LMET_NJ3 = 0
-
-  nHMHPC_filter_NJ3 = 0
-  nHMHPC_filter_NJ4to5 = 0
-  nHMHPC_filter_NJ6to7 = 0
-  nHMHPC_filter_NJ8 = 0
-
   nHMHPC_filter_LMET_H = 0
   nHMHPC_filter_LMET_FH = 0
 
+  
+  nHMHPC_filter_ttHMVA = 0;
+  nLMHPC_filter_ttHMVA = 0;
 
   LMMbtag = 0
   HMMbtag = 0
@@ -208,6 +210,12 @@ def readLorentzVector():
     leadingJet = event.leadingJet
     subleadingJet = event.subleadingJet
 
+    leadingElectron = event.leadingElectron
+    subleadingElectron = event.subleadingElectron
+
+    leadingMuon = event.leadingMuon
+    subleadingMuon = event.subleadingMuon
+
     CosThetaStar_CS = event.CosThetaStar_CS 
     CosTheta_bb = event.CosTheta_bb
 
@@ -221,15 +229,35 @@ def readLorentzVector():
     v3j1  = ROOT.TVector3(leadingJet.Px(), leadingJet.Py(), 0)
     v3j2  = ROOT.TVector3(subleadingJet.Px(), subleadingJet.Py(), 0)
 
-    dPhi1 = ROOT.TMath.ACos(v3MET.Dot(v3j1)/(MET*v3j1.Mag()+1e-10))
-    dPhi2 = ROOT.TMath.ACos(v3MET.Dot(v3j2)/(MET*v3j2.Mag()+1e-10))
-
-
-    nelecs = event.nelecs
-    nmus = event.nmus
-
-    nleptons = nelecs + nmus
+    dPhi1 = v3MET.Phi() - v3j1.Phi()
+    if (dPhi1 > ROOT.TMath.Pi()):
+      dPhi1 = dPhi1 - 2*ROOT.TMath.Pi()
+    elif dPhi1 < -ROOT.TMath.Pi():
+      dPhi1 = dPhi1 + 2*ROOT.TMath.Pi()
     
+    dPhi2 = v3MET.Phi() - v3j2.Phi()
+    if (dPhi2 > ROOT.TMath.Pi()):
+      dPhi2 = dPhi2 - 2*ROOT.TMath.Pi()
+    elif dPhi2 < -ROOT.TMath.Pi():
+      dPhi2 = dPhi2 + 2*ROOT.TMath.Pi()
+
+    pte1 =  leadingElectron.Pt()
+    pte2 =  subleadingElectron.Pt()
+    ptmu1 =  leadingMuon.Pt()
+    ptmu2 =  subleadingMuon.Pt()
+    
+    nleptons = 0
+
+    if (pte1 > 1): 
+      nleptons = +1
+    if (pte2 > 1): 
+      nleptons = +1
+    if (ptmu1 > 1): 
+      nleptons = +1
+    if (ptmu1 > 1): 
+      nleptons = +1    
+
+
     Xtt0 = event.Xtt0
     Xtt1 = event.Xtt1
 
@@ -239,6 +267,7 @@ def readLorentzVector():
     Mjjbt0 = event.Mjjbt0
     Mjjbt1 = event.Mjjbt1
 
+    ttHMVA = event.ttHTagger
 
     mass_jj = dijet.M()
     mass_gg = diphoton.M()
@@ -264,16 +293,20 @@ def readLorentzVector():
     nXtt0[0] = Xtt0
     nXtt1[0] = Xtt1
     nnjets[0] = njets
-    nnmus[0] = nmus
-    nnelecs[0] = nelecs
+    npte1[0] = pte1
+    npte2[0] = pte2
+    nptmu1[0] = ptmu1
+    nptmu2[0] = ptmu2
     nm_over_ptjj[0] = m_over_ptjj
     nm_over_ptgg[0] = m_over_ptgg
+
+
 
     ndPhi1[0] = dPhi1
     ndPhi2[0] = dPhi2
 
-    nCosTheta_bb[0] = CosTheta_bb
-    nCosThetaStar_CS[0] = CosThetaStar_CS 
+    nCosTheta_bb[0] = abs(CosTheta_bb)
+    nCosThetaStar_CS[0] = abs(CosThetaStar_CS)
     
     nPhoJetMinDr[0] = PhoJetMinDr
 
@@ -383,6 +416,10 @@ def readLorentzVector():
         hMjjW1_low_hp.Fill(MjjW1)
         hMjjbt1_low_hp.Fill(Mjjbt1)
 
+      if ttHMVA > -0.1:
+        nLMHPC_filter_ttHMVA += 1;
+
+
 
     elif bHMHPC:
       HMHPC += genTotalWeight
@@ -401,21 +438,6 @@ def readLorentzVector():
       if not filterSL_L and not filterSL_MET and not filterFH_JETS and not filterSL_H and not filterFH:
         nHMHPC_filter_LMET_JET_HFH += 1
 
-      if not filterSL_L and not filterSL_MET and njets < 4:
-        nHMHPC_filter_LMET_NJ3 += 1
-
-      if njets < 4:
-        nHMHPC_filter_NJ3 += 1
-
-      if njets > 3 and njets < 6:
-        nHMHPC_filter_NJ4to5 += 1
-
-      if njets > 5 and njets < 8:
-        nHMHPC_filter_NJ6to7 += 1
-
-      if njets > 7:
-        nHMHPC_filter_NJ8 += 1
-
 
 
       if not filterSL_L and not filterSL_MET and not filterSL_H and  njets > 3 and njets < 6:
@@ -423,7 +445,11 @@ def readLorentzVector():
 
       if not filterSL_L and not filterSL_MET and not filterFH and  njets > 5 and njets < 8:
         nHMHPC_filter_LMET_FH += 1
+        
+#      print ttHMVA
 
+      if ttHMVA > -0.1:
+        nHMHPC_filter_ttHMVA += 1;
 
 
       hNjets_high_hp.Fill(njets)
@@ -501,18 +527,10 @@ def readLorentzVector():
   print 'lept > 0 && MET > 130 && Njets > 8',  '%.3f' %(nHMHPC_filter_LMET_JET/(nHMHPC+1.0))
   print 'lept > 0 && MET > 130 && Njets > 8 && Wjj SL cut',  '%.3f' %(nHMHPC_filter_LMET_JET_H/(nHMHPC+1.0))
   print 'lept > 0 && MET > 130 && Njets > 8 && Wjj SL cut && Full H cut ',  '%.3f' %(nHMHPC_filter_LMET_JET_HFH/(nHMHPC+1.0))
-  print '---------------------'
-  print 'ttH hard to remove: Njets < 4',  '\t \t %.3f' %(nHMHPC_filter_NJ3/(nHMHPC+1.0))
-  print '    lept > 0 && MET > 130 && Njets < 4',      '\t\t  relative %.3f' %(nHMHPC_filter_LMET_NJ3/(nHMHPC_filter_NJ3+1.0))
-  print '---------------------'
-  print 'ttH hard to remove: Njets > 3 and Njets < 6',  '\t \t %.3f' %(nHMHPC_filter_NJ4to5/(nHMHPC+1.0))
-  print '    lept > 0 && MET > 130 && Wjj SL cut',     '\t \t relative %.3f' %(nHMHPC_filter_LMET_H/(nHMHPC_filter_NJ4to5+1.0))
-  print '---------------------'
-  print 'Njets > 6 and Njets < 8',  '\t \t %.3f' %(nHMHPC_filter_NJ6to7/(nHMHPC+1.0))
-  print '    lept > 0 && MET > 130 && Fully Hadronic', '\t \t relative  %.3f' %(nHMHPC_filter_LMET_FH/(nHMHPC_filter_NJ6to7+1.0))
-  print '---------------------'
-  print 'Njets > 7',  '\t \t %.3f' %(nHMHPC_filter_NJ8/(nHMHPC+1.0))
-  print '    removed Njets > 7: \t \t 0' 
+
+  print 'HMHP ttHMVA > -0.1', '%.3f'   % (nHMHPC_filter_ttHMVA/(nHMHPC+1.0))
+  print 'LMHP ttHMVA > -0.1', '%.3f'   % (nLMHPC_filter_ttHMVA/(nLMHPC+1.0))
+
 #    if mass_hh < 350 and b2btag:
 #      hDijet_low_2b.Fill(mass_jj)
 #    elif mass_hh > 350 and b2btag:

@@ -44,6 +44,7 @@ Implementation:
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
 
 //FLASHgg files
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
@@ -69,6 +70,7 @@ Implementation:
 #include "flashgg/bbggTools/interface/bbggPhotonCorrector.h"
 #include "flashgg/bbggTools/interface/bbggNonResMVA.h"
 #include "flashgg/bbggTools/interface/NonResWeights.h"
+#include "flashgg/bbggTools/interface/genericMVA.h"
 
 //New MVA
 #include "flashgg/bbggTools/interface/bbggNonResMVA2017.h"
@@ -116,6 +118,7 @@ private:
     bbggNonResMVA nonresMVA_;
     bbggNonResMVA2017 nonresMVA2017_;
     bbggNonResMVA resMVA_;
+    genericMVA ttHMVA_;
     flashgg::GlobalVariablesDumper* globVar_;
     //Parameter tokens
     edm::EDGetTokenT<edm::View<flashgg::DiPhotonCandidate> > diPhotonToken_;
@@ -168,6 +171,7 @@ private:
     int subLeadingPhotonHasGain1, subLeadingPhotonHasGain6;
     float HHTagger, HHTagger2017, HHTagger_LM, HHTagger_HM, HHTagger2017_transform;
     float ResHHTagger, ResHHTagger_LM, ResHHTagger_HM;
+    float ttHTagger;
     float MX, sumEt;
     TGraph *HHTagger2017_cumulative;
     
@@ -222,14 +226,17 @@ private:
     unsigned int doTnP;
     int doPhotonScale, doPhotonExtraScale, doPhotonSmearing;
     std::string PhotonScaleFile;
-    int addNonResMVA;
-    int addNonResMVA2017;
+    int addNonResMVA, addNonResMVA2017, addttHMVA;
     edm::FileInPath NonResMVAWeights_LowMass, NonResMVAWeights_HighMass;
     edm::FileInPath ResMVAWeights_LowMass, ResMVAWeights_HighMass;
     edm::FileInPath NonResMVA2017Weights;
+
+    edm::FileInPath ttHMVAWeights;
     edm::FileInPath NonResMVA2017Transformation;
+
     std::vector<std::string> NonResMVAVars;
     std::vector<std::string> NonResMVA2017Vars;
+    std::vector<std::string> ttHMVAVars;
 
     double muPtThreshold, muEtaThreshold, muPFIsoSumRelThreshold;// deltaRMuonPhoThreshold;
     double dRPhoLeptonThreshold, dRJetLeptonThreshold;
@@ -238,7 +245,7 @@ private:
     bool useElecMVARecipe, useElecLooseId;
     std::vector<double> elecEtaThresholds;
 
-  int njets, nelecs, nmus,  nelecs_loose, nmus_loose;
+  int njets;
     vector<float> Xtt;
     float Xtt0, Xtt1, MjjW0, MjjW1, Mjjbt0, Mjjbt1;
 
@@ -293,8 +300,9 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     phoCorr_ = bbggPhotonCorrector();
     nonresMVA_ = bbggNonResMVA();
     resMVA_ = bbggNonResMVA();
+    ttHMVA_ = genericMVA();
+
     NRW    = new NonResWeights();
-    //    globVar_ = new flashgg::GlobalVariablesDumper(iConfig,std::forward<edm::ConsumesCollector>(cc));
     globVar_ = new flashgg::GlobalVariablesDumper(iConfig, consumesCollector() );
     //Lumi weight
     double lumiWeight_ = ( iConfig.getParameter<double>( "lumiWeight" ) );
@@ -316,17 +324,11 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     unsigned int def_n_bJets, def_doCustomPhotonMVA;
     int def_doPhotonScale, def_doPhotonExtraScale, def_doPhotonSmearing;
     std::string def_PhotonScaleFile;
-    int def_addNonResMVA ;
-      int def_addNonResMVA2017 ;
-//    edm::FileInPath def_NonResMVAWeights_LowMass, def_NonResMVAWeights_HighMass;
-//    edm::FileInPath def_ResMVAWeights_LowMass, def_ResMVAWeights_HighMass;
+    int def_addNonResMVA, def_addNonResMVA2017, def_addttHMVA;
     edm::FileInPath def_NonResMVA2017Weights;
     
-    std::vector<std::string> def_NonResMVAVars;
-    std::vector<std::string> def_NonResMVA2017Vars;
-      
+    std::vector<std::string> def_NonResMVAVars, def_NonResMVA2017Vars, def_ttHMVAVars;
 
-    //std::string def_bRegFile;
     edm::FileInPath def_bRegFileLeading, def_bRegFileSubLeading;
 
     //init values
@@ -356,17 +358,11 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     std::string def_randomLabel = "";
     def_addNonResMVA = 0;
     def_addNonResMVA2017 = 0;
-//    def_NonResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
-//    def_NonResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
-//    def_ResMVAWeights_LowMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_LowMass.xml");
-//    def_ResMVAWeights_HighMass = edm::FileInPath("flashgg/bbggTools/data/NonResMVA/TMVAClassification_BDT.weights_HighMass.xml");
-//    def_NonResMVA2017Weights = edm::FileInPath("flashgg/bbggTools/data/MVA2017/allMC_resWeighting_F_noDR_minDRGJet_edited.weights.xml");
+    def_addttHMVA = 0;
 
     def_NonResMVAVars.push_back("");
     def_NonResMVA2017Vars.push_back("");
-//    edm::FileInPath def_resFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_PtResolution_AK4PFchs.txt");
-//    edm::FileInPath def_sfFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_SF_AK4PFchs.txt");
-//    edm::FileInPath def_scaleFile = edm::FileInPath("flashgg/bbggTools/data/JetSystematics/Fall15_25nsV2_MC_Uncertainty_AK4PFchs.txt");
+    def_ttHMVAVars.push_back("");
 
     edm::FileInPath def_resFile = edm::FileInPath("flashgg/Systematics/data/JER/Spring16_25nsV10_MC_PtResolution_AK4PFchs.txt");
     edm::FileInPath def_sfFile = edm::FileInPath("flashgg/Systematics/data/JER/Spring16_25nsV10_MC_SF_AK4PFchs.txt");
@@ -484,10 +480,8 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
     addNonResMVA = iConfig.getUntrackedParameter<unsigned int>("addNonResMVA", def_addNonResMVA);
     addNonResMVA2017 = iConfig.getUntrackedParameter<unsigned int>("addNonResMVA2017", def_addNonResMVA2017);
-//    NonResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_LowMass", def_NonResMVAWeights_LowMass);
-//    NonResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_HighMass", def_NonResMVAWeights_HighMass);
-//    ResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_LowMass", def_ResMVAWeights_LowMass);
-//    ResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_HighMass", def_ResMVAWeights_HighMass);
+    addttHMVA = iConfig.getUntrackedParameter<unsigned int>("addttHMVA", def_addttHMVA);
+
     NonResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_LowMass");
     NonResMVAWeights_HighMass = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVAWeights_HighMass");
     ResMVAWeights_LowMass = iConfig.getUntrackedParameter<edm::FileInPath>("ResMVAWeights_LowMass");
@@ -498,12 +492,15 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
     NonResMVA2017Vars = iConfig.getUntrackedParameter<std::vector<std::string > >("NonResMVA2017Vars", NonResMVA2017Vars);
     NonResMVA2017Transformation = iConfig.getUntrackedParameter<edm::FileInPath>("NonResMVA2017Transformation");
 
+    ttHMVAWeights = iConfig.getUntrackedParameter<edm::FileInPath>("ttHMVAWeights");
+    ttHMVAVars = iConfig.getUntrackedParameter<std::vector<std::string > >("ttHMVAVars", def_ttHMVAVars);
+
     //tokens and labels
     genInfo_ = iConfig.getUntrackedParameter<edm::InputTag>( "genInfo", edm::InputTag("generator") );
     genInfoToken_ = consumes<GenEventInfoProduct>( genInfo_ );
     myTriggers = iConfig.getUntrackedParameter<std::vector<std::string> >("myTriggers", def_myTriggers);
     triggerToken_ = consumes<edm::TriggerResults>( iConfig.getParameter<edm::InputTag>( "triggerTag" ) );
-//    METToken_ = consumes<edm::View<pat::MET> >(iConfig.getParameter<edm::InputTag>("metTag"));
+
     if (is2016){
       triggerToken_ = consumes<edm::TriggerResults>( edm::InputTag("TriggerResults", "", "HLT" )) ;
     }
@@ -516,9 +513,6 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
 
 
     randomLabel = iConfig.getUntrackedParameter<std::string>("randomLabel", def_randomLabel);
-
-
-
 
     resFile = iConfig.getUntrackedParameter<edm::FileInPath>("resFile", def_resFile);
     sfFile = iConfig.getUntrackedParameter<edm::FileInPath>("sfFile", def_sfFile);
@@ -629,6 +623,11 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
         phoCorr_.SetupCorrector(PhotonScaleFile);
         phoCorr_.setRandomLabel(std::string("rnd_g_E"));
     }
+    
+    if(addttHMVA){
+      std::cout << "Adding ttH MVA with files: " << ttHMVAWeights.fullPath() << std::endl;
+      ttHMVA_.setupMVA( ttHMVAWeights.fullPath().data(), ttHMVAVars);
+    }
 
     if(addNonResMVA) {
         std::cout << "Adding nonres MVA with files: " << NonResMVAWeights_LowMass.fullPath() << " and " << NonResMVAWeights_HighMass.fullPath() << std::endl;
@@ -656,7 +655,7 @@ inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets"
         }
       }
 
-
+      
 
     if (getNonResGenInfo){
       std::string fileNameWei1 = edm::FileInPath("flashgg/bbggTools/data/NonResReWeight/weights_v1_1507_points.root").fullPath();
@@ -749,6 +748,8 @@ void
     ResHHTagger = -10;
     ResHHTagger_LM = -10;
     ResHHTagger_HM = -10;
+    ttHTagger = -10;
+
 
     dEta_VBF = -999; 
     Mjj_VBF = 0;
@@ -757,8 +758,9 @@ void
 
     njets = 0;
 
-    leadingMuon.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
-    leadingElectron.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
+    leadingMuon.SetPxPyPzE(0,0,0,0);          leadingElectron.SetPxPyPzE(0,0,0,0);
+    subleadingMuon.SetPxPyPzE(0,0,0,0);    subleadingElectron.SetPxPyPzE(0,0,0,0);
+
 
     diphotonCandidate.SetPxPyPzE(0,0,0,0);// = diphoCand->p4();
     leadingPhoton.SetPxPyPzE(0,0,0,0);// = diphoCand->leadingPhoton()->p4();
@@ -868,8 +870,6 @@ void
 
 	if (genPar->pdgId()==25 && genPar->isHardProcess()){
 
-	  //std::cout<<EvtCount<<"  Higgs it is!   Pt="<<genPar->pt()<<"  M="<<genPar->mass()
-	  //<<"\n \t Is Hard ="<<genPar->isHardProcess()<<" daug-ter = "<<genPar->daughter(0)->pdgId()<<endl;
 	  if (nH==0)
 	    H1.SetXYZM(genPar->px(), genPar->py(), genPar->pz(), genPar->mass());
 	  if (nH==1)
@@ -881,10 +881,7 @@ void
       }
 
       if (nH==2){
-	  // Only fill those if both Higgses are found (avoids issues when running over Bkg MC).
 
-	  //gen_ptH1 = H1.Pt();
-	  //gen_ptH2 = H2.Pt();
 	  gen_mHH  = (H1+H2).M();
 	  gen_cosTheta = tools_.getCosThetaStar_CS(H1,H2,6500);
 
@@ -1209,7 +1206,8 @@ void
 
     MX = diHiggsCandidate.M() - diphotonCandidate.M() - dijetCandidate.M() + 250;
 
-    // ================================ VBF definition ======================
+ 
+   // ================================ VBF definition ======================
 
     collectionForVBF = tools_.JetVBFPreSelection(collectionForVBF, diphoCandidate, SelJets);
 
@@ -1227,17 +1225,8 @@ void
     }
 
 
+    // ==================== Kinematic fit =======
 
-    DiJetDiPho_DR = tools_.DeltaR(diphotonCandidate, dijetCandidate);
-
-    PhoJetMinDr = min( min( tools_.DeltaR( leadingPhoton, leadingJet ), tools_.DeltaR( leadingPhoton, subleadingJet ) ),
-                       min( tools_.DeltaR( subleadingPhoton, leadingJet ), tools_.DeltaR( subleadingPhoton, subleadingJet ) ) );
-
-
-
-
-
-    //Kinematic fit:
     if(DEBUG) std::cout << "[bbggTree::analyze] Doing kinematic fit!" << std::endl;
     kinFit_.KinematicFit(leadingJet, subleadingJet);
     leadingJet_KF = kinFit_.GetJet1();
@@ -1248,8 +1237,8 @@ void
     jet1EtaRes = kinFit_.GetEtaResolution(leadingJet);
     jet1PhiRes= kinFit_.GetPhiResolution(leadingJet);
 
-    //Getting CosThetaStar Angles
-//    const flashgg::DiPhotonCandidate* thisDiPhoCand = diphoCand.get();
+    // ===================== ANGLES ==============
+
     vector<float> CosThetaAngles  = tools_.CosThetaAngles(&diphoCand, LeadingJet, SubLeadingJet);
     TLorentzVector djc, dpc;
     djc.SetPtEtaPhiE( dijetCandidate.pt(), dijetCandidate.eta(), dijetCandidate.phi(), dijetCandidate.energy());
@@ -1263,6 +1252,14 @@ void
     vector<double> PhiAngles = tools_.getPhi(&diphoCand, LeadingJet, SubLeadingJet);
     Phi0 = PhiAngles[0];
     Phi1 = PhiAngles[1];
+
+    DiJetDiPho_DR = tools_.DeltaR(diphotonCandidate, dijetCandidate);
+
+    PhoJetMinDr = min( min( tools_.DeltaR( leadingPhoton, leadingJet ), tools_.DeltaR( leadingPhoton, subleadingJet ) ),
+                       min( tools_.DeltaR( subleadingPhoton, leadingJet ), tools_.DeltaR( subleadingPhoton, subleadingJet ) ) );
+
+
+    // ================== PHOTON MVA ============
     
     customLeadingPhotonMVA = diphoCand.leadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() );
     h_hggid->Fill(diphoCand.leadingPhoton()->phoIdMvaDWrtVtx( diphoCand.vtx() ));
@@ -1345,127 +1342,13 @@ void
 
     if(DEBUG) std::cout << "[bbggTree::analyze] After filling candidates" << std::endl;
 
-/*
-    int lphoIDloose = 0;
-    int lphoIDmedium = 0;
-    int lphoIDtight = 0;
-    int sphoIDloose = 0;
-    int sphoIDmedium = 0;
-    int sphoIDtight = 0;
-    int lphoISOloose = 0;
-    int lphoISOmedium = 0;
-    int lphoISOtight = 0;
-    int sphoISOloose = 0;
-    int sphoISOmedium = 0;
-    int sphoISOtight = 0;
-
-
-    float lpho_eta_abs = fabs( diphoCand->leadingPhoton()->superCluster()->eta() );
-    float spho_eta_abs = fabs( diphoCand->subLeadingPhoton()->superCluster()->eta() );
-
-    leadingPhotonIDMVA = diphoCand->leadingPhoton()->userFloat(PhotonMVAEstimator);
-    subleadingPhotonIDMVA = diphoCand->subLeadingPhoton()->userFloat(PhotonMVAEstimator);
-
-    if(lpho_eta_abs < 1.44){
-        lphoIDloose 	= tools_.isPhoID(diphoCand->leadingPhoton(), phoIDlooseEB);
-        lphoIDmedium 	= tools_.isPhoID(diphoCand->leadingPhoton(), phoIDmediumEB);
-        lphoIDtight 	= tools_.isPhoID(diphoCand->leadingPhoton(), phoIDtightEB);
-        lphoISOloose 	= tools_.isPhoISO(diphoCand, 0, phoISOlooseEB,  nhCorrEB, phCorrEB);
-        lphoISOmedium 	= tools_.isPhoISO(diphoCand, 0, phoISOmediumEB, nhCorrEB, phCorrEB);
-        lphoISOtight 	= tools_.isPhoISO(diphoCand, 0, phoISOtightEB,  nhCorrEB, phCorrEB);
-    }
-    if(lpho_eta_abs > 1.44){
-        lphoIDloose 	= tools_.isPhoID(diphoCand->leadingPhoton(), phoIDlooseEE);
-        lphoIDmedium 	= tools_.isPhoID(diphoCand->leadingPhoton(), phoIDmediumEE);
-        lphoIDtight 	= tools_.isPhoID(diphoCand->leadingPhoton(), phoIDtightEE);
-        lphoISOloose 	= tools_.isPhoISO(diphoCand, 0, phoISOlooseEE,  nhCorrEE, phCorrEE);
-        lphoISOmedium 	= tools_.isPhoISO(diphoCand, 0, phoISOmediumEE, nhCorrEE, phCorrEE);
-        lphoISOtight 	= tools_.isPhoISO(diphoCand, 0, phoISOtightEE,  nhCorrEE, phCorrEE);
-    }
-
-    if(spho_eta_abs < 1.44){
-        sphoIDloose 	= tools_.isPhoID(diphoCand->subLeadingPhoton(), phoIDlooseEB);
-        sphoIDmedium 	= tools_.isPhoID(diphoCand->subLeadingPhoton(), phoIDmediumEB);
-        sphoIDtight 	= tools_.isPhoID(diphoCand->subLeadingPhoton(), phoIDtightEB);
-        sphoISOloose 	= tools_.isPhoISO(diphoCand, 1, phoISOlooseEB,  nhCorrEB, phCorrEB);
-        sphoISOmedium 	= tools_.isPhoISO(diphoCand, 1, phoISOmediumEB, nhCorrEB, phCorrEB);
-        sphoISOtight 	= tools_.isPhoISO(diphoCand, 1, phoISOtightEB,  nhCorrEB, phCorrEB);
-    }
-    if(spho_eta_abs > 1.44){
-        sphoIDloose 	= tools_.isPhoID(diphoCand->subLeadingPhoton(), phoIDlooseEE);
-        sphoIDmedium 	= tools_.isPhoID(diphoCand->subLeadingPhoton(), phoIDmediumEE);
-        sphoIDtight 	= tools_.isPhoID(diphoCand->subLeadingPhoton(), phoIDtightEE);
-        sphoISOloose 	= tools_.isPhoISO(diphoCand, 1, phoISOlooseEE,  nhCorrEE, phCorrEE);
-        sphoISOmedium 	= tools_.isPhoISO(diphoCand, 1, phoISOmediumEE, nhCorrEE, phCorrEE);
-        sphoISOtight 	= tools_.isPhoISO(diphoCand, 1, phoISOtightEE,  nhCorrEE, phCorrEE);
-    }
-
-    leadingPhotonID.push_back(lphoIDloose);
-    leadingPhotonID.push_back(lphoIDmedium);
-    leadingPhotonID.push_back(lphoIDtight);
-    leadingPhotonISO.push_back(lphoISOloose);
-    leadingPhotonISO.push_back(lphoISOmedium);
-    leadingPhotonISO.push_back(lphoISOtight);
-
-    subleadingPhotonID.push_back(sphoIDloose);
-    subleadingPhotonID.push_back(sphoIDmedium);
-    subleadingPhotonID.push_back(sphoIDtight);
-    subleadingPhotonISO.push_back(sphoISOloose);
-    subleadingPhotonISO.push_back(sphoISOmedium);
-    subleadingPhotonISO.push_back(sphoISOtight);
-*/
 
     leadingPhotonEVeto = diphoCand.leadingPhoton()->passElectronVeto();
     subleadingPhotonEVeto = diphoCand.subLeadingPhoton()->passElectronVeto();
 
 
 
-    // ======================= LEPTONS =====================
-
-    edm::Handle<double>  rho;
-    iEvent.getByToken(rhoToken_,rho);
-
-
-    //    Handle<View<flashgg::Met> > METs;
-    Handle<View<flashgg::Electron> > theElectrons;
-    iEvent.getByToken( electronToken_, theElectrons );
- 
-    double looseLeptonPtThreshold = 10;
-
-    std::vector<edm::Ptr<flashgg::Electron> > selectedElectrons = selectStdAllElectrons( theElectrons->ptrs(), vertices->ptrs(), looseLeptonPtThreshold, elecEtaThresholds, useElecMVARecipe, useElecLooseId, *rho, iEvent.isRealData() );
-
-    std::vector<edm::Ptr<flashgg::Electron> > tagElectrons = tools_.filterElectrons( selectedElectrons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
-
-    nelecs_loose = tagElectrons.size();
-    if (tagElectrons.size() > 0) leadingElectron = tagElectrons.at( 0 )->p4();
-    if (tagElectrons.size() > 1) subleadingElectron = tagElectrons.at( 1 )->p4();
-
-    for (unsigned int i = 0; i < tagElectrons.size(); i++)
-      if (tagElectrons.at( i )->p4().Pt() > elecPtThreshold) nelecs++;
-
-    nelecs_loose = nelecs_loose - nelecs;
-
-
-
-    Handle<View<flashgg::Muon> > theMuons;
-    iEvent.getByToken( muonToken_, theMuons );
-    //diphoCandidate
-    std::vector<edm::Ptr<flashgg::Muon> > selectedMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muEtaThreshold, looseLeptonPtThreshold, muPFIsoSumRelThreshold);
-    std::vector<edm::Ptr<flashgg::Muon> > tagMuons = tools_.filterMuons( selectedMuons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
-
-    nmus_loose = tagMuons.size();
-    if (tagMuons.size() > 0) leadingMuon = tagMuons.at( 0 )->p4();
-    if (tagMuons.size() > 1) subleadingMuon = tagMuons.at( 1 )->p4();
-
-    for (unsigned int i = 0; i < tagMuons.size(); i++)
-      if (tagMuons.at( i )->p4().Pt() > muPtThreshold) nmus++;
-
-    nmus_loose = tagMuons.size() - nmus;
-
-
-
-
-    // ============== ttH hadronic filtering==============
+    // ============== ttH hadronic ==============
    
     collectionForCounting = tools_.JetPreSelection(collectionForCounting, diphoCandidate);
     njets = collectionForCounting.size();
@@ -1480,15 +1363,75 @@ void
 
     Xtt0 = Xtt[0], Xtt1 = Xtt[3]; MjjW0 = Xtt[1],  MjjW1 = Xtt[4]; Mjjbt0 = Xtt[2],  Mjjbt1 = Xtt[5];
 
-
     for( unsigned int jetIndex = 0; jetIndex < collectionForVBF.size(); jetIndex++ )
       sumEt += collectionForVBF[jetIndex].pt();
     
 
 
-    if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
-    tree->Fill();
+    // ========== ttH leptonic ===========
 
+    edm::Handle<double>  rho;
+    iEvent.getByToken(rhoToken_,rho);
+
+
+    double looseLeptonPtThreshold = 10;
+
+    // =========== electrons =============
+
+    Handle<View<flashgg::Electron> > theElectrons;
+    iEvent.getByToken( electronToken_, theElectrons );
+
+    std::vector<edm::Ptr<flashgg::Electron> > selectedElectrons = selectStdAllElectrons( theElectrons->ptrs(), vertices->ptrs(), looseLeptonPtThreshold, elecEtaThresholds, useElecMVARecipe, useElecLooseId, *rho, iEvent.isRealData() );
+
+    std::vector<edm::Ptr<flashgg::Electron> > tagElectrons = tools_.filterElectrons( selectedElectrons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
+
+    if (tagElectrons.size() > 0) leadingElectron = tagElectrons.at( 0 )->p4();
+    if (tagElectrons.size() > 1) subleadingElectron = tagElectrons.at( 1 )->p4();
+
+    // =========== muons =============
+
+    Handle<View<flashgg::Muon> > theMuons;
+    iEvent.getByToken( muonToken_, theMuons );
+    //diphoCandidate
+    std::vector<edm::Ptr<flashgg::Muon> > selectedMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muEtaThreshold, looseLeptonPtThreshold, muPFIsoSumRelThreshold);
+    std::vector<edm::Ptr<flashgg::Muon> > tagMuons = tools_.filterMuons( selectedMuons, diphoCandidate, leadingJet, subleadingJet, dRPhoLeptonThreshold, dRJetLeptonThreshold);
+
+    if (tagMuons.size() > 0) leadingMuon = tagMuons.at( 0 )->p4();
+    if (tagMuons.size() > 1) subleadingMuon = tagMuons.at( 1 )->p4();
+
+
+
+   // ============== ttH BDT ==============
+
+     if(addttHMVA) {
+       std::map<std::string, float> ttHVars;
+       ttHVars["sumEt"] = sumEt;
+       ttHVars["MET"] = p4MET.Pt();
+
+       ttHVars["dPhi1"] = deltaPhi(p4MET.Phi(), leadingJet.Phi());
+       ttHVars["dPhi2"] = deltaPhi(p4MET.Phi(), subleadingJet.Phi());
+
+       ttHVars["PhoJetMinDr"] =  PhoJetMinDr;
+
+       ttHVars["njets>8"] =  njets > 8;
+       ttHVars["Xtt0"] = Xtt0;
+       ttHVars["Xtt1"] = Xtt1;
+
+       ttHVars["pte1"] = leadingElectron.Pt();
+       ttHVars["pte2"] = subleadingElectron.Pt();
+       ttHVars["ptmu1"] = leadingMuon.Pt();
+       ttHVars["ptmu2"] = subleadingMuon.Pt();
+
+       ttHVars["fabs_CosThetaStar_CS"] = fabs(CosThetaStar_CS);
+       ttHVars["fabs_CosTheta_bb"] = fabs(CosThetaStar_CS);
+       
+    
+       ttHTagger = ttHMVA_.mvaDiscriminants(ttHVars);
+     }
+       
+       if(DEBUG) std::cout << "GOT TO THE END!!" << std::endl;
+       tree->Fill();
+    
     if(DEBUG) std::cout << "Histograms filled!" << std::endl;
 
 }
@@ -1616,13 +1559,10 @@ bbggTree::beginJob()
 
     tree->Branch("leadingMuon", &leadingMuon);
     tree->Branch("subleadingMuon", &subleadingMuon);
-    tree->Branch("nmus", &nmus, "nmus/I");
-    tree->Branch("nmus_loose", &nmus_loose, "nmus_loose/I");
-
     tree->Branch("leadingElectron", &leadingElectron);
     tree->Branch("subleadingElectron", &subleadingElectron);
-    tree->Branch("nelecs", &nelecs, "nelecs/I");
-    tree->Branch("nelecs_loose", &nelecs_loose, "nelecs_loose/I");
+
+    tree->Branch("ttHTagger", &ttHTagger, "ttHTagger/F"); 
 
     std::map<std::string, std::string> replacements;
     globVar_->bookTreeVariables(tree, replacements);

@@ -21,16 +21,16 @@ stepLegs = {
 steps = [2, 4, 7]
 
 isRes = 1
-isRadion = 1
+isRadion = 0
 
-ffolder = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA/EGML_Signal_Mjj70_NewMVA/Hadd/"
+ffolder = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Mar82018_ForPubli_RafStyle/Signal/Hadd/"
 #ffolder = '/tmp/rateixei/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/May2_Mjj70to190_NewCatMVA/EGML_Signal_Mjj70_NewMVA/Hadd/'
 #ffolder = "/afs/cern.ch/work/r/rateixei/work/DiHiggs/flashgg_tag-Moriond17-v5/CMSSW_8_0_26_patch1/src/flashgg/bbggTools/test/RunJobs/AllSignal_Feb25_mjj80_pt25/Hadd/"
 outname = "res_effs_mjj70_MVAcat_spin2.pdf"
 
 if isRes==1:
   #For Resonant
-  header = "#font[61]{pp#rightarrowX#rightarrowHH#rightarrow#gamma#gammab#bar{b} (spin-2)}: Selection Steps"
+  header = "#font[61]{pp#rightarrowX#rightarrowHH#rightarrow#gamma#gammab#bar{b} (spin-2)}: selection steps"
   if isRadion: header = header.replace('spin-2', 'spin-0')
   if isRadion: outname = outname.replace('spin2', 'spin0')
   #  250, 260, 270, 280, 300, 350, 400, 450, 500, 600, 700, 800, 900
@@ -49,19 +49,19 @@ if isRes==1:
   drawOpt = "PL"
   #"/afs/cern.ch/work/r/rateixei/work/DiHiggs/dev-rafael-Nov4/CMSSW_8_0_20/src/flashgg/bbggTools/test/RunJobs/Signal_Nov24/Hadd/"
   files_1 = [
-#"output_GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-400_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-450_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-600_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-700_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-800_narrow_13TeV-madgraph.root",
-"output_GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph.root"
+#"output_GluGluToBulkGravitonToHHTo2B2G_M-250_narrow_13TeV-madgraph-0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-260_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-270_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-280_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-300_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-350_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-400_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-450_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-500_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-600_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-700_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-800_narrow_13TeV-madgraph_0.root",
+"output_GluGluToBulkGravitonToHHTo2B2G_M-900_narrow_13TeV-madgraph_0.root"
   ]
   files = files_1
   if isRadion:

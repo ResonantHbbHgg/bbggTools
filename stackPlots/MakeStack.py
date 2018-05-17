@@ -124,6 +124,7 @@ for plot in plots:
             locHist.Scale(MCSF*lumi*fi["xsec"]*fi["sfactor"]/fi["weight"])
             thisHist.Add(locHist)
             Histos.append(locHist)
+	    print thisName, " ",  thisHist.Integral()
 #            thisFile = TFile(plot[0]+"_"+fi["file"], "RECREATE")
 #            thisFile.cd()
 #            thisHist.Write()
