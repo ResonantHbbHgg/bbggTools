@@ -7,6 +7,7 @@ cmsenv
 git clone git@github.com:ResonantHbbHgg/bbggTools
 
 cd bbggTools/test/ttH_v2
+
 python FastPlotter.py
 
 root -l ./TMVAClassification.C\(\"Cuts,BDT\"\)
