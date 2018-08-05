@@ -222,9 +222,9 @@ int TMVAClassification( TString myMethodList = "" )
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    //  TString fname = "./tmva_class_example.root";
-   //   TString fnameS = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Dec13_ForTTH_rejection/Signal_v2/Signal_v2_output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root";
+   //   TString fnameS = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Mar292018_ForUpgrade_ttHBDT/Signal/Hadd/output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root";
+   //TString fnameB = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Mar292018_ForUpgrade_ttHBDT/Signal/Hadd/output_ttHToGG_M125_13TeV_powheg_pythia8_v2.root";
 
-   //   TString fnameB = "/eos/cms/store/group/phys_higgs/resonant_HH/RunII/FlatTrees/2016/Dec13_ForTTH_rejection/SingleHiggsBackground/ttH_v2/SingleHiggsBackground_ttH_v2_output_ttHToGG_M125_13TeV_powheg_pythia8_v2_0.root";
    TString fnameS = "Signal_Hadd_output_GluGluToHHTo2B2G_node_SM_13TeV-madgraph_0.root";
    TString fnameB = "Background_Hadd_output_ttHToGG_M125_13TeV_powheg_pythia8_v2.root"; 
    

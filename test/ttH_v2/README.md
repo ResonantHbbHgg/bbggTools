@@ -4,11 +4,10 @@ cd CMSSW_8_0_18_patch1/src/
 
 cmsenv
 
-git clone git@github.com:ResonantHbbHgg/AngularTMVA.git
+git clone git@github.com:ResonantHbbHgg/bbggTools
 
-cd AngularTMVA
-
-cp /afs/cern.ch/user/s/snandan/public/tmva.root VBF_vs_GGFusion_HH.root
+cd bbggTools/test/ttH_v2
+python FastPlotter.py
 
 root -l ./TMVAClassification.C\(\"Cuts,BDT\"\)
 
