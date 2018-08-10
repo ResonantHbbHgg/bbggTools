@@ -10,7 +10,7 @@ cd bbggTools/test/ttH_v2
 
 python FastPlotter.py
 
-root -l ./TMVAClassification.C\(\"Cuts,BDT\"\)
+root -l ./TMVAClassification.C\'(\"Cuts,BDT\"\)'
 
 
 You would see quite a lot of interesting print of and the Gui screen appearing By clicking on different options you would see ncie plots.
