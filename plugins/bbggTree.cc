@@ -1423,7 +1423,7 @@ void
        ttHVars["ptmu2"] = subleadingMuon.Pt();
 
        ttHVars["fabs_CosThetaStar_CS"] = fabs(CosThetaStar_CS);
-       ttHVars["fabs_CosTheta_bb"] = fabs(CosThetaStar_CS);
+       ttHVars["fabs_CosTheta_bb"] = fabs(CosTheta_bb);
        
     
        ttHTagger = ttHMVA_.mvaDiscriminants(ttHVars);
